@@ -11,7 +11,7 @@
       "Port": { "Name": "Local API port", "Hint": "Audio Forge: Settings > Local API. Default 8329." },
       "ApiKey": { "Name": "API key", "Hint": "Only needed when Audio Forge is on another machine. The Local API is plain HTTP, so use a trusted network." },
       "RoomsServer": { "Name": "Rooms server", "Hint": "Where Audio Forge opens online rooms. Leave the default unless you run your own server." },
-      "RoomAutoOpen": { "Name": "Open the online room automatically", "Hint": "GM only. When Audio Forge connects, open an online room so players can listen in Foundry. Turn off to open it yourself from the room window." },
+      "RoomAutoOpen": { "Name": "Open the online room while players are connected", "Hint": "GM only. Opens an online room when the first player connects and closes it a minute after the last one leaves, unless someone else is still in the room. A room you open yourself is never closed for you. Turn off to open and close it yourself." },
       "RoomAutoJoin": { "Name": "Join the room automatically", "Hint": "Start listening as soon as the GM opens an online room." },
       "AutoScene": { "Name": "Apply scene audio on activation", "Hint": "When a scene is activated, run the audio profile configured for it." },
       "AutoCombat": { "Name": "Apply combat audio", "Hint": "Run the combat start and combat end profiles below." },

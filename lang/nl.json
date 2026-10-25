@@ -39,8 +39,8 @@
         "Hint": "Waar Audio Forge online kamers opent. Laat de standaardwaarde staan, tenzij je een eigen server draait."
       },
       "RoomAutoOpen": {
-        "Name": "Online kamer automatisch openen",
-        "Hint": "Alleen voor de GM. Zodra Audio Forge verbinding maakt, wordt een online kamer geopend zodat spelers in Foundry kunnen luisteren. Zet uit om hem zelf te openen vanuit het kamervenster."
+        "Name": "Online kamer openen zolang er spelers verbonden zijn",
+        "Hint": "Alleen voor de GM. Opent een online kamer zodra de eerste speler verbindt en sluit hem een minuut nadat de laatste is vertrokken, tenzij er nog iemand anders in de kamer zit. Een kamer die je zelf opent wordt nooit voor je gesloten. Zet uit om hem zelf te openen en te sluiten."
       },
       "RoomAutoJoin": {
         "Name": "Automatisch deelnemen aan de kamer",

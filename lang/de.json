@@ -39,8 +39,8 @@
         "Hint": "Wo Audio Forge Online-Räume öffnet. Lass den Standardwert, außer du betreibst einen eigenen Server."
       },
       "RoomAutoOpen": {
-        "Name": "Online-Raum automatisch öffnen",
-        "Hint": "Nur für die SL. Sobald Audio Forge verbunden ist, wird ein Online-Raum geöffnet, damit die Spieler in Foundry zuhören können. Ausschalten, um ihn selbst im Raumfenster zu öffnen."
+        "Name": "Online-Raum öffnen, solange Spieler verbunden sind",
+        "Hint": "Nur für die SL. Öffnet einen Online-Raum, sobald der erste Spieler verbunden ist, und schließt ihn eine Minute nachdem der letzte gegangen ist, sofern sich nicht noch jemand anderes im Raum befindet. Ein Raum, den du selbst öffnest, wird nie für dich geschlossen. Ausschalten, um ihn selbst zu öffnen und zu schließen."
       },
       "RoomAutoJoin": {
         "Name": "Dem Raum automatisch beitreten",

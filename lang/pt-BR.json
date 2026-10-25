@@ -39,8 +39,8 @@
         "Hint": "Onde o Audio Forge abre as salas online. Deixe o padrão, a menos que você use seu próprio servidor."
       },
       "RoomAutoOpen": {
-        "Name": "Abrir a sala online automaticamente",
-        "Hint": "Somente o Mestre. Quando o Audio Forge conecta, abre uma sala online para que os jogadores ouçam no Foundry. Desative para abri-la você mesmo pela janela da sala."
+        "Name": "Abrir a sala online enquanto houver jogadores conectados",
+        "Hint": "Somente o Mestre. Abre uma sala online quando o primeiro jogador se conecta e a fecha um minuto depois que o último sai, a menos que ainda haja mais alguém na sala. Uma sala que você abre nunca é fechada por você. Desative para abri-la e fechá-la você mesmo."
       },
       "RoomAutoJoin": {
         "Name": "Entrar na sala automaticamente",

@@ -39,8 +39,8 @@
         "Hint": "Donde Audio Forge abre las salas en línea. Deja el valor predeterminado salvo que uses tu propio servidor."
       },
       "RoomAutoOpen": {
-        "Name": "Abrir la sala en línea automáticamente",
-        "Hint": "Solo GM. Cuando Audio Forge se conecta, abre una sala en línea para que los jugadores escuchen en Foundry. Desactívalo para abrirla tú desde la ventana de la sala."
+        "Name": "Abrir la sala en línea mientras haya jugadores conectados",
+        "Hint": "Solo GM. Abre una sala en línea cuando se conecta el primer jugador y la cierra un minuto después de que se vaya el último, salvo que aún haya alguien más en la sala. Una sala que abres tú nunca se cierra por ti. Desactívalo para abrirla y cerrarla tú."
       },
       "RoomAutoJoin": {
         "Name": "Unirse a la sala automáticamente",

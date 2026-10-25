@@ -5,6 +5,7 @@ import { PcmPlayer } from "./pcm-player.mjs";
 import { buildPlayerRows, findStrangers, takeNewRejections } from "./roster.mjs";
 
 const CHANNEL = `module.${MODULE_ID}`;
+const EMPTY_ROOM_GRACE_MS = 60_000; // a player reloading the page should not close the room
 
 /**
  * Online room, seen from both sides.
@@ -22,7 +23,10 @@ class RoomSession extends EventTarget {
   rejections = [];
   opening = false;
   #seenRejections = null; // null until the first state arrives, so a reload does not replay old refusals
-  #autoOpened = false; // the room is opened by default once per page load; closing it by hand sticks
+  #weOpened = false; // only a room this module opened by itself is closed by itself
+  #suppressed = false; // the GM closed the room by hand: stay closed until every player has left once
+  #autoBusy = false;
+  #closeTimer = null;
   #polling = false;
   #pollAgain = false;
 
@@ -77,11 +81,12 @@ class RoomSession extends EventTarget {
       // Only live data counts: a dropped connection must not look like "room closed" and kick everyone out,
       // and stale state must not be announced before the fresh state arrives.
       client.addEventListener("state", () => this.#onState());
-      client.addEventListener("connection", (ev) => {
-        if (ev.detail) this.#autoOpen();
+      client.addEventListener("connection", () => {
+        this.#syncAuto();
         this.#changed();
       });
-      if (client.connected) this.#autoOpen();
+      Hooks.on("userConnected", () => this.#syncAuto());
+      this.#syncAuto();
     } else {
       this.#send({ action: "hello" });
     }
@@ -90,6 +95,12 @@ class RoomSession extends EventTarget {
   // ---- GM actions ---------------------------------------------------------------------------------------------
 
   async open(password = "") {
+    this.#weOpened = false; // a room the GM opens is the GM's to close
+    this.#suppressed = false;
+    return this.#open(password);
+  }
+
+  async #open(password) {
     this.opening = true;
     this.#changed();
     try {
@@ -107,21 +118,53 @@ class RoomSession extends EventTarget {
     }
   }
 
-  /** Open the room by default so players find it, unless the GM turned that off or one is already running. */
-  async #autoOpen() {
-    if (this.#autoOpened || this.opening || !game.settings.get(MODULE_ID, "roomAutoOpen")) return;
-    this.#autoOpened = true;
+  /**
+   * The room follows the table: it opens when the first player is connected and closes a minute after the last one
+   * leaves, so nothing is streamed to an empty room. Only a room opened here is closed here.
+   */
+  async #syncAuto() {
+    if (this.#autoBusy || this.opening || !client.connected || !game.settings.get(MODULE_ID, "roomAutoOpen")) return;
+    const players = game.users.some((u) => !u.isGM && u.active);
+
+    if (!players) {
+      this.#suppressed = false;
+      // Somebody who found the link (or a player still listening) keeps the room alive. Older Audio Forge builds
+      // do not report guests, so there the room closes as soon as the players are gone.
+      if (this.guests.length) {
+        clearTimeout(this.#closeTimer);
+        this.#closeTimer = null;
+      } else if (this.room && this.#weOpened && !this.#closeTimer) {
+        this.#closeTimer = setTimeout(() => {
+          this.#closeTimer = null;
+          if (!game.users.some((u) => !u.isGM && u.active) && !this.guests.length && this.#weOpened) this.close().catch(notifyFailure);
+        }, EMPTY_ROOM_GRACE_MS);
+      }
+      return;
+    }
+
+    clearTimeout(this.#closeTimer);
+    this.#closeTimer = null;
+    if (this.room || this.#suppressed) return;
+
+    this.#autoBusy = true;
     try {
       // Older Audio Forge builds do not push the room in their state, so ask instead of assuming there is none.
       const { status } = await client.send({ command: "getAudioCaptureStatus" });
       if (status?.running && status.roomId) this.#apply(status);
-      else await this.open(game.settings.get(MODULE_ID, "roomPassword"));
+      else {
+        await this.#open(game.settings.get(MODULE_ID, "roomPassword"));
+        this.#weOpened = true;
+      }
     } catch (err) {
       notifyFailure(err);
+    } finally {
+      this.#autoBusy = false;
     }
   }
 
-  async close() {
+  async close({ byHand = false } = {}) {
+    if (byHand) this.#suppressed = true;
+    this.#weOpened = false;
     await client.send({ command: "stopAudioCapture" });
     this.#apply(null);
   }
@@ -244,10 +287,14 @@ class RoomSession extends EventTarget {
     this.room = next;
     this.guests = guests;
     this.rejections = rejections;
-    if (!open) this.reports.clear();
+    if (!open) {
+      this.reports.clear();
+      this.#weOpened = false;
+    }
     this.#notifyRejections();
     if (announce) this.#send({ action: "room", room: next });
     if (changed) this.#changed();
+    if (open && !announce && changed) this.#syncAuto(); // the last guest leaving may be what lets the room close
   }
 
   #notifyRejections() {

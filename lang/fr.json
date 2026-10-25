@@ -39,8 +39,8 @@
         "Hint": "Là où Audio Forge ouvre les salons en ligne. Gardez la valeur par défaut sauf si vous avez votre propre serveur."
       },
       "RoomAutoOpen": {
-        "Name": "Ouvrir le salon en ligne automatiquement",
-        "Hint": "Réservé au MJ. Quand Audio Forge se connecte, ouvre un salon en ligne pour que les joueurs écoutent dans Foundry. Désactivez pour l'ouvrir vous-même depuis la fenêtre du salon."
+        "Name": "Ouvrir le salon en ligne quand des joueurs sont connectés",
+        "Hint": "Réservé au MJ. Ouvre un salon en ligne quand le premier joueur se connecte et le ferme une minute après le départ du dernier, sauf si quelqu'un d'autre est encore dans le salon. Un salon que vous ouvrez vous-même n'est jamais fermé à votre place. Désactivez pour l'ouvrir et le fermer vous-même."
       },
       "RoomAutoJoin": {
         "Name": "Rejoindre le salon automatiquement",

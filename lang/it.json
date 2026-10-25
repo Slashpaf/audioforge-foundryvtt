@@ -39,8 +39,8 @@
         "Hint": "Dove Audio Forge apre le stanze online. Lascia il valore predefinito, a meno che tu non usi un tuo server."
       },
       "RoomAutoOpen": {
-        "Name": "Apri automaticamente la stanza online",
-        "Hint": "Solo GM. Quando Audio Forge si connette, apre una stanza online così i giocatori possono ascoltare in Foundry. Disattiva per aprirla tu dalla finestra della stanza."
+        "Name": "Apri la stanza online quando ci sono giocatori connessi",
+        "Hint": "Solo GM. Apre una stanza online quando si connette il primo giocatore e la chiude un minuto dopo l'uscita dell'ultimo, a meno che non ci sia ancora qualcun altro nella stanza. Una stanza aperta da te non viene mai chiusa al posto tuo. Disattiva per aprirla e chiuderla tu."
       },
       "RoomAutoJoin": {
         "Name": "Entra automaticamente nella stanza",

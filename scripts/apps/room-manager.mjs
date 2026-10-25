@@ -78,7 +78,7 @@ export class RoomManager extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static async #onClose() {
     try {
-      await roomSession.close();
+      await roomSession.close({ byHand: true });
     } catch (err) {
       notifyFailure(err);
     }
