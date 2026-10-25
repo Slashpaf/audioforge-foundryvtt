@@ -65,6 +65,8 @@ Hooks: `audioforge.connection(connected)`, `audioforge.state(state)`.
 
 ## Development
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for how to contribute.
+
 ```sh
 npm install
 npm test        # client + profile logic against a mock Local API server
