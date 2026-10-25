@@ -11,6 +11,9 @@ if (m.download && !m.download.includes(`/v${m.version}/`)) errors.push("download
 for (const path of [...(m.esmodules ?? []), ...(m.styles ?? []), ...(m.languages ?? []).map((l) => l.path)]) {
   if (!existsSync(path)) errors.push(`listed file does not exist: ${path}`);
 }
+if (!existsSync("CHANGELOG.md") || !readFileSync("CHANGELOG.md", "utf8").includes(`## ${m.version}`)) {
+  errors.push(`CHANGELOG.md has no section for ${m.version}`);
+}
 for (const path of ["styles/module.css", "templates/panel.hbs", "templates/profile-editor.hbs", "LICENSE", "ASSET_LICENSE.md"]) {
   if (!existsSync(path)) errors.push(`missing file: ${path}`);
 }

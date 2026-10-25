@@ -14,6 +14,7 @@
   "download": "https://github.com/Slashpaf/audioforge-foundryvtt/releases/download/v0.1.2/module.zip",
   "bugs": "https://github.com/Slashpaf/audioforge-foundryvtt/issues",
   "readme": "https://github.com/Slashpaf/audioforge-foundryvtt#readme",
+  "changelog": "https://github.com/Slashpaf/audioforge-foundryvtt/blob/main/CHANGELOG.md",
   "license": "MIT",
   "compatibility": {
     "minimum": "13",

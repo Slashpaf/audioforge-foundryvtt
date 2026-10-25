@@ -66,16 +66,26 @@ jobs:
             m.download = `${base}/releases/download/v${version}/module.zip`;
             m.bugs = `${base}/issues`;
             m.readme = `${base}#readme`;
+            m.changelog = `${base}/blob/main/CHANGELOG.md`;
             fs.writeFileSync("release/module.json", JSON.stringify(m, null, 2) + "\n");
           ' "$base" "$version"
           cp release/module.json module.json
-          zip -r release/module.zip module.json scripts templates styles lang assets README.md LICENSE ASSET_LICENSE.md -x scripts/verify-module.mjs
+          zip -r release/module.zip module.json scripts templates styles lang assets README.md CHANGELOG.md LICENSE ASSET_LICENSE.md -x scripts/verify-module.mjs
 
       - name: Create draft GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
+          # Release notes come from this version's CHANGELOG.md section.
+          awk -v v="${GITHUB_REF_NAME#v}" '
+            /^## / { if (found) exit; found = index($0, "## " v " ") == 1 || $0 == "## " v; next }
+            found
+          ' CHANGELOG.md > release/notes.md
+          if ! grep -q '[^[:space:]]' release/notes.md; then
+            echo "CHANGELOG.md has no section for ${GITHUB_REF_NAME#v}." >&2
+            exit 1
+          fi
           gh release create "$GITHUB_REF_NAME" release/module.json release/module.zip \
             --draft --title "Audio Forge for Foundry VTT ${GITHUB_REF_NAME#v}" \
-            --generate-notes
+            --notes-file release/notes.md
