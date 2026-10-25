@@ -2,6 +2,8 @@
 
 Drive the [Audio Forge](https://slashpaf.com/audioforge) soundboard from Foundry VTT over Audio Forge's Local API (HTTP + WebSocket). No cloud account or MQTT broker.
 
+![The Audio Forge control panel in Foundry VTT](docs/audio-forge-panel.png)
+
 ## What it does
 
 - **Scene audio**: attach an audio profile to a scene (restore a saved Audio Forge state, or pick music and ambiance). It runs when the scene is activated, or on demand from the panel.
