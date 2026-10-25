@@ -5,9 +5,6 @@ const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 const SECTIONS = ["Music", "Ambiance"];
 
-/** Mirrors the app's own lists: categories with no tracks are hidden. (enabledInForge is not the app's echo filter.) */
-const usable = (c) => c.trackCount !== 0;
-
 /** GM control panel mirroring Audio Forge's live state. */
 export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
   static DEFAULT_OPTIONS = {
@@ -82,7 +79,7 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
       Ambiance: new Set((st.ambianceCategories ?? []).map((c) => c.uuid)),
     };
     const section = (name) => {
-      const list = (lib?.[name.toLowerCase()] ?? []).filter((c) => !c.oneShot && usable(c));
+      const list = (lib?.[name.toLowerCase()] ?? []).filter((c) => !c.oneShot);
       const sectionPlaying = name === "Music" ? !!st.musicPlaying : !!st.ambiancePlaying;
       return {
         name,
@@ -92,7 +89,7 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
         categories: list.map((c) => ({ ...c, on: sectionPlaying && playing[name].has(c.uuid), icon: client.iconUrl(c.uuid, 96) })),
       };
     };
-    const echoes = (lib?.ambiance ?? []).filter((c) => c.oneShot && usable(c)).map((c) => ({ ...c, icon: client.iconUrl(c.uuid, 96) }));
+    const echoes = (lib?.ambiance ?? []).filter((c) => c.oneShot).map((c) => ({ ...c, icon: client.iconUrl(c.uuid, 96) }));
     return {
       connected: client.connected,
       blocked: client.blockedReason === "mixed-content",
