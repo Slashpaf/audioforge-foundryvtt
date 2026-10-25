@@ -2,6 +2,10 @@
 
 All notable changes to this module. Versions follow `module.json`; each release has a matching `vX.Y.Z` tag.
 
+## 0.2.2 - 2026-10-25
+
+- Online rooms: the room opens when the first player connects and closes a minute after the last listener leaves, including guests who joined with the link. A room you open yourself is never closed for you, and one you close by hand stays closed until everyone has left once.
+
 ## 0.2.1 - 2026-10-25
 
 - Translations of the online room and its settings: French, Italian, Dutch, German, Spanish and Brazilian Portuguese.
