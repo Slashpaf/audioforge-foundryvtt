@@ -87,5 +87,5 @@ jobs:
             exit 1
           fi
           gh release create "$GITHUB_REF_NAME" release/module.json release/module.zip \
-            --draft --title "Audio Forge for Foundry VTT ${GITHUB_REF_NAME#v}" \
+            --draft --title "$GITHUB_REF_NAME" \
             --notes-file release/notes.md
