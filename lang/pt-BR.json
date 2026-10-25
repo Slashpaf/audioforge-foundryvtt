@@ -34,6 +34,18 @@
         "Name": "Chave de API",
         "Hint": "Necessária só se o Audio Forge estiver em outra máquina. A API local usa HTTP simples, então use uma rede confiável."
       },
+      "RoomsServer": {
+        "Name": "Servidor de salas",
+        "Hint": "Onde o Audio Forge abre as salas online. Deixe o padrão, a menos que você use seu próprio servidor."
+      },
+      "RoomAutoOpen": {
+        "Name": "Abrir a sala online automaticamente",
+        "Hint": "Somente o Mestre. Quando o Audio Forge conecta, abre uma sala online para que os jogadores ouçam no Foundry. Desative para abri-la você mesmo pela janela da sala."
+      },
+      "RoomAutoJoin": {
+        "Name": "Entrar na sala automaticamente",
+        "Hint": "Começa a ouvir assim que o Mestre abre uma sala online."
+      },
       "AutoScene": {
         "Name": "Aplicar o áudio da cena ao ativá-la",
         "Hint": "Quando uma cena é ativada, executa o perfil de áudio configurado para ela."
@@ -78,6 +90,56 @@
       "Failed": "Audio Forge: {error}",
       "Offline": "O Audio Forge não está conectado.",
       "EchoScreen": "O Audio Forge não iniciou o eco em 10 segundos. Se acontecer de novo, reproduza-o uma vez no aplicativo Audio Forge."
+    },
+    "Room": {
+      "ManagerTitle": "Sala online",
+      "PlayerTitle": "Sala do Audio Forge",
+      "NeedsAudioForge": "Conecte-se primeiro ao Audio Forge: a sala é aberta pelo aplicativo Audio Forge neste computador.",
+      "Password": "Senha",
+      "PasswordOptional": "Opcional",
+      "OpenHint": "Os jogadores deste mundo entram automaticamente e ouvem a saída do Audio Forge. Ninguém precisa do link.",
+      "OpenButton": "Abrir a sala",
+      "Open": "Sala aberta",
+      "Close": "Fechar a sala",
+      "CopyLink": "Copiar o link da sala",
+      "LinkCopied": "Link da sala copiado",
+      "Players": "Jogadores",
+      "Others": "Outros na sala",
+      "NoPlayers": "Nenhum jogador neste mundo.",
+      "Invite": "Conectar este jogador agora",
+      "InviteAll": "Conectar todos",
+      "Remove": "Remover da sala",
+      "WaitingHint": "Jogadores em espera foram recusados porque a sala está cheia. Remova alguém e depois conecte-os.",
+      "Full": "A sala está cheia.",
+      "FullFree": "A sala está cheia. Salas gratuitas têm um limite de ouvintes. Assine o Audio Forge no aplicativo para removê-lo.",
+      "RejectedGM": "{name} não conseguiu entrar na sala do Audio Forge: ela está cheia ({max} ouvintes).",
+      "RejectedGMFree": "{name} não conseguiu entrar na sala do Audio Forge: ela está cheia ({max} ouvintes). Assine o Audio Forge no aplicativo para remover o limite.",
+      "RejectedPlayer": "A sala está cheia. Seu Mestre pode liberar uma vaga para você.",
+      "Removed": "O Mestre removeu você da sala.",
+      "JoinError": "Não foi possível entrar na sala. Peça ao seu Mestre para verificar a senha da sala.",
+      "State": {
+        "joined": "Ouvindo",
+        "waiting": "Em espera, sala cheia",
+        "removed": "Removido",
+        "error": "Erro",
+        "connecting": "Conectando…",
+        "idle": "Não conectado",
+        "offline": "Offline"
+      },
+      "Player": {
+        "idle": "Não conectado",
+        "connecting": "Conectando…",
+        "joined": "Ouvindo",
+        "waiting": "Sala cheia",
+        "removed": "Removido",
+        "error": "Erro",
+        "closed": "Sala fechada"
+      },
+      "NoRoom": "Seu Mestre não abriu uma sala.",
+      "Join": "Entrar na sala",
+      "Leave": "Sair da sala",
+      "Volume": "Volume",
+      "ClickToListen": "Clique para iniciar o áudio"
     },
     "Keybinding": {
       "Panel": "Mostrar ou ocultar o painel do Audio Forge"

@@ -34,6 +34,18 @@
         "Name": "API-Schlüssel",
         "Hint": "Nur nötig, wenn Audio Forge auf einem anderen Rechner läuft. Die lokale API nutzt einfaches HTTP, verwende daher ein vertrauenswürdiges Netzwerk."
       },
+      "RoomsServer": {
+        "Name": "Raum-Server",
+        "Hint": "Wo Audio Forge Online-Räume öffnet. Lass den Standardwert, außer du betreibst einen eigenen Server."
+      },
+      "RoomAutoOpen": {
+        "Name": "Online-Raum automatisch öffnen",
+        "Hint": "Nur für die SL. Sobald Audio Forge verbunden ist, wird ein Online-Raum geöffnet, damit die Spieler in Foundry zuhören können. Ausschalten, um ihn selbst im Raumfenster zu öffnen."
+      },
+      "RoomAutoJoin": {
+        "Name": "Dem Raum automatisch beitreten",
+        "Hint": "Beginnt zuzuhören, sobald die SL einen Online-Raum öffnet."
+      },
       "AutoScene": {
         "Name": "Szenen-Audio bei Aktivierung anwenden",
         "Hint": "Wird eine Szene aktiviert, wird das dafür eingerichtete Audioprofil ausgeführt."
@@ -78,6 +90,56 @@
       "Failed": "Audio Forge: {error}",
       "Offline": "Audio Forge ist nicht verbunden.",
       "EchoScreen": "Audio Forge hat das Echo nicht innerhalb von 10 Sekunden gestartet. Falls das wieder passiert, spiele es einmal in der Audio-Forge-App ab."
+    },
+    "Room": {
+      "ManagerTitle": "Online-Raum",
+      "PlayerTitle": "Audio-Forge-Raum",
+      "NeedsAudioForge": "Verbinde dich zuerst mit Audio Forge: Der Raum wird über die Audio-Forge-App auf diesem Computer geöffnet.",
+      "Password": "Passwort",
+      "PasswordOptional": "Optional",
+      "OpenHint": "Spieler dieser Welt treten automatisch bei und hören die Ausgabe von Audio Forge. Niemand braucht den Link.",
+      "OpenButton": "Raum öffnen",
+      "Open": "Raum offen",
+      "Close": "Raum schließen",
+      "CopyLink": "Raumlink kopieren",
+      "LinkCopied": "Raumlink kopiert",
+      "Players": "Spieler",
+      "Others": "Weitere im Raum",
+      "NoPlayers": "Keine Spieler in dieser Welt.",
+      "Invite": "Diesen Spieler jetzt verbinden",
+      "InviteAll": "Alle verbinden",
+      "Remove": "Aus dem Raum entfernen",
+      "WaitingHint": "Wartende Spieler wurden abgewiesen, weil der Raum voll ist. Entferne jemanden und verbinde sie dann.",
+      "Full": "Der Raum ist voll.",
+      "FullFree": "Der Raum ist voll. Kostenlose Räume haben ein Zuhörerlimit. Abonniere Audio Forge in der App, um es aufzuheben.",
+      "RejectedGM": "{name} konnte dem Audio-Forge-Raum nicht beitreten: Er ist voll ({max} Zuhörer).",
+      "RejectedGMFree": "{name} konnte dem Audio-Forge-Raum nicht beitreten: Er ist voll ({max} Zuhörer). Abonniere Audio Forge in der App, um das Limit aufzuheben.",
+      "RejectedPlayer": "Der Raum ist voll. Deine SL kann einen Platz für dich freimachen.",
+      "Removed": "Die SL hat dich aus dem Raum entfernt.",
+      "JoinError": "Dem Raum konnte nicht beigetreten werden. Bitte deine SL, das Raumpasswort zu prüfen.",
+      "State": {
+        "joined": "Hört zu",
+        "waiting": "Wartet, Raum voll",
+        "removed": "Entfernt",
+        "error": "Fehler",
+        "connecting": "Verbinde…",
+        "idle": "Nicht beigetreten",
+        "offline": "Offline"
+      },
+      "Player": {
+        "idle": "Nicht beigetreten",
+        "connecting": "Verbinde…",
+        "joined": "Hört zu",
+        "waiting": "Raum voll",
+        "removed": "Entfernt",
+        "error": "Fehler",
+        "closed": "Raum geschlossen"
+      },
+      "NoRoom": "Deine SL hat keinen Raum geöffnet.",
+      "Join": "Dem Raum beitreten",
+      "Leave": "Den Raum verlassen",
+      "Volume": "Lautstärke",
+      "ClickToListen": "Klicken, um den Ton zu starten"
     },
     "Keybinding": {
       "Panel": "Audio-Forge-Panel ein- oder ausblenden"

@@ -34,6 +34,18 @@
         "Name": "API-sleutel",
         "Hint": "Alleen nodig als Audio Forge op een andere machine draait. De lokale API gebruikt gewoon HTTP, gebruik dus een vertrouwd netwerk."
       },
+      "RoomsServer": {
+        "Name": "Kamerserver",
+        "Hint": "Waar Audio Forge online kamers opent. Laat de standaardwaarde staan, tenzij je een eigen server draait."
+      },
+      "RoomAutoOpen": {
+        "Name": "Online kamer automatisch openen",
+        "Hint": "Alleen voor de GM. Zodra Audio Forge verbinding maakt, wordt een online kamer geopend zodat spelers in Foundry kunnen luisteren. Zet uit om hem zelf te openen vanuit het kamervenster."
+      },
+      "RoomAutoJoin": {
+        "Name": "Automatisch deelnemen aan de kamer",
+        "Hint": "Begin met luisteren zodra de GM een online kamer opent."
+      },
       "AutoScene": {
         "Name": "Scènegeluid toepassen bij activeren",
         "Hint": "Als een scène wordt geactiveerd, wordt het audioprofiel van die scène uitgevoerd."
@@ -78,6 +90,56 @@
       "Failed": "Audio Forge: {error}",
       "Offline": "Audio Forge is niet verbonden.",
       "EchoScreen": "Audio Forge heeft de echo niet binnen 10 seconden gestart. Blijft dit gebeuren, speel hem dan één keer af vanuit de Audio Forge-app."
+    },
+    "Room": {
+      "ManagerTitle": "Online kamer",
+      "PlayerTitle": "Audio Forge-kamer",
+      "NeedsAudioForge": "Maak eerst verbinding met Audio Forge: de kamer wordt geopend vanuit de Audio Forge-app op deze computer.",
+      "Password": "Wachtwoord",
+      "PasswordOptional": "Optioneel",
+      "OpenHint": "Spelers in deze wereld nemen automatisch deel en horen de uitvoer van Audio Forge. Niemand heeft de link nodig.",
+      "OpenButton": "Kamer openen",
+      "Open": "Kamer open",
+      "Close": "Kamer sluiten",
+      "CopyLink": "Kamerlink kopiëren",
+      "LinkCopied": "Kamerlink gekopieerd",
+      "Players": "Spelers",
+      "Others": "Anderen in de kamer",
+      "NoPlayers": "Geen spelers in deze wereld.",
+      "Invite": "Deze speler nu verbinden",
+      "InviteAll": "Iedereen verbinden",
+      "Remove": "Uit de kamer verwijderen",
+      "WaitingHint": "Spelers die wachten zijn geweigerd omdat de kamer vol is. Verwijder iemand en verbind ze daarna.",
+      "Full": "De kamer is vol.",
+      "FullFree": "De kamer is vol. Gratis kamers hebben een luisteraarslimiet. Neem in de app een abonnement op Audio Forge om die op te heffen.",
+      "RejectedGM": "{name} kon niet deelnemen aan de Audio Forge-kamer: hij is vol ({max} luisteraars).",
+      "RejectedGMFree": "{name} kon niet deelnemen aan de Audio Forge-kamer: hij is vol ({max} luisteraars). Neem in de app een abonnement op Audio Forge om de limiet op te heffen.",
+      "RejectedPlayer": "De kamer is vol. Je GM kan een plek voor je vrijmaken.",
+      "Removed": "De GM heeft je uit de kamer verwijderd.",
+      "JoinError": "Kon niet deelnemen aan de kamer. Vraag je GM het wachtwoord van de kamer te controleren.",
+      "State": {
+        "joined": "Luistert",
+        "waiting": "Wacht, kamer vol",
+        "removed": "Verwijderd",
+        "error": "Fout",
+        "connecting": "Verbinden…",
+        "idle": "Niet deelgenomen",
+        "offline": "Offline"
+      },
+      "Player": {
+        "idle": "Niet deelgenomen",
+        "connecting": "Verbinden…",
+        "joined": "Luistert",
+        "waiting": "Kamer vol",
+        "removed": "Verwijderd",
+        "error": "Fout",
+        "closed": "Kamer gesloten"
+      },
+      "NoRoom": "Je GM heeft geen kamer geopend.",
+      "Join": "Deelnemen aan de kamer",
+      "Leave": "De kamer verlaten",
+      "Volume": "Volume",
+      "ClickToListen": "Klik om het geluid te starten"
     },
     "Keybinding": {
       "Panel": "Audio Forge-paneel tonen of verbergen"

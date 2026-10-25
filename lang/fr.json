@@ -34,6 +34,18 @@
         "Name": "Clé d'API",
         "Hint": "Nécessaire seulement si Audio Forge tourne sur une autre machine. L'API locale est en HTTP simple : utilisez un réseau de confiance."
       },
+      "RoomsServer": {
+        "Name": "Serveur de salons",
+        "Hint": "Là où Audio Forge ouvre les salons en ligne. Gardez la valeur par défaut sauf si vous avez votre propre serveur."
+      },
+      "RoomAutoOpen": {
+        "Name": "Ouvrir le salon en ligne automatiquement",
+        "Hint": "Réservé au MJ. Quand Audio Forge se connecte, ouvre un salon en ligne pour que les joueurs écoutent dans Foundry. Désactivez pour l'ouvrir vous-même depuis la fenêtre du salon."
+      },
+      "RoomAutoJoin": {
+        "Name": "Rejoindre le salon automatiquement",
+        "Hint": "Commence l'écoute dès que le MJ ouvre un salon en ligne."
+      },
       "AutoScene": {
         "Name": "Appliquer l'audio de la scène à son activation",
         "Hint": "Quand une scène est activée, lance le profil audio configuré pour elle."
@@ -78,6 +90,56 @@
       "Failed": "Audio Forge : {error}",
       "Offline": "Audio Forge n'est pas connecté.",
       "EchoScreen": "Audio Forge n'a pas démarré l'écho en moins de 10 secondes. Si cela se répète, jouez-le une fois depuis l'application Audio Forge."
+    },
+    "Room": {
+      "ManagerTitle": "Salon en ligne",
+      "PlayerTitle": "Salon Audio Forge",
+      "NeedsAudioForge": "Connectez-vous d'abord à Audio Forge : le salon s'ouvre depuis l'application Audio Forge de cet ordinateur.",
+      "Password": "Mot de passe",
+      "PasswordOptional": "Facultatif",
+      "OpenHint": "Les joueurs de ce monde rejoignent automatiquement et entendent la sortie d'Audio Forge. Personne n'a besoin du lien.",
+      "OpenButton": "Ouvrir le salon",
+      "Open": "Salon ouvert",
+      "Close": "Fermer le salon",
+      "CopyLink": "Copier le lien du salon",
+      "LinkCopied": "Lien du salon copié",
+      "Players": "Joueurs",
+      "Others": "Autres dans le salon",
+      "NoPlayers": "Aucun joueur dans ce monde.",
+      "Invite": "Connecter ce joueur maintenant",
+      "InviteAll": "Connecter tout le monde",
+      "Remove": "Retirer du salon",
+      "WaitingHint": "Les joueurs en attente ont été refusés car le salon est plein. Retirez quelqu'un, puis connectez-les.",
+      "Full": "Le salon est plein.",
+      "FullFree": "Le salon est plein. Les salons gratuits ont une limite d'auditeurs. Abonnez-vous à Audio Forge dans l'application pour la supprimer.",
+      "RejectedGM": "{name} n'a pas pu rejoindre le salon Audio Forge : il est plein ({max} auditeurs).",
+      "RejectedGMFree": "{name} n'a pas pu rejoindre le salon Audio Forge : il est plein ({max} auditeurs). Abonnez-vous à Audio Forge dans l'application pour supprimer la limite.",
+      "RejectedPlayer": "Le salon est plein. Votre MJ peut libérer une place pour vous.",
+      "Removed": "Le MJ vous a retiré du salon.",
+      "JoinError": "Impossible de rejoindre le salon. Demandez à votre MJ de vérifier le mot de passe du salon.",
+      "State": {
+        "joined": "À l'écoute",
+        "waiting": "En attente, salon plein",
+        "removed": "Retiré",
+        "error": "Erreur",
+        "connecting": "Connexion…",
+        "idle": "Non connecté",
+        "offline": "Hors ligne"
+      },
+      "Player": {
+        "idle": "Non connecté",
+        "connecting": "Connexion…",
+        "joined": "À l'écoute",
+        "waiting": "Salon plein",
+        "removed": "Retiré",
+        "error": "Erreur",
+        "closed": "Salon fermé"
+      },
+      "NoRoom": "Votre MJ n'a pas ouvert de salon.",
+      "Join": "Rejoindre le salon",
+      "Leave": "Quitter le salon",
+      "Volume": "Volume",
+      "ClickToListen": "Cliquez pour démarrer le son"
     },
     "Keybinding": {
       "Panel": "Afficher ou masquer le panneau Audio Forge"

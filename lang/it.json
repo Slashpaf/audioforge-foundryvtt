@@ -34,6 +34,18 @@
         "Name": "Chiave API",
         "Hint": "Serve solo se Audio Forge è su un'altra macchina. L'API locale usa HTTP semplice: usa una rete fidata."
       },
+      "RoomsServer": {
+        "Name": "Server delle stanze",
+        "Hint": "Dove Audio Forge apre le stanze online. Lascia il valore predefinito, a meno che tu non usi un tuo server."
+      },
+      "RoomAutoOpen": {
+        "Name": "Apri automaticamente la stanza online",
+        "Hint": "Solo GM. Quando Audio Forge si connette, apre una stanza online così i giocatori possono ascoltare in Foundry. Disattiva per aprirla tu dalla finestra della stanza."
+      },
+      "RoomAutoJoin": {
+        "Name": "Entra automaticamente nella stanza",
+        "Hint": "Inizia ad ascoltare non appena il GM apre una stanza online."
+      },
       "AutoScene": {
         "Name": "Applica l'audio della scena all'attivazione",
         "Hint": "Quando una scena viene attivata, esegue il profilo audio configurato per essa."
@@ -78,6 +90,56 @@
       "Failed": "Audio Forge: {error}",
       "Offline": "Audio Forge non è connesso.",
       "EchoScreen": "Audio Forge non ha avviato l'eco entro 10 secondi. Se si ripete, riproducilo una volta dall'app Audio Forge."
+    },
+    "Room": {
+      "ManagerTitle": "Stanza online",
+      "PlayerTitle": "Stanza Audio Forge",
+      "NeedsAudioForge": "Connettiti prima ad Audio Forge: la stanza si apre dall'app Audio Forge su questo computer.",
+      "Password": "Password",
+      "PasswordOptional": "Facoltativa",
+      "OpenHint": "I giocatori di questo mondo entrano automaticamente e sentono l'uscita di Audio Forge. Nessuno ha bisogno del link.",
+      "OpenButton": "Apri la stanza",
+      "Open": "Stanza aperta",
+      "Close": "Chiudi la stanza",
+      "CopyLink": "Copia il link della stanza",
+      "LinkCopied": "Link della stanza copiato",
+      "Players": "Giocatori",
+      "Others": "Altri nella stanza",
+      "NoPlayers": "Nessun giocatore in questo mondo.",
+      "Invite": "Connetti questo giocatore ora",
+      "InviteAll": "Connetti tutti",
+      "Remove": "Rimuovi dalla stanza",
+      "WaitingHint": "I giocatori in attesa sono stati rifiutati perché la stanza è piena. Rimuovi qualcuno, poi connettili.",
+      "Full": "La stanza è piena.",
+      "FullFree": "La stanza è piena. Le stanze gratuite hanno un limite di ascoltatori. Abbonati ad Audio Forge nell'app per toglierlo.",
+      "RejectedGM": "{name} non è riuscito a entrare nella stanza Audio Forge: è piena ({max} ascoltatori).",
+      "RejectedGMFree": "{name} non è riuscito a entrare nella stanza Audio Forge: è piena ({max} ascoltatori). Abbonati ad Audio Forge nell'app per togliere il limite.",
+      "RejectedPlayer": "La stanza è piena. Il tuo GM può liberare un posto per te.",
+      "Removed": "Il GM ti ha rimosso dalla stanza.",
+      "JoinError": "Impossibile entrare nella stanza. Chiedi al tuo GM di controllare la password della stanza.",
+      "State": {
+        "joined": "In ascolto",
+        "waiting": "In attesa, stanza piena",
+        "removed": "Rimosso",
+        "error": "Errore",
+        "connecting": "Connessione…",
+        "idle": "Non connesso",
+        "offline": "Offline"
+      },
+      "Player": {
+        "idle": "Non connesso",
+        "connecting": "Connessione…",
+        "joined": "In ascolto",
+        "waiting": "Stanza piena",
+        "removed": "Rimosso",
+        "error": "Errore",
+        "closed": "Stanza chiusa"
+      },
+      "NoRoom": "Il tuo GM non ha aperto una stanza.",
+      "Join": "Entra nella stanza",
+      "Leave": "Esci dalla stanza",
+      "Volume": "Volume",
+      "ClickToListen": "Clicca per avviare l'audio"
     },
     "Keybinding": {
       "Panel": "Mostra o nascondi il pannello Audio Forge"
