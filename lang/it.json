@@ -19,7 +19,8 @@
       "Next": "Brano successivo",
       "ApplyScene": "Applica l'audio della scena",
       "NoStates": "Nessuno stato salvato",
-      "NoEchoes": "Nessun eco in questa libreria"
+      "NoEchoes": "Nessun eco in questa libreria",
+      "GetAudioForge": "Scarica Audio Forge"
     },
     "Settings": {
       "Host": {
@@ -139,7 +140,8 @@
       "Join": "Entra nella stanza",
       "Leave": "Esci dalla stanza",
       "Volume": "Volume",
-      "ClickToListen": "Clicca per avviare l'audio"
+      "ClickToListen": "Clicca per avviare l'audio",
+      "PlayerPromo": "Ti piace quello che senti? Audio Forge si scarica gratis."
     },
     "Keybinding": {
       "Panel": "Mostra o nascondi il pannello Audio Forge"

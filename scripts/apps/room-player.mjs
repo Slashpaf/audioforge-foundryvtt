@@ -1,5 +1,6 @@
 import { MODULE_ID } from "../settings.mjs";
 import { roomSession } from "../rooms/session.mjs";
+import { DOWNLOAD_URL } from "../util.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -50,6 +51,7 @@ export class RoomPlayerPanel extends HandlebarsApplicationMixin(ApplicationV2) {
       canLeave: ["joined", "connecting", "waiting"].includes(status),
       blocked: status === "joined" && roomSession.audioBlocked,
       volume: roomSession.volume,
+      downloadUrl: DOWNLOAD_URL,
     };
   }
 

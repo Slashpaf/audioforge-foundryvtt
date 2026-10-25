@@ -70,3 +70,4 @@
 .audioforge-room .af-row.removed .af-dot, .audioforge-room .af-row.error .af-dot { background: #c0392b; }
 .audioforge-room .af-row.connecting .af-dot { background: #f1c40f; }
 .audioforge-room .af-row.stranger .af-dot { background: #8e44ad; }
+.audioforge .af-note a { text-decoration: underline; }

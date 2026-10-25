@@ -1,5 +1,5 @@
 import { MODULE_ID, client } from "../settings.mjs";
-import { notifyFailure } from "../util.mjs";
+import { DOWNLOAD_URL, notifyFailure } from "../util.mjs";
 import { roomSession } from "../rooms/session.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
@@ -53,6 +53,7 @@ export class RoomManager extends HandlebarsApplicationMixin(ApplicationV2) {
     }));
     return {
       connected: client.connected,
+      downloadUrl: DOWNLOAD_URL,
       opening: roomSession.opening,
       room,
       password: this.#password ?? game.settings.get(MODULE_ID, "roomPassword"),

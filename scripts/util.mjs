@@ -6,7 +6,10 @@ export function notifyFailure(err) {
 }
 
 /**
- * A category can be both an echo (oneShot) and a regular ambiance category. The app lists it as a regular one when it
- * is enabled in the Forge, and hides only the pure echoes.
+ * Whether the panel and the profile editor list a category as a regular music or ambiance one. That is the anvil
+ * switch in the app (`enabledInForge`), so a disabled category stays out even when it is not an echo. A category can
+ * also be an echo (`oneShot`) at the same time, like Ghost, and then it shows in both lists.
  */
-export const isRegular = (c) => c.enabledInForge !== false || !c.oneShot;
+export const isRegular = (c) => c.enabledInForge !== false;
+
+export const DOWNLOAD_URL = "https://slashpaf.com/audioforge/download";

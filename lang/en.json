@@ -5,7 +5,7 @@
       "Connecting": "Connecting…", "MixedContent": "Blocked: this page is served over HTTPS, so the browser will not allow a connection to a remote Audio Forge. Use http:// for Foundry or run Audio Forge on this computer.",
       "Music": "Music", "Ambiance": "Ambiance", "Echoes": "Echoes", "SavedStates": "Saved states", "Library": "Library",
       "StopAll": "Stop all", "Play": "Play", "Pause": "Pause", "Stop": "Stop", "Next": "Next track",
-      "ApplyScene": "Apply scene audio", "NoStates": "No saved states", "NoEchoes": "No echoes in this library" },
+      "ApplyScene": "Apply scene audio", "NoStates": "No saved states", "NoEchoes": "No echoes in this library", "GetAudioForge": "Download Audio Forge" },
     "Settings": {
       "Host": { "Name": "Audio Forge host", "Hint": "Where Audio Forge runs, as seen from this browser. Usually localhost." },
       "Port": { "Name": "Local API port", "Hint": "Audio Forge: Settings > Local API. Default 8329." },
@@ -41,7 +41,7 @@
       "RejectedPlayer": "The room is full. Your GM can free a slot for you.", "Removed": "The GM removed you from the room.", "JoinError": "Could not join the room. Ask your GM to check the room password.",
       "State": { "joined": "Listening", "waiting": "Waiting, room full", "removed": "Removed", "error": "Error", "connecting": "Connecting…", "idle": "Not joined", "offline": "Offline" },
       "Player": { "idle": "Not joined", "connecting": "Connecting…", "joined": "Listening", "waiting": "Room full", "removed": "Removed", "error": "Error", "closed": "Room closed" },
-      "NoRoom": "Your GM has not opened a room.", "Join": "Join the room", "Leave": "Leave the room", "Volume": "Volume", "ClickToListen": "Click to start the audio"
+      "NoRoom": "Your GM has not opened a room.", "PlayerPromo": "Like what you hear? Audio Forge is free to download.", "Join": "Join the room", "Leave": "Leave the room", "Volume": "Volume", "ClickToListen": "Click to start the audio"
     },
     "Keybinding": { "Panel": "Toggle Audio Forge panel" }
   }

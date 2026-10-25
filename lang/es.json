@@ -19,7 +19,8 @@
       "Next": "Pista siguiente",
       "ApplyScene": "Aplicar el audio de la escena",
       "NoStates": "No hay estados guardados",
-      "NoEchoes": "No hay ecos en esta biblioteca"
+      "NoEchoes": "No hay ecos en esta biblioteca",
+      "GetAudioForge": "Descargar Audio Forge"
     },
     "Settings": {
       "Host": {
@@ -139,7 +140,8 @@
       "Join": "Unirse a la sala",
       "Leave": "Salir de la sala",
       "Volume": "Volumen",
-      "ClickToListen": "Haz clic para iniciar el audio"
+      "ClickToListen": "Haz clic para iniciar el audio",
+      "PlayerPromo": "¿Te gusta lo que oyes? Audio Forge se descarga gratis."
     },
     "Keybinding": {
       "Panel": "Mostrar u ocultar el panel de Audio Forge"

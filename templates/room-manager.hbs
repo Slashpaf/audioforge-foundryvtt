@@ -1,6 +1,7 @@
 <div class="af-room">
   {{#unless connected}}
   <p class="af-note">{{localize "AUDIOFORGE.Room.NeedsAudioForge"}}</p>
+  <p class="af-note"><a href="{{downloadUrl}}" target="_blank" rel="noopener"><i class="fa-solid fa-download"></i> {{localize "AUDIOFORGE.Panel.GetAudioForge"}}</a></p>
   {{else}}
     {{#if room}}
     <header class="af-status on">

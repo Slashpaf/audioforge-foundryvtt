@@ -8,6 +8,10 @@
     <button type="button" data-action="stopAll" title="{{localize 'AUDIOFORGE.Panel.StopAll'}}" {{#unless connected}}disabled{{/unless}}><i class="fa-solid fa-stop"></i></button>
   </header>
 
+  {{#unless connected}}
+  <p class="af-note"><a href="{{downloadUrl}}" target="_blank" rel="noopener"><i class="fa-solid fa-download"></i> {{localize "AUDIOFORGE.Panel.GetAudioForge"}}</a></p>
+  {{/unless}}
+
   {{#if connected}}
   <div class="form-group af-library">
     <label>{{localize "AUDIOFORGE.Panel.Library"}}</label>

@@ -1,5 +1,5 @@
 import { MODULE_ID, client } from "../settings.mjs";
-import { isRegular, notifyFailure } from "../util.mjs";
+import { DOWNLOAD_URL, isRegular, notifyFailure } from "../util.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -96,6 +96,7 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
     const echoes = (lib?.ambiance ?? []).filter((c) => c.oneShot && usable(c)).map((c) => ({ ...c, icon: client.iconUrl(c.uuid, 96) }));
     return {
       connected: client.connected,
+      downloadUrl: DOWNLOAD_URL,
       blocked: client.blockedReason === "mixed-content",
       libraries: libs.map((l) => ({ uuid: l.uuid, name: l.name, selected: l.uuid === lib?.uuid })),
       sections: SECTIONS.map(section),

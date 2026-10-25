@@ -5,17 +5,16 @@ All notable changes to this module. Versions follow `module.json`; each release 
 ## 0.2.2 - 2026-10-25
 
 - Online rooms: the room opens when the first player connects and closes a minute after the last listener leaves, including guests who joined with the link. A room you open yourself is never closed for you, and one you close by hand stays closed until everyone has left once.
-- Categories that are both a regular ambiance category and an echo (such as Ghost) now show in both lists, like in the app.
+- The panel and the profile editor list the categories enabled for the anvil in the app, so a disabled category no longer shows. A category that is also an echo (such as Ghost) shows in both lists.
+- Online rooms recover when Audio Forge is closed and reopened: the dead room is closed for the players and a new one opens, which they join on their own.
+- Download link to Audio Forge in the panel and the room window while it is not connected, and a short note with the link in the player's room window.
 
 ## 0.2.1 - 2026-10-25
-
-- Translations of the online room and its settings: French, Italian, Dutch, German, Spanish and Brazilian Portuguese.
-
-## 0.2.0 - 2026-10-25
 
 - Online rooms: Audio Forge opens an online room when it connects (a setting turns that off), and players join automatically and listen inside Foundry. The GM sees who is in and who was turned away because the room is full (with a reminder that subscribing to Audio Forge removes the limit), and can remove players or connect them on demand. With an older Audio Forge the room still opens and plays, but the player list and removal are not available.
 - The panel and the scene and combat profile editor list only categories that can be played (those with tracks).
 - The control panel scrolls when it is taller than the window.
+- Translations of the online room and its settings: French, Italian, Dutch, German, Spanish and Brazilian Portuguese.
 
 ## 0.1.3 - 2026-10-25
 

@@ -19,7 +19,8 @@
       "Next": "Nächster Titel",
       "ApplyScene": "Szenen-Audio anwenden",
       "NoStates": "Keine gespeicherten Zustände",
-      "NoEchoes": "Keine Echos in dieser Bibliothek"
+      "NoEchoes": "Keine Echos in dieser Bibliothek",
+      "GetAudioForge": "Audio Forge herunterladen"
     },
     "Settings": {
       "Host": {
@@ -139,7 +140,8 @@
       "Join": "Dem Raum beitreten",
       "Leave": "Den Raum verlassen",
       "Volume": "Lautstärke",
-      "ClickToListen": "Klicken, um den Ton zu starten"
+      "ClickToListen": "Klicken, um den Ton zu starten",
+      "PlayerPromo": "Gefällt dir, was du hörst? Audio Forge ist kostenlos erhältlich."
     },
     "Keybinding": {
       "Panel": "Audio-Forge-Panel ein- oder ausblenden"

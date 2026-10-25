@@ -26,6 +26,7 @@ class RoomSession extends EventTarget {
   #weOpened = false; // only a room this module opened by itself is closed by itself
   #suppressed = false; // the GM closed the room by hand: stay closed until every player has left once
   #autoBusy = false;
+  #verified = false; // whether the room we show was checked against Audio Forge since it last connected
   #closeTimer = null;
   #polling = false;
   #pollAgain = false;
@@ -82,6 +83,7 @@ class RoomSession extends EventTarget {
       // and stale state must not be announced before the fresh state arrives.
       client.addEventListener("state", () => this.#onState());
       client.addEventListener("connection", () => {
+        if (!client.connected) this.#verified = false; // Audio Forge was closed: whatever room it had is gone
         this.#syncAuto();
         this.#changed();
       });
@@ -123,7 +125,32 @@ class RoomSession extends EventTarget {
    * leaves, so nothing is streamed to an empty room. Only a room opened here is closed here.
    */
   async #syncAuto() {
-    if (this.#autoBusy || this.opening || !client.connected || !game.settings.get(MODULE_ID, "roomAutoOpen")) return;
+    if (this.#autoBusy || this.opening || !client.connected) return;
+    this.#autoBusy = true;
+    try {
+      await this.#verifyRoom();
+      if (game.settings.get(MODULE_ID, "roomAutoOpen")) await this.#autoManage();
+    } catch (err) {
+      notifyFailure(err);
+    } finally {
+      this.#autoBusy = false;
+    }
+  }
+
+  /**
+   * After Audio Forge (re)connects, ask what room it really has. A room we still show may have died with the app;
+   * players are told it closed, and the automatic opening below starts a fresh one they join on their own.
+   */
+  async #verifyRoom() {
+    if (this.#verified) return;
+    // Older Audio Forge builds do not push the room in their state, so ask instead of assuming there is none.
+    const { status } = await client.send({ command: "getAudioCaptureStatus" });
+    this.#verified = true;
+    if (status?.running && status.roomId) this.#apply(status);
+    else if (this.room) this.#apply(null);
+  }
+
+  async #autoManage() {
     const players = game.users.some((u) => !u.isGM && u.active);
 
     if (!players) {
@@ -146,20 +173,8 @@ class RoomSession extends EventTarget {
     this.#closeTimer = null;
     if (this.room || this.#suppressed) return;
 
-    this.#autoBusy = true;
-    try {
-      // Older Audio Forge builds do not push the room in their state, so ask instead of assuming there is none.
-      const { status } = await client.send({ command: "getAudioCaptureStatus" });
-      if (status?.running && status.roomId) this.#apply(status);
-      else {
-        await this.#open(game.settings.get(MODULE_ID, "roomPassword"));
-        this.#weOpened = true;
-      }
-    } catch (err) {
-      notifyFailure(err);
-    } finally {
-      this.#autoBusy = false;
-    }
+    await this.#open(game.settings.get(MODULE_ID, "roomPassword"));
+    this.#weOpened = true;
   }
 
   async close({ byHand = false } = {}) {

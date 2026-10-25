@@ -19,7 +19,8 @@
       "Next": "Volgend nummer",
       "ApplyScene": "Scènegeluid toepassen",
       "NoStates": "Geen opgeslagen statussen",
-      "NoEchoes": "Geen echo's in deze bibliotheek"
+      "NoEchoes": "Geen echo's in deze bibliotheek",
+      "GetAudioForge": "Audio Forge downloaden"
     },
     "Settings": {
       "Host": {
@@ -139,7 +140,8 @@
       "Join": "Deelnemen aan de kamer",
       "Leave": "De kamer verlaten",
       "Volume": "Volume",
-      "ClickToListen": "Klik om het geluid te starten"
+      "ClickToListen": "Klik om het geluid te starten",
+      "PlayerPromo": "Bevalt wat je hoort? Audio Forge is gratis te downloaden."
     },
     "Keybinding": {
       "Panel": "Audio Forge-paneel tonen of verbergen"
