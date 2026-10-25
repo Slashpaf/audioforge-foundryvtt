@@ -1,0 +1,86 @@
+{
+  "AUDIOFORGE": {
+    "Title": "Audio Forge",
+    "Panel": {
+      "Open": "Audio Forge öffnen",
+      "Offline": "Audio Forge ist nicht verbunden",
+      "Connected": "Verbunden",
+      "Connecting": "Verbinde…",
+      "MixedContent": "Blockiert: Diese Seite wird über HTTPS ausgeliefert, daher erlaubt der Browser keine Verbindung zu einem entfernten Audio Forge. Verwende http:// für Foundry oder starte Audio Forge auf diesem Computer.",
+      "Music": "Musik",
+      "Ambiance": "Ambiente",
+      "Echoes": "Echos",
+      "SavedStates": "Gespeicherte Zustände",
+      "Library": "Bibliothek",
+      "StopAll": "Alles stoppen",
+      "Play": "Abspielen",
+      "Pause": "Pause",
+      "Stop": "Stoppen",
+      "Next": "Nächster Titel",
+      "ApplyScene": "Szenen-Audio anwenden",
+      "NoStates": "Keine gespeicherten Zustände",
+      "NoEchoes": "Keine Echos in dieser Bibliothek"
+    },
+    "Settings": {
+      "Host": {
+        "Name": "Audio-Forge-Host",
+        "Hint": "Wo Audio Forge läuft, aus Sicht dieses Browsers. Meist localhost."
+      },
+      "Port": {
+        "Name": "Port der lokalen API",
+        "Hint": "Audio Forge: Einstellungen > Lokale API. Standard ist 8329."
+      },
+      "ApiKey": {
+        "Name": "API-Schlüssel",
+        "Hint": "Nur nötig, wenn Audio Forge auf einem anderen Rechner läuft. Die lokale API nutzt einfaches HTTP, verwende daher ein vertrauenswürdiges Netzwerk."
+      },
+      "AutoScene": {
+        "Name": "Szenen-Audio bei Aktivierung anwenden",
+        "Hint": "Wird eine Szene aktiviert, wird das dafür eingerichtete Audioprofil ausgeführt."
+      },
+      "AutoCombat": {
+        "Name": "Kampf-Audio anwenden",
+        "Hint": "Führt die Profile für Kampfbeginn und Kampfende unten aus."
+      },
+      "CombatStart": {
+        "Name": "Audio bei Kampfbeginn",
+        "Label": "Einrichten"
+      },
+      "CombatEnd": {
+        "Name": "Audio bei Kampfende",
+        "Label": "Einrichten"
+      }
+    },
+    "Profile": {
+      "Title": "Audioprofil: {name}",
+      "Scene": "Szenen-Audio",
+      "CombatStart": "Kampfbeginn",
+      "CombatEnd": "Kampfende",
+      "Mode": "Aktion",
+      "ModeNone": "Nichts",
+      "ModeState": "Gespeicherten Zustand wiederherstellen",
+      "ModeCategories": "Musik und Ambiente wählen",
+      "State": "Gespeicherter Zustand",
+      "Library": "Zuerst Bibliothek wechseln",
+      "KeepLibrary": "Aktuelle Bibliothek beibehalten",
+      "Music": "Musik",
+      "NoMusic": "Keine Änderung",
+      "Ambiance": "Ambiente (Strg für Mehrfachauswahl)",
+      "StopMusic": "Musik stoppen, wenn keine gewählt ist",
+      "StopAmbiance": "Andere Ambiente stoppen",
+      "StopEchoes": "Laufende Echos stoppen",
+      "Save": "Speichern",
+      "OfflineHint": "Audio Forge ist offline, daher sind die Listen leer. Gespeicherte Auswahlen bleiben erhalten.",
+      "Test": "Jetzt testen",
+      "Saved": "Audioprofil gespeichert"
+    },
+    "Notify": {
+      "Failed": "Audio Forge: {error}",
+      "Offline": "Audio Forge ist nicht verbunden.",
+      "EchoScreen": "Audio Forge hat das Echo nicht innerhalb von 10 Sekunden gestartet. Falls das wieder passiert, spiele es einmal in der Audio-Forge-App ab."
+    },
+    "Keybinding": {
+      "Panel": "Audio-Forge-Panel ein- oder ausblenden"
+    }
+  }
+}

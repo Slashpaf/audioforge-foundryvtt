@@ -1,0 +1,86 @@
+{
+  "AUDIOFORGE": {
+    "Title": "Audio Forge",
+    "Panel": {
+      "Open": "Audio Forge openen",
+      "Offline": "Audio Forge is niet verbonden",
+      "Connected": "Verbonden",
+      "Connecting": "Verbinden…",
+      "MixedContent": "Geblokkeerd: deze pagina wordt via HTTPS aangeboden, dus de browser staat geen verbinding met een externe Audio Forge toe. Gebruik http:// voor Foundry of draai Audio Forge op deze computer.",
+      "Music": "Muziek",
+      "Ambiance": "Ambiance",
+      "Echoes": "Echo's",
+      "SavedStates": "Opgeslagen statussen",
+      "Library": "Bibliotheek",
+      "StopAll": "Alles stoppen",
+      "Play": "Afspelen",
+      "Pause": "Pauzeren",
+      "Stop": "Stoppen",
+      "Next": "Volgend nummer",
+      "ApplyScene": "Scènegeluid toepassen",
+      "NoStates": "Geen opgeslagen statussen",
+      "NoEchoes": "Geen echo's in deze bibliotheek"
+    },
+    "Settings": {
+      "Host": {
+        "Name": "Host van Audio Forge",
+        "Hint": "Waar Audio Forge draait, gezien vanuit deze browser. Meestal localhost."
+      },
+      "Port": {
+        "Name": "Poort van de lokale API",
+        "Hint": "Audio Forge: Instellingen > Lokale API. Standaard 8329."
+      },
+      "ApiKey": {
+        "Name": "API-sleutel",
+        "Hint": "Alleen nodig als Audio Forge op een andere machine draait. De lokale API gebruikt gewoon HTTP, gebruik dus een vertrouwd netwerk."
+      },
+      "AutoScene": {
+        "Name": "Scènegeluid toepassen bij activeren",
+        "Hint": "Als een scène wordt geactiveerd, wordt het audioprofiel van die scène uitgevoerd."
+      },
+      "AutoCombat": {
+        "Name": "Gevechtsgeluid toepassen",
+        "Hint": "Voert de profielen voor begin en einde van het gevecht hieronder uit."
+      },
+      "CombatStart": {
+        "Name": "Geluid bij begin van gevecht",
+        "Label": "Instellen"
+      },
+      "CombatEnd": {
+        "Name": "Geluid bij einde van gevecht",
+        "Label": "Instellen"
+      }
+    },
+    "Profile": {
+      "Title": "Audioprofiel: {name}",
+      "Scene": "Scènegeluid",
+      "CombatStart": "Begin van gevecht",
+      "CombatEnd": "Einde van gevecht",
+      "Mode": "Actie",
+      "ModeNone": "Niets",
+      "ModeState": "Een opgeslagen status herstellen",
+      "ModeCategories": "Muziek en ambiance kiezen",
+      "State": "Opgeslagen status",
+      "Library": "Eerst van bibliotheek wisselen",
+      "KeepLibrary": "Huidige bibliotheek behouden",
+      "Music": "Muziek",
+      "NoMusic": "Niets wijzigen",
+      "Ambiance": "Ambiance (Ctrl om er meerdere te kiezen)",
+      "StopMusic": "Muziek stoppen als er geen gekozen is",
+      "StopAmbiance": "Andere ambiance stoppen",
+      "StopEchoes": "Lopende echo's stoppen",
+      "Save": "Opslaan",
+      "OfflineHint": "Audio Forge is offline, dus de lijsten zijn leeg. Je opgeslagen keuzes blijven bewaard.",
+      "Test": "Nu testen",
+      "Saved": "Audioprofiel opgeslagen"
+    },
+    "Notify": {
+      "Failed": "Audio Forge: {error}",
+      "Offline": "Audio Forge is niet verbonden.",
+      "EchoScreen": "Audio Forge heeft de echo niet binnen 10 seconden gestart. Blijft dit gebeuren, speel hem dan één keer af vanuit de Audio Forge-app."
+    },
+    "Keybinding": {
+      "Panel": "Audio Forge-paneel tonen of verbergen"
+    }
+  }
+}
