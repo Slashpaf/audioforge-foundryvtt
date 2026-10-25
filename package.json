@@ -1,0 +1,8 @@
+{
+  "name": "audioforge-foundryvtt",
+  "version": "0.1.2",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node --test test/*.test.mjs" },
+  "devDependencies": { "ws": "^8.18.0" }
+}

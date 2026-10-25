@@ -1,0 +1,56 @@
+<div class="af-panel">
+  <header class="af-status {{#if connected}}on{{else}}off{{/if}}">
+    <i class="fa-solid fa-circle"></i>
+    {{#if connected}}{{localize "AUDIOFORGE.Panel.Connected"}}{{else}}{{#if blocked}}{{localize "AUDIOFORGE.Panel.MixedContent"}}{{else}}{{localize "AUDIOFORGE.Panel.Offline"}}{{/if}}{{/if}}
+    <span class="af-spacer"></span>
+    {{#if hasScene}}<button type="button" data-action="applyScene" title="{{localize 'AUDIOFORGE.Panel.ApplyScene'}}"><i class="fa-solid fa-clapperboard"></i></button>{{/if}}
+    <button type="button" data-action="stopAll" title="{{localize 'AUDIOFORGE.Panel.StopAll'}}" {{#unless connected}}disabled{{/unless}}><i class="fa-solid fa-stop"></i></button>
+  </header>
+
+  {{#if connected}}
+  <div class="form-group af-library">
+    <label>{{localize "AUDIOFORGE.Panel.Library"}}</label>
+    <select name="library">{{#each libraries}}<option value="{{uuid}}" {{#if selected}}selected{{/if}}>{{name}}</option>{{/each}}</select>
+  </div>
+
+  {{#each sections}}
+  <section class="af-section">
+    <div class="af-section-head">
+      <h3>{{label}}</h3>
+      <button type="button" data-action="toggleSection" data-section="{{name}}" data-playing="{{playing}}" title="{{#if playing}}{{localize 'AUDIOFORGE.Panel.Pause'}}{{else}}{{localize 'AUDIOFORGE.Panel.Play'}}{{/if}}"><i class="fa-solid {{#if playing}}fa-pause{{else}}fa-play{{/if}}"></i></button>
+      <button type="button" data-action="stopSection" data-section="{{name}}" title="{{localize 'AUDIOFORGE.Panel.Stop'}}"><i class="fa-solid fa-stop"></i></button>
+      <button type="button" data-action="nextTrack" data-section="{{name}}" title="{{localize 'AUDIOFORGE.Panel.Next'}}"><i class="fa-solid fa-forward-step"></i></button>
+      <input type="range" min="0" max="1" step="0.01" value="{{volume}}" data-section="{{name}}">
+    </div>
+    <div class="af-chips">
+      {{#each categories}}
+      <button type="button" class="af-chip {{#if on}}on{{/if}}" data-action="toggleCategory" data-section="{{../name}}" data-uuid="{{uuid}}" data-on="{{on}}" {{#if color}}style="--af-chip: {{color}}"{{/if}}>
+        <img src="{{icon}}" alt="" loading="lazy" onerror="this.remove()"> <span>{{name}}</span>
+      </button>
+      {{/each}}
+    </div>
+  </section>
+  {{/each}}
+
+  <section class="af-section">
+    <div class="af-section-head">
+      <h3>{{localize "AUDIOFORGE.Panel.Echoes"}}</h3>
+      <input type="range" min="0" max="1" step="0.01" value="{{echoesVolume}}" data-section="Echoes">
+    </div>
+    <div class="af-echoes">
+      {{#each echoes}}
+      <button type="button" class="af-echo" data-action="echo" data-uuid="{{uuid}}" {{#if color}}style="--af-chip: {{color}}"{{/if}}><img src="{{icon}}" alt="" loading="lazy" onerror="this.remove()"><span>{{name}}</span></button>
+      {{else}}<p class="af-note">{{localize "AUDIOFORGE.Panel.NoEchoes"}}</p>{{/each}}
+    </div>
+  </section>
+
+  <section class="af-section">
+    <div class="af-section-head"><h3>{{localize "AUDIOFORGE.Panel.SavedStates"}}</h3></div>
+    <div class="af-chips">
+      {{#each savedStates}}
+      <button type="button" class="af-chip" data-action="restoreState" data-id="{{id}}"><i class="fa-solid fa-bookmark"></i> <span>{{name}}</span></button>
+      {{else}}<p class="af-note">{{localize "AUDIOFORGE.Panel.NoStates"}}</p>{{/each}}
+    </div>
+  </section>
+  {{/if}}
+</div>

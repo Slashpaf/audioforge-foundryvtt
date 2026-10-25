@@ -1,0 +1,54 @@
+<div class="af-profile">
+  {{#if offline}}<p class="af-note">{{localize "AUDIOFORGE.Profile.OfflineHint"}}</p>{{/if}}
+
+  <div class="form-group">
+    <label>{{localize "AUDIOFORGE.Profile.Mode"}}</label>
+    <select name="mode">
+      {{#each modes}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>{{localize "AUDIOFORGE.Profile.Library"}}</label>
+    <select name="libraryUuid">
+      <option value="">{{localize "AUDIOFORGE.Profile.KeepLibrary"}}</option>
+      {{#each libraries}}<option value="{{uuid}}" {{#if selected}}selected{{/if}}>{{name}}</option>{{/each}}
+    </select>
+  </div>
+
+  <fieldset>
+    <legend>{{localize "AUDIOFORGE.Profile.ModeState"}}</legend>
+    <div class="form-group">
+      <label>{{localize "AUDIOFORGE.Profile.State"}}</label>
+      <select name="stateId">
+        <option value=""></option>
+        {{#each states}}<option value="{{id}}" {{#if selected}}selected{{/if}}>{{name}}</option>{{/each}}
+      </select>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>{{localize "AUDIOFORGE.Profile.ModeCategories"}}</legend>
+    <div class="form-group">
+      <label>{{localize "AUDIOFORGE.Profile.Music"}}</label>
+      <select name="music">
+        <option value="">{{localize "AUDIOFORGE.Profile.NoMusic"}}</option>
+        {{#each music}}<option value="{{uuid}}" {{#if selected}}selected{{/if}}>{{name}}</option>{{/each}}
+      </select>
+    </div>
+    <div class="form-group">
+      <label>{{localize "AUDIOFORGE.Profile.Ambiance"}}</label>
+      <select name="ambiance" multiple size="6">
+        {{#each ambiance}}<option value="{{uuid}}" {{#if selected}}selected{{/if}}>{{name}}</option>{{/each}}
+      </select>
+    </div>
+    <div class="form-group"><label class="checkbox"><input type="checkbox" name="stopMusic" {{#if p.stopMusic}}checked{{/if}}> {{localize "AUDIOFORGE.Profile.StopMusic"}}</label></div>
+    <div class="form-group"><label class="checkbox"><input type="checkbox" name="stopAmbiance" {{#if p.stopAmbiance}}checked{{/if}}> {{localize "AUDIOFORGE.Profile.StopAmbiance"}}</label></div>
+    <div class="form-group"><label class="checkbox"><input type="checkbox" name="stopEchoes" {{#if p.stopEchoes}}checked{{/if}}> {{localize "AUDIOFORGE.Profile.StopEchoes"}}</label></div>
+  </fieldset>
+
+  <footer class="form-footer">
+    <button type="button" data-action="test"><i class="fa-solid fa-play"></i> {{localize "AUDIOFORGE.Profile.Test"}}</button>
+    <button type="submit"><i class="fa-solid fa-floppy-disk"></i> {{localize "AUDIOFORGE.Profile.Save"}}</button>
+  </footer>
+</div>

@@ -1,0 +1,30 @@
+{
+  "AUDIOFORGE": {
+    "Title": "Audio Forge",
+    "Panel": { "Open": "Open Audio Forge", "Offline": "Audio Forge is not connected", "Connected": "Connected",
+      "Connecting": "Connecting…", "MixedContent": "Blocked: this page is served over HTTPS, so the browser will not allow a connection to a remote Audio Forge. Use http:// for Foundry or run Audio Forge on this computer.",
+      "Music": "Music", "Ambiance": "Ambiance", "Echoes": "Echoes", "SavedStates": "Saved states", "Library": "Library",
+      "StopAll": "Stop all", "Play": "Play", "Pause": "Pause", "Stop": "Stop", "Next": "Next track",
+      "ApplyScene": "Apply scene audio", "NoStates": "No saved states", "NoEchoes": "No echoes in this library" },
+    "Settings": {
+      "Host": { "Name": "Audio Forge host", "Hint": "Where Audio Forge runs, as seen from this browser. Usually localhost." },
+      "Port": { "Name": "Local API port", "Hint": "Audio Forge: Settings > Local API. Default 8329." },
+      "ApiKey": { "Name": "API key", "Hint": "Only needed when Audio Forge is on another machine. The Local API is plain HTTP, so use a trusted network." },
+      "AutoScene": { "Name": "Apply scene audio on activation", "Hint": "When a scene is activated, run the audio profile configured for it." },
+      "AutoCombat": { "Name": "Apply combat audio", "Hint": "Run the combat start and combat end profiles below." },
+      "CombatStart": { "Name": "Combat start audio", "Label": "Configure" },
+      "CombatEnd": { "Name": "Combat end audio", "Label": "Configure" }
+    },
+    "Profile": {
+      "Title": "Audio profile: {name}", "Scene": "Scene audio", "CombatStart": "Combat start", "CombatEnd": "Combat end",
+      "Mode": "What to do", "ModeNone": "Nothing", "ModeState": "Restore a saved state", "ModeCategories": "Pick music and ambiance",
+      "State": "Saved state", "Library": "Switch library first", "KeepLibrary": "Keep current library", "Music": "Music", "NoMusic": "No change",
+      "Ambiance": "Ambiance (hold Ctrl to pick several)", "StopMusic": "Stop music if none is picked",
+      "StopAmbiance": "Stop other ambiance", "StopEchoes": "Stop running echoes", "Save": "Save", "OfflineHint": "Audio Forge is offline, so the lists are empty. Saved choices are kept.",
+      "Test": "Test now", "Saved": "Audio profile saved"
+    },
+    "Notify": { "Failed": "Audio Forge: {error}", "Offline": "Audio Forge is not connected.",
+      "EchoScreen": "Audio Forge did not start the echo within 10 seconds. If this keeps happening, try playing it once from the Audio Forge app." },
+    "Keybinding": { "Panel": "Toggle Audio Forge panel" }
+  }
+}

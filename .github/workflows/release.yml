@@ -1,0 +1,81 @@
+name: Test and release
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Syntax-check scripts
+        run: for f in scripts/*.mjs scripts/apps/*.mjs; do node --check "$f"; done
+
+      - name: Run tests
+        run: npm test
+
+      - name: Check manifest and tag
+        shell: bash
+        run: |
+          node scripts/verify-module.mjs
+          version="$(node -p "require('./module.json').version")"
+          if [[ "$GITHUB_REF_TYPE" == "tag" && "$GITHUB_REF_NAME" != "v${version}" ]]; then
+            echo "Tag $GITHUB_REF_NAME must match module.json version v${version}." >&2
+            exit 1
+          fi
+
+  draft-release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Build module.zip and a release module.json
+        shell: bash
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          base="https://github.com/${GITHUB_REPOSITORY}"
+          mkdir -p release
+          # Stamp the URLs for this repository and tag so a fork or rename stays installable.
+          node -e '
+            const fs = require("fs");
+            const [base, version] = process.argv.slice(1);
+            const m = JSON.parse(fs.readFileSync("module.json", "utf8"));
+            m.manifest = `${base}/releases/latest/download/module.json`;
+            m.download = `${base}/releases/download/v${version}/module.zip`;
+            m.bugs = `${base}/issues`;
+            m.readme = `${base}#readme`;
+            fs.writeFileSync("release/module.json", JSON.stringify(m, null, 2) + "\n");
+          ' "$base" "$version"
+          cp release/module.json module.json
+          zip -r release/module.zip module.json scripts templates styles lang assets README.md LICENSE ASSET_LICENSE.md -x scripts/verify-module.mjs
+
+      - name: Create draft GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" release/module.json release/module.zip \
+            --draft --title "Audio Forge for Foundry VTT ${GITHUB_REF_NAME#v}" \
+            --generate-notes
