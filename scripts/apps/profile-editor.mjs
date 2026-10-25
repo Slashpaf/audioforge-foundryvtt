@@ -99,8 +99,8 @@ export class ProfileEditor extends HandlebarsApplicationMixin(ApplicationV2) {
       })),
       states: states.map((s) => ({ ...s, selected: s.id === p.stateId })),
       libraries: withStoredLibrary(libs.map((l) => ({ uuid: l.uuid, name: l.name })), p),
-      music: withStored(lib?.music?.filter((c) => !c.oneShot), [p.music]).map((c) => ({ ...c, selected: c.uuid === p.music?.uuid })),
-      ambiance: withStored(lib?.ambiance?.filter((c) => !c.oneShot), p.ambiance).map((c) => ({ ...c, selected: ambianceSel.has(c.uuid) })),
+      music: withStored(lib?.music?.filter((c) => !c.oneShot && c.trackCount !== 0), [p.music]).map((c) => ({ ...c, selected: c.uuid === p.music?.uuid })),
+      ambiance: withStored(lib?.ambiance?.filter((c) => !c.oneShot && c.trackCount !== 0), p.ambiance).map((c) => ({ ...c, selected: ambianceSel.has(c.uuid) })),
     };
   }
 

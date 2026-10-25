@@ -9,9 +9,10 @@ Drive the [Audio Forge](https://slashpaf.com/audioforge) soundboard from Foundry
 - **Scene audio**: attach an audio profile to a scene (restore a saved Audio Forge state, or pick music and ambiance). It runs when the scene is activated, or on demand from the panel.
 - **Combat audio**: separate profiles for combat start and combat end.
 - **GM control panel** (sound controls button, or `Alt+A`): play/pause/stop/next per section, volumes, category toggles, echoes, saved states, library switch.
+- **Online room**: open an Audio Forge room from the panel and your players hear your output in Foundry, joining automatically. You see who is in, who was turned away because the room is full, and can remove players or connect them on demand.
 - **Macro API**: `game.modules.get("audioforge").api`.
 
-Only GM clients connect; each GM talks to the Audio Forge on their own machine.
+Only GM clients connect to Audio Forge; each GM talks to the Audio Forge on their own machine. Players only connect to the Audio Forge Rooms server, and only when you open a room.
 
 ## Install
 
@@ -37,6 +38,16 @@ The Local API is plain `http://`/`ws://`. Browsers allow that to `localhost` eve
 - Combat: module settings > **Combat start audio** / **Combat end audio**.
 
 A profile does one of: nothing, restore a saved state, or pick music and ambiance. Ambiance changes are explicit on/off commands (Audio Forge's own `play` toggles ambiance), so re-applying a profile never switches things off by accident. Use **Test now** in the editor to try it without saving.
+
+## Online room
+
+Needs an Audio Forge version with room management in the Local API, and an Audio Forge account signed in on the GM's machine.
+
+1. In the panel, click the broadcast button, optionally set a password, and **Open room**. Audio Forge creates the room and your players are told over Foundry's socket. They join on their own and hear your master output; nobody needs the link.
+2. Free Audio Forge rooms have a listener limit. Players who do not fit show as **Waiting** and you get a notification. Remove someone, then connect the waiting player (the player button in the room window). Subscribing to Audio Forge in the app removes the limit.
+3. Anyone else who finds the link and joins shows under **Others in the room**; remove them from there.
+
+Players can leave, rejoin and change the volume from the broadcast button in their scene controls. Audio stays silent until the player has clicked somewhere in Foundry (a browser rule); the window offers a button when that is the case.
 
 ## Macro API
 

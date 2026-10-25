@@ -37,6 +37,22 @@ export function registerSettings(profileMenus) {
     ...base, type: Boolean, default: true,
     name: "AUDIOFORGE.Settings.AutoCombat.Name", hint: "AUDIOFORGE.Settings.AutoCombat.Hint",
   });
+  game.settings.register(MODULE_ID, "roomsServerUrl", {
+    ...base, type: String, default: "https://rooms.audioforge.app",
+    name: "AUDIOFORGE.Settings.RoomsServer.Name", hint: "AUDIOFORGE.Settings.RoomsServer.Hint",
+  });
+  game.settings.register(MODULE_ID, "roomAutoOpen", {
+    ...base, restricted: true, type: Boolean, default: true,
+    name: "AUDIOFORGE.Settings.RoomAutoOpen.Name", hint: "AUDIOFORGE.Settings.RoomAutoOpen.Hint",
+  });
+  game.settings.register(MODULE_ID, "roomAutoJoin", {
+    ...base, type: Boolean, default: true,
+    name: "AUDIOFORGE.Settings.RoomAutoJoin.Name", hint: "AUDIOFORGE.Settings.RoomAutoJoin.Hint",
+  });
+  game.settings.register(MODULE_ID, "roomPassword", { scope: "client", config: false, type: String, default: "" });
+  // The room this player left or was removed from; auto-join stays off for it, even after a reload.
+  game.settings.register(MODULE_ID, "roomOptOut", { scope: "client", config: false, type: String, default: "" });
+  game.settings.register(MODULE_ID, "roomVolume", { scope: "client", config: false, type: Number, default: 1 });
   for (const key of ["combatStart", "combatEnd"]) {
     game.settings.register(MODULE_ID, key, { scope: "client", config: false, type: Object, default: defaultProfile() });
   }

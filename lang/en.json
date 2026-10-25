@@ -10,6 +10,9 @@
       "Host": { "Name": "Audio Forge host", "Hint": "Where Audio Forge runs, as seen from this browser. Usually localhost." },
       "Port": { "Name": "Local API port", "Hint": "Audio Forge: Settings > Local API. Default 8329." },
       "ApiKey": { "Name": "API key", "Hint": "Only needed when Audio Forge is on another machine. The Local API is plain HTTP, so use a trusted network." },
+      "RoomsServer": { "Name": "Rooms server", "Hint": "Where Audio Forge opens online rooms. Leave the default unless you run your own server." },
+      "RoomAutoOpen": { "Name": "Open the online room automatically", "Hint": "GM only. When Audio Forge connects, open an online room so players can listen in Foundry. Turn off to open it yourself from the room window." },
+      "RoomAutoJoin": { "Name": "Join the room automatically", "Hint": "Start listening as soon as the GM opens an online room." },
       "AutoScene": { "Name": "Apply scene audio on activation", "Hint": "When a scene is activated, run the audio profile configured for it." },
       "AutoCombat": { "Name": "Apply combat audio", "Hint": "Run the combat start and combat end profiles below." },
       "CombatStart": { "Name": "Combat start audio", "Label": "Configure" },
@@ -25,6 +28,21 @@
     },
     "Notify": { "Failed": "Audio Forge: {error}", "Offline": "Audio Forge is not connected.",
       "EchoScreen": "Audio Forge did not start the echo within 10 seconds. If this keeps happening, try playing it once from the Audio Forge app." },
+    "Room": {
+      "ManagerTitle": "Online room", "PlayerTitle": "Audio Forge room",
+      "NeedsAudioForge": "Connect to Audio Forge first: the room is opened from the Audio Forge app on this computer.",
+      "Password": "Password", "PasswordOptional": "Optional", "OpenHint": "Players in this world join automatically and hear your Audio Forge output. Nobody needs the link.",
+      "OpenButton": "Open room", "Open": "Room open", "Close": "Close room", "CopyLink": "Copy the room link", "LinkCopied": "Room link copied",
+      "Players": "Players", "Others": "Others in the room", "NoPlayers": "No players in this world.", "Invite": "Connect this player now", "InviteAll": "Connect everyone", "Remove": "Remove from the room",
+      "WaitingHint": "Players marked as waiting were turned away because the room is full. Remove someone, then connect them.",
+      "Full": "The room is full.", "FullFree": "The room is full. Free rooms have a listener limit. Subscribe to Audio Forge in the app to remove it.",
+      "RejectedGM": "{name} could not join the Audio Forge room: it is full ({max} listeners).",
+      "RejectedGMFree": "{name} could not join the Audio Forge room: it is full ({max} listeners). Subscribe to Audio Forge in the app to remove the limit.",
+      "RejectedPlayer": "The room is full. Your GM can free a slot for you.", "Removed": "The GM removed you from the room.", "JoinError": "Could not join the room. Ask your GM to check the room password.",
+      "State": { "joined": "Listening", "waiting": "Waiting, room full", "removed": "Removed", "error": "Error", "connecting": "Connecting…", "idle": "Not joined", "offline": "Offline" },
+      "Player": { "idle": "Not joined", "connecting": "Connecting…", "joined": "Listening", "waiting": "Room full", "removed": "Removed", "error": "Error", "closed": "Room closed" },
+      "NoRoom": "Your GM has not opened a room.", "Join": "Join the room", "Leave": "Leave the room", "Volume": "Volume", "ClickToListen": "Click to start the audio"
+    },
     "Keybinding": { "Panel": "Toggle Audio Forge panel" }
   }
 }

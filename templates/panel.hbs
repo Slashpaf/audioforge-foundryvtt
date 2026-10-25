@@ -3,6 +3,7 @@
     <i class="fa-solid fa-circle"></i>
     {{#if connected}}{{localize "AUDIOFORGE.Panel.Connected"}}{{else}}{{#if blocked}}{{localize "AUDIOFORGE.Panel.MixedContent"}}{{else}}{{localize "AUDIOFORGE.Panel.Offline"}}{{/if}}{{/if}}
     <span class="af-spacer"></span>
+    <button type="button" data-action="openRoom" title="{{localize 'AUDIOFORGE.Room.ManagerTitle'}}"><i class="fa-solid fa-tower-broadcast"></i></button>
     {{#if hasScene}}<button type="button" data-action="applyScene" title="{{localize 'AUDIOFORGE.Panel.ApplyScene'}}"><i class="fa-solid fa-clapperboard"></i></button>{{/if}}
     <button type="button" data-action="stopAll" title="{{localize 'AUDIOFORGE.Panel.StopAll'}}" {{#unless connected}}disabled{{/unless}}><i class="fa-solid fa-stop"></i></button>
   </header>

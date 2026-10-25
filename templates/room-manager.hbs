@@ -1,0 +1,68 @@
+<div class="af-room">
+  {{#unless connected}}
+  <p class="af-note">{{localize "AUDIOFORGE.Room.NeedsAudioForge"}}</p>
+  {{else}}
+    {{#if room}}
+    <header class="af-status on">
+      <i class="fa-solid fa-circle"></i>
+      {{localize "AUDIOFORGE.Room.Open"}}
+      <span class="af-spacer"></span>
+      <span class="af-count {{#if full}}full{{/if}}">{{used}} / {{max}}</span>
+      <button type="button" data-action="copyLink" data-link="{{link}}" title="{{localize 'AUDIOFORGE.Room.CopyLink'}}"><i class="fa-solid fa-link"></i></button>
+      <button type="button" data-action="closeRoom" title="{{localize 'AUDIOFORGE.Room.Close'}}"><i class="fa-solid fa-stop"></i></button>
+    </header>
+
+    {{#if full}}
+    <p class="af-warn">
+      {{#if free}}{{localize "AUDIOFORGE.Room.FullFree"}}{{else}}{{localize "AUDIOFORGE.Room.Full"}}{{/if}}
+    </p>
+    {{/if}}
+
+    <section class="af-section">
+      <div class="af-section-head">
+        <h3>{{localize "AUDIOFORGE.Room.Players"}}</h3>
+        <span class="af-spacer"></span>
+        <button type="button" class="af-wide" data-action="inviteAll"><i class="fa-solid fa-bullhorn"></i> {{localize "AUDIOFORGE.Room.InviteAll"}}</button>
+      </div>
+      <ul class="af-roster">
+        {{#each rows}}
+        <li class="af-row {{state}}">
+          <span class="af-dot"></span>
+          <span class="af-name">{{name}}</span>
+          <span class="af-state">{{label}}</span>
+          {{#if canKick}}<button type="button" data-action="kick" data-client-id="{{clientId}}" title="{{localize 'AUDIOFORGE.Room.Remove'}}"><i class="fa-solid fa-user-xmark"></i></button>{{/if}}
+          {{#if canInvite}}<button type="button" data-action="invite" data-user-id="{{id}}" title="{{localize 'AUDIOFORGE.Room.Invite'}}"><i class="fa-solid fa-user-plus"></i></button>{{/if}}
+        </li>
+        {{else}}
+        <li class="af-note">{{localize "AUDIOFORGE.Room.NoPlayers"}}</li>
+        {{/each}}
+      </ul>
+      {{#if waiting}}<p class="af-note">{{localize "AUDIOFORGE.Room.WaitingHint"}}</p>{{/if}}
+    </section>
+
+    {{#if strangers.length}}
+    <section class="af-section">
+      <div class="af-section-head"><h3>{{localize "AUDIOFORGE.Room.Others"}}</h3></div>
+      <ul class="af-roster">
+        {{#each strangers}}
+        <li class="af-row stranger">
+          <span class="af-dot"></span>
+          <span class="af-name">{{username}}</span>
+          <button type="button" data-action="kick" data-client-id="{{clientId}}" title="{{localize 'AUDIOFORGE.Room.Remove'}}"><i class="fa-solid fa-user-xmark"></i></button>
+        </li>
+        {{/each}}
+      </ul>
+    </section>
+    {{/if}}
+    {{else}}
+    <div class="form-group">
+      <label>{{localize "AUDIOFORGE.Room.Password"}}</label>
+      <input type="text" name="password" value="{{password}}" placeholder="{{localize 'AUDIOFORGE.Room.PasswordOptional'}}" autocomplete="off">
+    </div>
+    <p class="af-note">{{localize "AUDIOFORGE.Room.OpenHint"}}</p>
+    <button type="button" data-action="openRoom" {{#if opening}}disabled{{/if}}>
+      <i class="fa-solid {{#if opening}}fa-spinner fa-spin{{else}}fa-tower-broadcast{{/if}}"></i> {{localize "AUDIOFORGE.Room.OpenButton"}}
+    </button>
+    {{/if}}
+  {{/unless}}
+</div>

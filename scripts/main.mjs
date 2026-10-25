@@ -3,8 +3,22 @@ import { applyProfile, normalizeProfile } from "./profile.mjs";
 import { notifyFailure } from "./util.mjs";
 import { AudioForgePanel } from "./apps/panel.mjs";
 import { ProfileEditor, CombatStartProfile, CombatEndProfile } from "./apps/profile-editor.mjs";
+import { RoomManager } from "./apps/room-manager.mjs";
+import { RoomPlayerPanel } from "./apps/room-player.mjs";
+import { roomSession } from "./rooms/session.mjs";
 
 let panel = null;
+let roomWindow = null;
+
+/** The GM manages the room; players get their listener window. */
+function toggleRoomWindow(force) {
+  if (roomWindow?.rendered && force !== true) {
+    roomWindow.close();
+    return;
+  }
+  roomWindow ??= game.user.isGM ? new RoomManager() : new RoomPlayerPanel();
+  roomWindow.render({ force: true });
+}
 
 function togglePanel(force) {
   if (panel?.rendered && force !== true) {
@@ -83,7 +97,10 @@ Hooks.once("ready", () => {
   };
   game.modules.get(MODULE_ID).api = api;
 
-  // Audio Forge runs next to the GM; players never connect.
+  api.openRoom = () => toggleRoomWindow(true);
+  roomSession.init();
+
+  // Audio Forge runs next to the GM; players never connect to it.
   if (!game.user.isGM) return;
 
   applyConnectionSettings();
@@ -93,9 +110,21 @@ Hooks.once("ready", () => {
 });
 
 Hooks.on("getSceneControlButtons", (controls) => {
-  if (!game.user.isGM) return;
-  const group = controls.sounds ?? Object.values(controls).at(-1);
+  // Players do not get the sounds group.
+  const group = game.user.isGM ? controls.sounds ?? Object.values(controls).at(-1) : controls.tokens ?? Object.values(controls)[0];
   if (!group?.tools) return;
+  if (!game.user.isGM) {
+    group.tools.audioforgeRoom = {
+      name: "audioforgeRoom",
+      title: "AUDIOFORGE.Room.PlayerTitle",
+      icon: "af-icon",
+      button: true,
+      visible: true,
+      order: Object.keys(group.tools).length,
+      onChange: () => toggleRoomWindow(true),
+    };
+    return;
+  }
   group.tools.audioforge = {
     name: "audioforge",
     title: "AUDIOFORGE.Panel.Open",

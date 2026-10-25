@@ -1,0 +1,23 @@
+<div class="af-room">
+  {{#unless open}}
+  <p class="af-note">{{localize "AUDIOFORGE.Room.NoRoom"}}</p>
+  {{else}}
+  <header class="af-status {{#if joined}}on{{else}}off{{/if}}">
+    <i class="fa-solid fa-circle"></i>
+    {{statusLabel}}
+    <span class="af-spacer"></span>
+    {{#if canJoin}}<button type="button" data-action="join" title="{{localize 'AUDIOFORGE.Room.Join'}}"><i class="fa-solid fa-headphones"></i></button>{{/if}}
+    {{#if canLeave}}<button type="button" data-action="leave" title="{{localize 'AUDIOFORGE.Room.Leave'}}"><i class="fa-solid fa-right-from-bracket"></i></button>{{/if}}
+  </header>
+
+  {{#if waiting}}<p class="af-warn">{{localize "AUDIOFORGE.Room.RejectedPlayer"}}</p>{{/if}}
+  {{#if removed}}<p class="af-warn">{{localize "AUDIOFORGE.Room.Removed"}}</p>{{/if}}
+  {{#if error}}<p class="af-warn">{{localize "AUDIOFORGE.Room.JoinError"}}</p>{{/if}}
+  {{#if blocked}}<button type="button" data-action="unlock"><i class="fa-solid fa-volume-high"></i> {{localize "AUDIOFORGE.Room.ClickToListen"}}</button>{{/if}}
+
+  <div class="form-group">
+    <label>{{localize "AUDIOFORGE.Room.Volume"}}</label>
+    <input type="range" name="volume" min="0" max="1" step="0.01" value="{{volume}}">
+  </div>
+  {{/unless}}
+</div>

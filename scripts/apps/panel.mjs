@@ -5,6 +5,9 @@ const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 const SECTIONS = ["Music", "Ambiance"];
 
+/** Mirrors the app's own lists: categories with no tracks are hidden. (enabledInForge is not the app's echo filter.) */
+const usable = (c) => c.trackCount !== 0;
+
 /** GM control panel mirroring Audio Forge's live state. */
 export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
   static DEFAULT_OPTIONS = {
@@ -21,6 +24,7 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
       restoreState: AudioForgePanel.#onRestoreState,
       stopAll: AudioForgePanel.#onStopAll,
       applyScene: AudioForgePanel.#onApplyScene,
+      openRoom: AudioForgePanel.#onOpenRoom,
     },
   };
 
@@ -79,7 +83,7 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
       Ambiance: new Set((st.ambianceCategories ?? []).map((c) => c.uuid)),
     };
     const section = (name) => {
-      const list = (lib?.[name.toLowerCase()] ?? []).filter((c) => !c.oneShot);
+      const list = (lib?.[name.toLowerCase()] ?? []).filter((c) => !c.oneShot && usable(c));
       const sectionPlaying = name === "Music" ? !!st.musicPlaying : !!st.ambiancePlaying;
       return {
         name,
@@ -89,7 +93,7 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
         categories: list.map((c) => ({ ...c, on: sectionPlaying && playing[name].has(c.uuid), icon: client.iconUrl(c.uuid, 96) })),
       };
     };
-    const echoes = (lib?.ambiance ?? []).filter((c) => c.oneShot).map((c) => ({ ...c, icon: client.iconUrl(c.uuid, 96) }));
+    const echoes = (lib?.ambiance ?? []).filter((c) => c.oneShot && usable(c)).map((c) => ({ ...c, icon: client.iconUrl(c.uuid, 96) }));
     return {
       connected: client.connected,
       blocked: client.blockedReason === "mixed-content",
@@ -113,6 +117,10 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static #onStopSection(event, target) {
     AudioForgePanel.#run(client.send({ command: "stop", section: target.dataset.section }));
+  }
+
+  static #onOpenRoom() {
+    game.modules.get(MODULE_ID).api.openRoom();
   }
 
   static #onStopAll() {

@@ -14,7 +14,7 @@ for (const path of [...(m.esmodules ?? []), ...(m.styles ?? []), ...(m.languages
 if (!existsSync("CHANGELOG.md") || !readFileSync("CHANGELOG.md", "utf8").includes(`## ${m.version}`)) {
   errors.push(`CHANGELOG.md has no section for ${m.version}`);
 }
-for (const path of ["styles/module.css", "templates/panel.hbs", "templates/profile-editor.hbs", "LICENSE", "ASSET_LICENSE.md"]) {
+for (const path of ["styles/module.css", "templates/panel.hbs", "templates/profile-editor.hbs", "templates/room-manager.hbs", "templates/room-player.hbs", "LICENSE", "ASSET_LICENSE.md"]) {
   if (!existsSync(path)) errors.push(`missing file: ${path}`);
 }
 if (errors.length) {
