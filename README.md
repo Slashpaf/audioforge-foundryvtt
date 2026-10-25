@@ -2,7 +2,7 @@
 
 Drive the [Audio Forge](https://slashpaf.com/audioforge) soundboard from Foundry VTT over Audio Forge's Local API (HTTP + WebSocket). No cloud account or MQTT broker.
 
-![The Audio Forge control panel in Foundry VTT](docs/audio-forge-panel.png)
+![The Audio Forge control panel and the online room window in Foundry VTT](docs/audio-forge-panel.png)
 
 ## What it does
 
