@@ -2,6 +2,11 @@
 
 All notable changes to this module. Versions follow `module.json`; each release has a matching `vX.Y.Z` tag.
 
+## 0.1.3 - 2026-10-25
+
+- Translations: French, Italian, Dutch, German, Spanish and Brazilian Portuguese.
+- The panel and the scene and combat profile editor list categories that have no tracks yet, so profiles can be set up before the sounds are added.
+
 ## 0.1.2 - 2026-10-25
 
 First public release.
