@@ -2,7 +2,7 @@
 
 All notable changes to this module. Versions follow `module.json`; each release has a matching `vX.Y.Z` tag.
 
-## Unreleased
+## 0.2.0 - 2026-10-25
 
 - Online rooms: Audio Forge opens an online room when it connects (a setting turns that off), and players join automatically and listen inside Foundry. The GM sees who is in and who was turned away because the room is full (with a reminder that subscribing to Audio Forge removes the limit), and can remove players or connect them on demand. With an older Audio Forge the room still opens and plays, but the player list and removal are not available.
 - The panel and the scene and combat profile editor list only categories that can be played (those with tracks).
