@@ -1,11 +1,11 @@
 import { MODULE_ID, client } from "../settings.mjs";
-import { notifyFailure } from "../util.mjs";
+import { isRegular, notifyFailure } from "../util.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 const SECTIONS = ["Music", "Ambiance"];
 
-/** Mirrors the app's own lists: categories with no tracks are hidden. (enabledInForge is not the app's echo filter.) */
+/** Mirrors the app's own lists: categories with no tracks are hidden. */
 const usable = (c) => c.trackCount !== 0;
 
 /** GM control panel mirroring Audio Forge's live state. */
@@ -83,7 +83,7 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
       Ambiance: new Set((st.ambianceCategories ?? []).map((c) => c.uuid)),
     };
     const section = (name) => {
-      const list = (lib?.[name.toLowerCase()] ?? []).filter((c) => !c.oneShot && usable(c));
+      const list = (lib?.[name.toLowerCase()] ?? []).filter((c) => isRegular(c) && usable(c));
       const sectionPlaying = name === "Music" ? !!st.musicPlaying : !!st.ambiancePlaying;
       return {
         name,

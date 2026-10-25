@@ -5,6 +5,7 @@ All notable changes to this module. Versions follow `module.json`; each release 
 ## 0.2.2 - 2026-10-25
 
 - Online rooms: the room opens when the first player connects and closes a minute after the last listener leaves, including guests who joined with the link. A room you open yourself is never closed for you, and one you close by hand stays closed until everyone has left once.
+- Categories that are both a regular ambiance category and an echo (such as Ghost) now show in both lists, like in the app.
 
 ## 0.2.1 - 2026-10-25
 
