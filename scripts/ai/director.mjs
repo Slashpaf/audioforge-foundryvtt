@@ -63,7 +63,7 @@ class AiDirectorController {
         if (!this.#mic.active) return; // stopped while the permission prompt was open
       }
       try {
-        await client.sendAiDirector({ command: "aiDirectorStart", inputSource: useMic ? "remote" : "device" });
+        await client.sendAiDirector({ command: "aiDirectorStart", inputSource: useMic ? "remote" : "device", fresh: true });
       } catch (err) {
         this.#mic.stop();
         throw err;
