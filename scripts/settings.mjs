@@ -53,6 +53,8 @@ export function registerSettings(profileMenus) {
   // The room this player left or was removed from; auto-join stays off for it, even after a reload.
   game.settings.register(MODULE_ID, "roomOptOut", { scope: "client", config: false, type: String, default: "" });
   game.settings.register(MODULE_ID, "roomVolume", { scope: "client", config: false, type: Number, default: 1 });
+  // "" follows the call: the browser microphone when Foundry's A/V is on, Audio Forge's input otherwise.
+  game.settings.register(MODULE_ID, "aiDirectorSource", { scope: "client", config: false, type: String, default: "" });
   for (const key of ["combatStart", "combatEnd"]) {
     game.settings.register(MODULE_ID, key, { scope: "client", config: false, type: Object, default: defaultProfile() });
   }

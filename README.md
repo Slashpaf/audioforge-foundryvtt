@@ -10,6 +10,7 @@ Drive the [Audio Forge](https://slashpaf.com/audioforge) soundboard from Foundry
 - **Combat audio**: separate profiles for combat start and combat end.
 - **GM control panel** (sound controls button, or `Alt+A`): play/pause/stop/next per section, volumes, category toggles, echoes, saved states, library switch.
 - **Online room**: your players hear your Audio Forge output inside Foundry, with nothing to install. The room opens by itself while players are connected and closes when everyone has left. You see who is in, who was turned away because the room is full, and can remove players or connect them on demand.
+- **AI Director** (Audio Forge 1.5.18+, switched on in the app): start and stop it from the panel, pick its microphone, and follow a log of what it understood. Hidden when the app does not offer it.
 - **Macro API**: `game.modules.get("audioforge").api`.
 
 Only GM clients connect to Audio Forge; each GM talks to the Audio Forge on their own machine. Players only connect to the Audio Forge Rooms server, and only when you open a room.

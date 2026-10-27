@@ -2,6 +2,10 @@
 
 All notable changes to this module. Versions follow `module.json`; each release has a matching `vX.Y.Z` tag.
 
+## Unreleased
+
+- AI Director: when Audio Forge 1.5.18 or newer offers it and it is switched on in the app, the panel gets a section to start and stop it, choose what it listens to (your browser microphone, which follows Foundry's call by default, or Audio Forge's own input device), and read what it heard and did. Nothing is shown or requested with older versions.
+
 ## 0.2.2 - 2026-10-25
 
 - Online rooms: the room opens when the first player connects and closes a minute after the last listener leaves, including guests who joined with the link. A room you open yourself is never closed for you, and one you close by hand stays closed until everyone has left once.

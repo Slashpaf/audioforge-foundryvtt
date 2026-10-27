@@ -143,6 +143,13 @@
       "ClickToListen": "Klicken, um den Ton zu starten",
       "PlayerPromo": "Gefällt dir, was du hörst? Audio Forge ist kostenlos erhältlich."
     },
+    "Ai": {
+      "Title": "KI-Regisseur", "Enable": "KI-Regisseur starten", "Disable": "KI-Regisseur beenden", "MicLive": "Dein Mikrofon wird an Audio Forge gesendet",
+      "Source": "Zuhören über", "SourceMic": "Mein Mikrofon (Anruf)", "SourceDevice": "Das Eingabegerät von Audio Forge",
+      "NotUnlocked": "Der KI-Regisseur ist in Audio Forge nicht freigeschaltet.", "NoModels": "Schließe zuerst die Einrichtung des KI-Regisseurs in Audio Forge ab.",
+      "Log": "Was er verstanden hat", "LogEmpty": "Noch nichts",
+      "State": { "idle": "Aus", "activating": "Startet…", "listening": "Hört zu", "processing": "Denkt nach…", "paused": "Pausiert" }
+    },
     "Keybinding": {
       "Panel": "Audio-Forge-Panel ein- oder ausblenden"
     }

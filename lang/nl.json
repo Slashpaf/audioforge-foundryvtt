@@ -143,6 +143,13 @@
       "ClickToListen": "Klik om het geluid te starten",
       "PlayerPromo": "Bevalt wat je hoort? Audio Forge is gratis te downloaden."
     },
+    "Ai": {
+      "Title": "AI-regisseur", "Enable": "Start de AI-regisseur", "Disable": "Stop de AI-regisseur", "MicLive": "Je microfoon wordt naar Audio Forge gestuurd",
+      "Source": "Luister naar", "SourceMic": "Mijn microfoon (gesprek)", "SourceDevice": "Het invoerapparaat van Audio Forge",
+      "NotUnlocked": "De AI-regisseur is niet ontgrendeld in Audio Forge.", "NoModels": "Rond eerst de installatie van de AI-regisseur af in Audio Forge.",
+      "Log": "Wat hij begreep", "LogEmpty": "Nog niets",
+      "State": { "idle": "Uit", "activating": "Starten…", "listening": "Luistert", "processing": "Denkt na…", "paused": "Gepauzeerd" }
+    },
     "Keybinding": {
       "Panel": "Audio Forge-paneel tonen of verbergen"
     }

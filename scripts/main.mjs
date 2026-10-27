@@ -6,6 +6,7 @@ import { ProfileEditor, CombatStartProfile, CombatEndProfile } from "./apps/prof
 import { RoomManager } from "./apps/room-manager.mjs";
 import { RoomPlayerPanel } from "./apps/room-player.mjs";
 import { roomSession } from "./rooms/session.mjs";
+import { aiDirector } from "./ai/director.mjs";
 
 let panel = null;
 let roomWindow = null;
@@ -106,6 +107,7 @@ Hooks.once("ready", () => {
   applyConnectionSettings();
   client.addEventListener("connection", (ev) => Hooks.callAll("audioforge.connection", ev.detail));
   client.addEventListener("state", (ev) => Hooks.callAll("audioforge.state", ev.detail));
+  aiDirector.init();
   client.start();
 });
 

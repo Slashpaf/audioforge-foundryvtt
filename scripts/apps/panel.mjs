@@ -1,7 +1,10 @@
 import { MODULE_ID, client } from "../settings.mjs";
+import { aiDirector } from "../ai/director.mjs";
 import { DOWNLOAD_URL, isRegular, notifyFailure } from "../util.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
+
+const PANEL_EVENTS = ["connection", "blocked", "state", "catalog", "savedStates", "aiDirector", "aiDirectorLog"];
 
 const SECTIONS = ["Music", "Ambiance"];
 
@@ -25,6 +28,7 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
       stopAll: AudioForgePanel.#onStopAll,
       applyScene: AudioForgePanel.#onApplyScene,
       openRoom: AudioForgePanel.#onOpenRoom,
+      toggleAi: AudioForgePanel.#onToggleAi,
     },
   };
 
@@ -33,6 +37,7 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
   #refresh = () => this.#scheduleRender();
   #renderTimer = null;
   #dragging = false;
+  #aiLogOpen = false;
 
   #scheduleRender() {
     if (!this.rendered) return;
@@ -46,12 +51,12 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
 
   async _onFirstRender(context, options) {
     await super._onFirstRender?.(context, options);
-    for (const ev of ["connection", "blocked", "state", "catalog", "savedStates"]) client.addEventListener(ev, this.#refresh);
+    for (const ev of PANEL_EVENTS) client.addEventListener(ev, this.#refresh);
   }
 
   _onClose(options) {
     clearTimeout(this.#renderTimer);
-    for (const ev of ["connection", "blocked", "state", "catalog", "savedStates"]) client.removeEventListener(ev, this.#refresh);
+    for (const ev of PANEL_EVENTS) client.removeEventListener(ev, this.#refresh);
     super._onClose?.(options);
   }
 
@@ -66,6 +71,17 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
         const value = Number(ev.currentTarget.value);
         client.send({ command: "setVolume", section: ev.currentTarget.dataset.section, value }).catch(notifyFailure);
       });
+    }
+    this.element.querySelector("select[name=aiSource]")?.addEventListener("change", (ev) => {
+      aiDirector.setSource(ev.currentTarget.value).catch(notifyFailure);
+    });
+    // The panel is rebuilt on every push: keep the log open (and at the newest entry) across rebuilds.
+    const details = this.element.querySelector(".af-ai-details");
+    if (details) {
+      details.open = this.#aiLogOpen;
+      details.addEventListener("toggle", () => (this.#aiLogOpen = details.open));
+      const log = details.querySelector(".af-ai-log");
+      log.scrollTop = log.scrollHeight;
     }
     this.element.querySelector("select[name=library]")?.addEventListener("change", (ev) => {
       client.send({ command: "setActiveLibrary", libraryUuid: ev.currentTarget.value }).catch(notifyFailure);
@@ -104,7 +120,38 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
       echoesVolume: st.echoesVolume ?? 1,
       savedStates: client.savedStates ?? [],
       hasScene: !!canvas?.scene,
+      ai: this.#aiContext(),
     };
+  }
+
+  /** The AI Director block, or null so the panel shows nothing when the app does not offer it. */
+  #aiContext() {
+    if (!client.aiDirectorAvailable) return null;
+    const st = client.aiDirector;
+    const running = st.state !== "idle";
+    const ready = st.entitled && st.modelsReady;
+    const L = (key) => game.i18n.localize(`AUDIOFORGE.Ai.${key}`);
+    const kinds = { transcript: "fa-ear-listen", action: "fa-wand-magic-sparkles", error: "fa-triangle-exclamation", info: "fa-circle-info" };
+    return {
+      running,
+      ready,
+      state: L(`State.${st.state}`),
+      hint: !st.entitled ? L("NotUnlocked") : !st.modelsReady ? L("NoModels") : "",
+      error: st.error,
+      sourceMic: aiDirector.source === "mic",
+      micActive: aiDirector.micActive,
+      scene: st.sceneDescription,
+      log: client.aiDirectorLog.map((e) => ({
+        time: new Date(e.at).toLocaleTimeString(),
+        kind: e.kind,
+        icon: kinds[e.kind] ?? kinds.info,
+        text: e.text,
+      })),
+    };
+  }
+
+  static #onToggleAi() {
+    AudioForgePanel.#run(aiDirector.toggle());
   }
 
   static #run(promise) {

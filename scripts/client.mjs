@@ -1,11 +1,16 @@
 /**
  * Browser WebSocket client for the Audio Forge Local API.
  * Pure ES module with no Foundry dependencies so it can be tested under Node.
- * Emits: "connection" (detail: boolean), "state", "catalog", "savedStates", "echo".
+ * Emits: "connection" (detail: boolean), "state", "catalog", "savedStates", "echo", "aiDirector" (status or null), "aiDirectorLog".
  */
 
 const DEFAULT_TIMEOUT_MS = 5000;
 const MAX_BACKOFF_MS = 30000;
+/** First Local API version with the AI Director (Audio Forge 1.5.18). Older servers send no `hello`. */
+const MIN_AI_DIRECTOR_API = 2;
+const AI_LOG_LIMIT = 100;
+/** Microphone audio is real time: when the socket falls this far behind, frames are dropped. */
+const MAX_AUDIO_BACKLOG = 256 * 1024;
 
 export function isLoopback(host) {
   const h = String(host).toLowerCase();
@@ -25,6 +30,12 @@ export class AudioForgeClient extends EventTarget {
   catalog = null;
   savedStates = [];
   connected = false;
+  /** From the server's `hello`; 0 until it arrives (and for Audio Forge older than 1.5.18, which never sends one). */
+  apiVersion = 0;
+  /** Latest `ai_director` status push, or null. */
+  aiDirector = null;
+  /** Recent AI Director activity, oldest first. */
+  aiDirectorLog = [];
   /** Set when the browser would block the connection (https page -> ws:// to a non-loopback host). */
   blockedReason = null;
 
@@ -49,6 +60,29 @@ export class AudioForgeClient extends EventTarget {
     this.#wanted = false;
     this.#teardown();
     this.#setConnected(false);
+  }
+
+  /**
+   * The AI Director is usable from here only when the server speaks API v2 and reports it
+   * available and switched on in the app. Nothing AI Director related is sent otherwise.
+   */
+  get aiDirectorAvailable() {
+    return this.connected && this.apiVersion >= MIN_AI_DIRECTOR_API && !!this.aiDirector?.available && !!this.aiDirector?.enabled;
+  }
+
+  /** A command for the AI Director. Rejects without touching the socket when it is not available. */
+  sendAiDirector(command, timeoutMs = DEFAULT_TIMEOUT_MS) {
+    if (!this.aiDirectorAvailable) return Promise.reject(new Error("The AI Director is not available"));
+    return this.send(command, timeoutMs);
+  }
+
+  /** Send microphone audio (16 kHz mono PCM16) to the AI Director. Dropped when the socket is congested. */
+  sendAudio(buffer) {
+    const ws = this.#ws;
+    if (!this.aiDirectorAvailable || !ws || ws.readyState !== 1) return false;
+    if (ws.bufferedAmount > MAX_AUDIO_BACKLOG) return false;
+    ws.send(buffer);
+    return true;
   }
 
   /** Send a command and resolve with the server's result message. Rejects on error result or timeout. */
@@ -186,6 +220,10 @@ export class AudioForgeClient extends EventTarget {
     if (this.connected === value) return;
     this.connected = value;
     if (!value) {
+      this.apiVersion = 0;
+      this.aiDirector = null;
+      this.aiDirectorLog = [];
+      this.dispatchEvent(new CustomEvent("aiDirector", { detail: null }));
       this.#rejectPending(new Error("Audio Forge connection closed"));
     }
     this.dispatchEvent(new CustomEvent("connection", { detail: value }));
@@ -209,6 +247,26 @@ export class AudioForgeClient extends EventTarget {
       case "saved_states":
         this.#setSavedStates(msg.savedStates ?? []);
         break;
+      case "hello":
+        this.apiVersion = Number(msg.apiVersion) || 1;
+        this.dispatchEvent(new CustomEvent("aiDirector", { detail: this.aiDirector }));
+        break;
+      case "ai_director":
+        // Ignored from a server that did not announce a new enough API.
+        if (this.apiVersion < MIN_AI_DIRECTOR_API) break;
+        this.aiDirector = msg;
+        this.dispatchEvent(new CustomEvent("aiDirector", { detail: msg }));
+        break;
+      case "ai_director_log": {
+        if (this.apiVersion < MIN_AI_DIRECTOR_API) break;
+        const entries = msg.entries ?? [];
+        // A client that connects while a push is pending can see the same entry twice: keep ids unique.
+        const seen = msg.reset ? 0 : this.aiDirectorLog.at(-1)?.id ?? 0;
+        const next = msg.reset ? entries : [...this.aiDirectorLog, ...entries.filter((e) => e.id > seen)];
+        this.aiDirectorLog = next.slice(-AI_LOG_LIMIT);
+        this.dispatchEvent(new CustomEvent("aiDirectorLog", { detail: this.aiDirectorLog }));
+        break;
+      }
       case "echo":
         this.dispatchEvent(new CustomEvent("echo", { detail: msg }));
         break;

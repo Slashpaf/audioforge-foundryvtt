@@ -43,6 +43,13 @@
       "Player": { "idle": "Not joined", "connecting": "Connecting…", "joined": "Listening", "waiting": "Room full", "removed": "Removed", "error": "Error", "closed": "Room closed" },
       "NoRoom": "Your GM has not opened a room.", "PlayerPromo": "Like what you hear? Audio Forge is free to download.", "Join": "Join the room", "Leave": "Leave the room", "Volume": "Volume", "ClickToListen": "Click to start the audio"
     },
+    "Ai": {
+      "Title": "AI Director", "Enable": "Start the AI Director", "Disable": "Stop the AI Director", "MicLive": "Your microphone is being sent to Audio Forge",
+      "Source": "Listen to", "SourceMic": "My microphone (call)", "SourceDevice": "Audio Forge's input device",
+      "NotUnlocked": "The AI Director is not unlocked in Audio Forge.", "NoModels": "Finish the AI Director setup in Audio Forge first.",
+      "Log": "What it understood", "LogEmpty": "Nothing yet",
+      "State": { "idle": "Off", "activating": "Starting…", "listening": "Listening", "processing": "Thinking…", "paused": "Paused" }
+    },
     "Keybinding": { "Panel": "Toggle Audio Forge panel" }
   }
 }

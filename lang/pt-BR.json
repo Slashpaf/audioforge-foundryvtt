@@ -143,6 +143,13 @@
       "ClickToListen": "Clique para iniciar o áudio",
       "PlayerPromo": "Gostou do que ouviu? O Audio Forge é gratuito para baixar."
     },
+    "Ai": {
+      "Title": "Diretor IA", "Enable": "Iniciar o Diretor IA", "Disable": "Parar o Diretor IA", "MicLive": "Seu microfone está sendo enviado ao Audio Forge",
+      "Source": "Ouvir", "SourceMic": "Meu microfone (chamada)", "SourceDevice": "O dispositivo de entrada do Audio Forge",
+      "NotUnlocked": "O Diretor IA não está desbloqueado no Audio Forge.", "NoModels": "Conclua primeiro a configuração do Diretor IA no Audio Forge.",
+      "Log": "O que ele entendeu", "LogEmpty": "Nada ainda",
+      "State": { "idle": "Desligado", "activating": "Iniciando…", "listening": "Ouvindo", "processing": "Pensando…", "paused": "Pausado" }
+    },
     "Keybinding": {
       "Panel": "Mostrar ou ocultar o painel do Audio Forge"
     }

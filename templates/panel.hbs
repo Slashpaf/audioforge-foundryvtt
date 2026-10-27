@@ -49,6 +49,33 @@
     </div>
   </section>
 
+  {{#if ai}}
+  <section class="af-section af-ai">
+    <div class="af-section-head">
+      <h3>{{localize "AUDIOFORGE.Ai.Title"}}</h3>
+      <button type="button" data-action="toggleAi" class="{{#if ai.running}}on{{/if}}" title="{{#if ai.running}}{{localize 'AUDIOFORGE.Ai.Disable'}}{{else}}{{localize 'AUDIOFORGE.Ai.Enable'}}{{/if}}" {{#unless ai.ready}}{{#unless ai.running}}disabled{{/unless}}{{/unless}}><i class="fa-solid fa-power-off"></i></button>
+      <span class="af-ai-state">{{ai.state}}{{#if ai.micActive}} <i class="fa-solid fa-microphone" title="{{localize 'AUDIOFORGE.Ai.MicLive'}}"></i>{{/if}}</span>
+    </div>
+    {{#if ai.hint}}<p class="af-note">{{ai.hint}}</p>{{/if}}
+    {{#if ai.error}}<p class="af-note af-error">{{ai.error}}</p>{{/if}}
+    <div class="form-group">
+      <label>{{localize "AUDIOFORGE.Ai.Source"}}</label>
+      <select name="aiSource">
+        <option value="mic" {{#if ai.sourceMic}}selected{{/if}}>{{localize "AUDIOFORGE.Ai.SourceMic"}}</option>
+        <option value="device" {{#unless ai.sourceMic}}selected{{/unless}}>{{localize "AUDIOFORGE.Ai.SourceDevice"}}</option>
+      </select>
+    </div>
+    {{#if ai.scene}}<p class="af-note">{{ai.scene}}</p>{{/if}}
+    <details class="af-ai-details">
+      <summary>{{localize "AUDIOFORGE.Ai.Log"}}</summary>
+      <ol class="af-ai-log" aria-live="polite">
+        {{#each ai.log}}<li class="af-ai-{{kind}}"><time>{{time}}</time> <i class="fa-solid {{icon}}"></i> <span>{{text}}</span></li>
+        {{else}}<li class="af-note">{{localize "AUDIOFORGE.Ai.LogEmpty"}}</li>{{/each}}
+      </ol>
+    </details>
+  </section>
+  {{/if}}
+
   <section class="af-section">
     <div class="af-section-head"><h3>{{localize "AUDIOFORGE.Panel.SavedStates"}}</h3></div>
     <div class="af-chips">
