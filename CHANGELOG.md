@@ -2,8 +2,9 @@
 
 All notable changes to this module. Versions follow `module.json`; each release has a matching `vX.Y.Z` tag.
 
-## Unreleased
+## 0.2.3 - 2026-11-01
 
+- The Audio Forge scene control button keeps the normal button look (it was reduced to a bare glyph), and its icon is larger.
 - AI Director: when Audio Forge 1.5.18 or newer offers it and it is switched on in the app, the panel gets a section to start and stop it, choose what it listens to (your browser microphone, which follows Foundry's call by default, or Audio Forge's own input device), and read what it heard and did. Nothing is shown or requested with older versions.
 
 ## 0.2.2 - 2026-10-25
