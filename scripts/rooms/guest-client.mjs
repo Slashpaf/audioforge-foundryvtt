@@ -59,6 +59,11 @@ export class RoomGuestClient extends EventTarget {
     this.#open();
   }
 
+  /** Where the room lives, for URLs on the rooms server (icons); null before the first join. */
+  get roomRef() {
+    return this.#cfg ? { baseUrl: this.#cfg.baseUrl, roomId: this.#cfg.roomId } : null;
+  }
+
   /** This guest's own permission, from the latest room state: its own entry, else the room default. */
   get permission() {
     const own = this.room?.guests?.find((g) => g.clientId === this.clientId)?.permission;

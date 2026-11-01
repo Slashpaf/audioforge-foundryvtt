@@ -50,11 +50,11 @@ async function setup(onCommand = () => {}) {
     for (const s of wss.clients) s.terminate();
     wss.close();
   };
-  return { guest, remote, sock: () => sock, grant, stop };
+  return { wss: () => wss, guest, remote, sock: () => sock, grant, stop };
 }
 
 test("mirrors the host snapshot as state, catalog and saved states", async () => {
-  const { remote, grant, stop } = await setup();
+  const { remote, grant, stop, wss } = await setup();
   assert.equal(remote.connected, false);
   assert.equal(remote.available, false);
   await grant();
@@ -62,7 +62,7 @@ test("mirrors the host snapshot as state, catalog and saved states", async () =>
   assert.equal(remote.state.musicVolume, 0.4);
   assert.equal(remote.catalog.activeLibraryUuid, "L");
   assert.deepEqual(remote.savedStates, [{ id: "s1", name: "Tavern" }]);
-  assert.equal(remote.iconUrl("x"), "");
+  assert.equal(remote.iconUrl("a b/1", 96), `http://127.0.0.1:${wss().address().port}/api/rooms/R/control-icons/a%20b%2F1`);
   stop();
 });
 

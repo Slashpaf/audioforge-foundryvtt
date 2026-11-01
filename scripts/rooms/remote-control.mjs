@@ -48,9 +48,11 @@ export class RemoteControlClient extends EventTarget {
     });
   }
 
-  /** No Audio Forge on this machine to serve icons from. */
-  iconUrl() {
-    return "";
+  /** Guests cannot reach Audio Forge, so the host uploads icons to the rooms server (a 404 just before they arrive is normal). */
+  iconUrl(uuid) {
+    const ref = this.#guest.roomRef;
+    if (!ref) return "";
+    return `${new URL(ref.baseUrl).origin}/api/rooms/${encodeURIComponent(ref.roomId)}/control-icons/${encodeURIComponent(uuid)}`;
   }
 
   #onResult({ requestId, ok, error }) {
