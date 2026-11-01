@@ -8,7 +8,7 @@ Drive the [Audio Forge](https://slashpaf.com/audioforge) soundboard from Foundry
 
 - **Scene audio**: attach an audio profile to a scene (restore a saved Audio Forge state, or pick music and ambiance). It runs when the scene is activated, or on demand from the panel.
 - **Combat audio**: separate profiles for combat start and combat end.
-- **GM control panel** (sound controls button, or `Alt+A`): play/pause/stop/next per section, volumes, category toggles, echoes, saved states, library switch.
+- **GM control panel** (the Audio Forge button in the scene controls, or `Alt+A`): play/pause/stop/next per section, volumes, category toggles, echoes, saved states, library switch.
 - **Online room**: your players hear your Audio Forge output inside Foundry, with nothing to install. The room opens by itself while players are connected and closes when everyone has left. You see who is in, who was turned away because the room is full, and can remove players or connect them on demand.
 - **AI Director** (Audio Forge 1.5.18+, switched on in the app): start and stop it from the panel, pick its microphone, and follow a log of what it understood. Hidden when the app does not offer it.
 - **Macro API**: `game.modules.get("audioforge").api`.
@@ -50,7 +50,7 @@ Needs an Audio Forge account signed in on the GM's machine. The player list and 
 4. **Others in the room.** Anyone else who finds the link and joins shows under **Others in the room**; remove them from there, or from the Audio Forge app.
 5. **Letting players control Audio Forge.** With a recent Audio Forge, each player and guest in the room window has a control button next to the remove button, and **Who can control Audio Forge** switches between only you and everyone for the open room. Every new room starts at only you. Echo tiles fill with the category color while an echo plays. Players with control get an **Open controls** button with your panel's playback controls; opening rooms, scene audio, the AI Director and profiles stay yours.
 
-Players can leave, rejoin and change the volume from the broadcast button in their scene controls. They join automatically unless they turn that off in their own module settings. Audio stays silent until the player has clicked somewhere in Foundry (a browser rule); the window offers a button when that is the case.
+Players can leave, rejoin and change the volume from the Audio Forge button in their scene controls. They join automatically unless they turn that off in their own module settings. Audio stays silent until the player has clicked somewhere in Foundry (a browser rule); the window offers a button when that is the case.
 
 ## Macro API
 

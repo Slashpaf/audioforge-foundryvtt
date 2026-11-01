@@ -128,48 +128,35 @@ Hooks.once("ready", () => {
   client.start();
 });
 
+// Audio Forge is a control of its own in the scene controls bar (the GM opens the panel, players their room window).
+// Selecting a control switches the canvas layer, so it behaves as a button: it opens the window and hands the
+// selection straight back to the control that was active.
+const CONTROL = "audioforge";
+let controlBefore = null;
+
+Hooks.on("renderSceneControls", (app) => {
+  const name = app.control?.name;
+  if (name && name !== CONTROL) controlBefore = name;
+});
+
 Hooks.on("getSceneControlButtons", (controls) => {
-  // Players do not get the sounds group.
-  const group = game.user.isGM ? controls.sounds ?? Object.values(controls).at(-1) : controls.tokens ?? Object.values(controls)[0];
-  if (!group?.tools) return;
-  if (!game.user.isGM) {
-    group.tools.audioforgeRoom = {
-      name: "audioforgeRoom",
-      title: "AUDIOFORGE.Room.PlayerTitle",
-      icon: "af-icon",
-      button: true,
-      visible: true,
-      order: Object.keys(group.tools).length,
-      onChange: () => toggleRoomWindow(true),
-    };
-    return;
-  }
-  group.tools.audioforge = {
-    name: "audioforge",
-    title: "AUDIOFORGE.Panel.Open",
+  controls[CONTROL] = {
+    name: CONTROL,
+    title: game.user.isGM ? "AUDIOFORGE.Panel.Open" : "AUDIOFORGE.Room.PlayerTitle",
     icon: "af-icon",
-    button: true,
+    order: Object.keys(controls).length,
     visible: true,
-    order: Object.keys(group.tools).length,
-    onChange: () => togglePanel(true),
+    tools: {},
+    onChange: (event, active) => {
+      if (!active) return;
+      if (game.user.isGM) togglePanel(true);
+      else toggleRoomWindow(true);
+      // After the scene controls have finished switching to this control.
+      setTimeout(() => {
+        if (controlBefore && controlBefore in ui.controls.controls) ui.controls.activate({ control: controlBefore });
+      }, 0);
+    },
   };
-});
-
-// Scene activation -> scene profile.
-Hooks.on("updateScene", (scene, changes) => {
-  if (!game.user.isGM || changes.active !== true) return;
-  if (!game.settings.get(MODULE_ID, "autoScene")) return;
-  runProfile(scene.getFlag(MODULE_ID, "profile"));
-});
-
-// Combat start / end.
-Hooks.on("combatStart", () => {
-  if (!game.user.isGM || !game.settings.get(MODULE_ID, "autoCombat")) return;
-  runProfile(getProfileSetting("combatStart"));
-});
-Hooks.on("deleteCombat", (combat) => {
-  if (!game.user.isGM || !game.settings.get(MODULE_ID, "autoCombat") || !combat.started) return;
-  runProfile(getProfileSetting("combatEnd"));
 });
 
 // Scene audio editor: scene config header and scene directory context menu.
