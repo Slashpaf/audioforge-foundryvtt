@@ -9,6 +9,7 @@ import { roomSession } from "./rooms/session.mjs";
 import { aiDirector } from "./ai/director.mjs";
 
 let panel = null;
+let remotePanel = null;
 let roomWindow = null;
 
 /** The GM manages the room; players get their listener window. */
@@ -28,6 +29,17 @@ function togglePanel(force) {
   }
   panel ??= new AudioForgePanel();
   panel.render({ force: true });
+}
+
+/** A player the GM allowed to control Audio Forge gets the same panel, driven through the room. */
+function toggleRemotePanel(force) {
+  if (remotePanel?.rendered && force !== true) {
+    remotePanel.close();
+    return;
+  }
+  if (!roomSession.canControl) return;
+  remotePanel ??= new AudioForgePanel(roomSession.remote, { id: "audioforge-remote-panel", window: { title: "AUDIOFORGE.Room.ControlsTitle" } });
+  remotePanel.render({ force: true });
 }
 
 // Profiles diff against live state, so they must not interleave.
@@ -99,7 +111,12 @@ Hooks.once("ready", () => {
   game.modules.get(MODULE_ID).api = api;
 
   api.openRoom = () => toggleRoomWindow(true);
+  api.openControls = () => toggleRemotePanel(true);
   roomSession.init();
+  // Taking control away closes the panel; the snapshot is already gone.
+  roomSession.addEventListener("change", () => {
+    if (!roomSession.canControl && remotePanel?.rendered) remotePanel.close();
+  });
 
   // Audio Forge runs next to the GM; players never connect to it.
   if (!game.user.isGM) return;

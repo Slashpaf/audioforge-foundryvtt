@@ -15,6 +15,7 @@ export class RoomPlayerPanel extends HandlebarsApplicationMixin(ApplicationV2) {
       join: RoomPlayerPanel.#onJoin,
       leave: RoomPlayerPanel.#onLeave,
       unlock: RoomPlayerPanel.#onUnlock,
+      openControls: RoomPlayerPanel.#onOpenControls,
     },
   };
 
@@ -50,6 +51,7 @@ export class RoomPlayerPanel extends HandlebarsApplicationMixin(ApplicationV2) {
       canJoin: !!roomSession.room && ["idle", "waiting", "removed", "error", "closed"].includes(status),
       canLeave: ["joined", "connecting", "waiting"].includes(status),
       blocked: status === "joined" && roomSession.audioBlocked,
+      canControl: roomSession.canControl,
       volume: roomSession.volume,
       downloadUrl: DOWNLOAD_URL,
     };
@@ -61,6 +63,10 @@ export class RoomPlayerPanel extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static #onLeave() {
     roomSession.leave();
+  }
+
+  static #onOpenControls() {
+    game.modules.get(MODULE_ID).api.openControls();
   }
 
   static #onUnlock() {

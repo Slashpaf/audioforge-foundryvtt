@@ -34,6 +34,7 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static PARTS = { body: { template: `modules/${MODULE_ID}/templates/panel.hbs` } };
 
+  #src;
   #refresh = () => this.#scheduleRender();
   #renderTimer = null;
   #dragging = false;
@@ -49,14 +50,24 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
     }, 80);
   }
 
+  /** `source`: where state comes from and commands go: the local client (GM) or a RemoteControlClient (granted player). */
+  constructor(source = client, options = {}) {
+    super(options);
+    this.#src = source;
+  }
+
+  get #remote() {
+    return this.#src !== client;
+  }
+
   async _onFirstRender(context, options) {
     await super._onFirstRender?.(context, options);
-    for (const ev of PANEL_EVENTS) client.addEventListener(ev, this.#refresh);
+    for (const ev of PANEL_EVENTS) this.#src.addEventListener(ev, this.#refresh);
   }
 
   _onClose(options) {
     clearTimeout(this.#renderTimer);
-    for (const ev of PANEL_EVENTS) client.removeEventListener(ev, this.#refresh);
+    for (const ev of PANEL_EVENTS) this.#src.removeEventListener(ev, this.#refresh);
     super._onClose?.(options);
   }
 
@@ -69,7 +80,7 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
       input.addEventListener("change", (ev) => {
         this.#dragging = false;
         const value = Number(ev.currentTarget.value);
-        client.send({ command: "setVolume", section: ev.currentTarget.dataset.section, value }).catch(notifyFailure);
+        this.#src.send({ command: "setVolume", section: ev.currentTarget.dataset.section, value }).catch(notifyFailure);
       });
     }
     this.element.querySelector("select[name=aiSource]")?.addEventListener("change", (ev) => {
@@ -84,13 +95,13 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
       log.scrollTop = log.scrollHeight;
     }
     this.element.querySelector("select[name=library]")?.addEventListener("change", (ev) => {
-      client.send({ command: "setActiveLibrary", libraryUuid: ev.currentTarget.value }).catch(notifyFailure);
+      this.#src.send({ command: "setActiveLibrary", libraryUuid: ev.currentTarget.value }).catch(notifyFailure);
     });
   }
 
   async _prepareContext() {
-    const st = client.state ?? {};
-    const cat = client.catalog;
+    const st = this.#src.state ?? {};
+    const cat = this.#src.catalog;
     const libs = cat?.libraries ?? [];
     const activeUuid = st.libraryUuid || cat?.activeLibraryUuid;
     const lib = libs.find((l) => l.uuid === activeUuid) ?? libs[0];
@@ -106,21 +117,22 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
         label: game.i18n.localize(`AUDIOFORGE.Panel.${name}`),
         playing: sectionPlaying,
         volume: name === "Music" ? st.musicVolume ?? 0 : st.ambianceVolume ?? 0,
-        categories: list.map((c) => ({ ...c, on: sectionPlaying && playing[name].has(c.uuid), icon: client.iconUrl(c.uuid, 96) })),
+        categories: list.map((c) => ({ ...c, on: sectionPlaying && playing[name].has(c.uuid), icon: this.#src.iconUrl(c.uuid, 96) })),
       };
     };
-    const echoes = (lib?.ambiance ?? []).filter((c) => c.oneShot && usable(c)).map((c) => ({ ...c, icon: client.iconUrl(c.uuid, 96) }));
+    const echoes = (lib?.ambiance ?? []).filter((c) => c.oneShot && usable(c)).map((c) => ({ ...c, icon: this.#src.iconUrl(c.uuid, 96) }));
     return {
-      connected: client.connected,
+      connected: this.#src.connected,
       downloadUrl: DOWNLOAD_URL,
-      blocked: client.blockedReason === "mixed-content",
+      blocked: this.#src.blockedReason === "mixed-content",
       libraries: libs.map((l) => ({ uuid: l.uuid, name: l.name, selected: l.uuid === lib?.uuid })),
       sections: SECTIONS.map(section),
       echoes,
       echoesVolume: st.echoesVolume ?? 1,
-      savedStates: client.savedStates ?? [],
-      hasScene: !!canvas?.scene,
-      ai: this.#aiContext(),
+      savedStates: this.#src.savedStates ?? [],
+      hasScene: !this.#remote && !!canvas?.scene,
+      gm: !this.#remote,
+      ai: this.#remote ? null : this.#aiContext(),
     };
   }
 
@@ -160,11 +172,11 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static #onToggleSection(event, target) {
     const { section, playing } = target.dataset;
-    AudioForgePanel.#run(client.send({ command: playing === "true" ? "pause" : "play", section }));
+    AudioForgePanel.#run(this.#src.send({ command: playing === "true" ? "pause" : "play", section }));
   }
 
   static #onStopSection(event, target) {
-    AudioForgePanel.#run(client.send({ command: "stop", section: target.dataset.section }));
+    AudioForgePanel.#run(this.#src.send({ command: "stop", section: target.dataset.section }));
   }
 
   static #onOpenRoom() {
@@ -172,18 +184,18 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   static #onStopAll() {
-    AudioForgePanel.#run(client.send({ command: "stop", section: "All" }));
+    AudioForgePanel.#run(this.#src.send({ command: "stop", section: "All" }));
   }
 
   static #onNextTrack(event, target) {
     const section = target.dataset.section;
-    const st = client.state ?? {};
+    const st = this.#src.state ?? {};
     // Audio Forge skips one category at a time, so skip every active one in the section.
     const isPlaying = section === "Music" ? st.musicPlaying : st.ambiancePlaying;
     if (!isPlaying) return;
     const active = section === "Music" ? st.musicCategories : st.ambianceCategories;
     for (const c of active ?? []) {
-      AudioForgePanel.#run(client.send({ command: "nextTrack", section, categoryUuid: c.uuid }));
+      AudioForgePanel.#run(this.#src.send({ command: "nextTrack", section, categoryUuid: c.uuid }));
     }
   }
 
@@ -195,15 +207,15 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
       : section === "Music"
         ? { command: "play", section, categoryUuid: uuid }
         : { command: "setCategoryEnabled", section, categoryUuid: uuid, enabled: true };
-    AudioForgePanel.#run(client.send(cmd));
+    AudioForgePanel.#run(this.#src.send(cmd));
   }
 
   static #onEcho(event, target) {
-    AudioForgePanel.#run(client.send({ command: "playEcho", categoryUuid: target.dataset.uuid }, 12000));
+    AudioForgePanel.#run(this.#src.send({ command: "playEcho", categoryUuid: target.dataset.uuid }, 12000));
   }
 
   static #onRestoreState(event, target) {
-    AudioForgePanel.#run(client.send({ command: "restoreStateById", id: target.dataset.id }));
+    AudioForgePanel.#run(this.#src.send({ command: "restoreStateById", id: target.dataset.id }));
   }
 
   static #onApplyScene() {

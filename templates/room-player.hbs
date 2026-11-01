@@ -15,6 +15,8 @@
   {{#if error}}<p class="af-warn">{{localize "AUDIOFORGE.Room.JoinError"}}</p>{{/if}}
   {{#if blocked}}<button type="button" data-action="unlock"><i class="fa-solid fa-volume-high"></i> {{localize "AUDIOFORGE.Room.ClickToListen"}}</button>{{/if}}
 
+  {{#if canControl}}<button type="button" data-action="openControls"><i class="fa-solid fa-sliders"></i> {{localize "AUDIOFORGE.Room.OpenControls"}}</button>{{/if}}
+
   <div class="form-group">
     <label>{{localize "AUDIOFORGE.Room.Volume"}}</label>
     <input type="range" name="volume" min="0" max="1" step="0.01" value="{{volume}}">
