@@ -80,6 +80,26 @@ test("send relays {command, ...fields} as control.command args and resolves on t
   stop();
 });
 
+test("a burst of volume changes is paced: few commands reach the host, the last value wins, none fails", async () => {
+  const seen = [];
+  const { remote, grant, stop } = await setup((ws, msg) => {
+    seen.push(msg.payload);
+    ws.send(JSON.stringify({ type: "control.result", requestId: msg.requestId, ok: true }));
+  });
+  await grant();
+  const results = await Promise.all(Array.from({ length: 100 }, (_, i) => remote.send({ command: "setVolume", section: "Music", value: i / 100 })));
+  assert.ok(results.every((r) => r.ok));
+  await new Promise((r) => setTimeout(r, 400));
+  const music = seen.filter((p) => p.command === "setVolume");
+  assert.ok(music.length >= 2 && music.length <= 3, `sent ${music.length}`);
+  assert.equal(music.at(-1).args.value, 0.99);
+  // Sections are paced independently, and other commands are never held back.
+  seen.length = 0;
+  await Promise.all([remote.send({ command: "setVolume", section: "Ambiance", value: 0.5 }), remote.send({ command: "setVolume", section: "Echoes", value: 0.2 }), remote.send({ command: "stop", section: "All" })]);
+  assert.deepEqual(seen.map((p) => p.command).sort(), ["setVolume", "setVolume", "stop"]);
+  stop();
+});
+
 test("send rejects on an error result, on timeout, and when not allowed", async () => {
   const { remote, grant, stop } = await setup((ws, msg) => {
     if (msg.payload.command === "stop") ws.send(JSON.stringify({ type: "control.result", requestId: msg.requestId, ok: false, error: "forbidden" }));
