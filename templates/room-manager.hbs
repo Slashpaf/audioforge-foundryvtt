@@ -19,6 +19,16 @@
     </p>
     {{/if}}
 
+    {{#if controlAvailable}}
+    <div class="form-group">
+      <label>{{localize "AUDIOFORGE.Room.WhoControls"}}</label>
+      <select name="defaultControl">
+        <option value="listen" {{#unless everyoneControls}}selected{{/unless}}>{{localize "AUDIOFORGE.Room.ControlOnlyMe"}}</option>
+        <option value="control" {{#if everyoneControls}}selected{{/if}}>{{localize "AUDIOFORGE.Room.ControlEveryone"}}</option>
+      </select>
+    </div>
+    {{/if}}
+
     <section class="af-section">
       <div class="af-section-head">
         <h3>{{localize "AUDIOFORGE.Room.Players"}}</h3>
@@ -40,16 +50,6 @@
       </ul>
       {{#if waiting}}<p class="af-note">{{localize "AUDIOFORGE.Room.WaitingHint"}}</p>{{/if}}
     </section>
-
-    {{#if controlAvailable}}
-    <div class="form-group">
-      <label>{{localize "AUDIOFORGE.Room.WhoControls"}}</label>
-      <select name="defaultControl">
-        <option value="listen" {{#unless everyoneControls}}selected{{/unless}}>{{localize "AUDIOFORGE.Room.ControlOnlyMe"}}</option>
-        <option value="control" {{#if everyoneControls}}selected{{/if}}>{{localize "AUDIOFORGE.Room.ControlEveryone"}}</option>
-      </select>
-    </div>
-    {{/if}}
 
     {{#if strangers.length}}
     <section class="af-section">
