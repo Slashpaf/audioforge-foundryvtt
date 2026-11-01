@@ -30,6 +30,8 @@ button.af-icon::before {
 .audioforge-panel .af-section { margin-top: 0.6rem; }
 .audioforge-panel .af-section-head { display: flex; align-items: center; gap: 0.3rem; }
 .audioforge-panel .af-section-head h3 { margin: 0; flex: 0 0 5.5rem; border: 0; }
+/* A title with nothing next to it (saved states) takes the room it needs instead of the fixed column. */
+.audioforge-panel .af-section-head.af-plain h3 { flex: 0 1 auto; white-space: nowrap; }
 .audioforge-panel .af-section-head button { flex: 0 0 auto; width: 2rem; }
 .audioforge-panel .af-section-head input[type=range] { flex: 1; min-width: 4rem; }
 
@@ -37,7 +39,8 @@ button.af-icon::before {
 .audioforge-panel .af-chip {
   display: inline-flex; align-items: center; gap: 0.3rem;
   width: auto; line-height: 1.2; padding: 0.15rem 0.5rem;
-  border-left: 3px solid var(--af-chip, transparent);
+  /* A chip without a category color keeps the normal button border on its left side. */
+  border-left: 3px solid var(--af-chip, var(--button-border-color, #7a7971));
 }
 .audioforge-panel .af-chip img { width: 20px; height: 20px; object-fit: contain; border: 0; }
 .audioforge-panel .af-chip.on { background: var(--color-warm-2, #6b4a1f); color: #fff; box-shadow: 0 0 6px var(--color-shadow-highlight, #ff6400); }
