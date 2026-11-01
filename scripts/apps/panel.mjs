@@ -16,7 +16,7 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
   static DEFAULT_OPTIONS = {
     id: "audioforge-panel",
     classes: ["audioforge", "audioforge-panel"],
-    position: { width: 380, height: "auto" },
+    position: { width: 520, height: "auto" },
     window: { title: "AUDIOFORGE.Title", icon: "af-icon", resizable: true },
     actions: {
       toggleSection: AudioForgePanel.#onToggleSection,
