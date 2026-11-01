@@ -15,6 +15,7 @@ export class RoomManager extends HandlebarsApplicationMixin(ApplicationV2) {
       openRoom: RoomManager.#onOpen,
       closeRoom: RoomManager.#onClose,
       kick: RoomManager.#onKick,
+      toggleControl: RoomManager.#onToggleControl,
       invite: RoomManager.#onInvite,
       inviteAll: RoomManager.#onInviteAll,
       copyLink: RoomManager.#onCopyLink,
@@ -41,6 +42,9 @@ export class RoomManager extends HandlebarsApplicationMixin(ApplicationV2) {
   _onRender(context, options) {
     super._onRender?.(context, options);
     this.element.querySelector("input[name=password]")?.addEventListener("input", (ev) => (this.#password = ev.currentTarget.value));
+    this.element.querySelector("select[name=defaultControl]")?.addEventListener("change", (ev) => {
+      roomSession.setDefaultControl(ev.currentTarget.value === "control").catch(notifyFailure);
+    });
   }
 
   async _prepareContext() {
@@ -65,6 +69,8 @@ export class RoomManager extends HandlebarsApplicationMixin(ApplicationV2) {
       rows,
       waiting: rows.some((r) => r.state === "waiting"),
       strangers: roomSession.strangers(),
+      controlAvailable: roomSession.controlAvailable,
+      everyoneControls: roomSession.defaultPermission === "control",
     };
   }
 
@@ -87,6 +93,10 @@ export class RoomManager extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static #onKick(event, target) {
     roomSession.kick(target.dataset.clientId).catch(notifyFailure);
+  }
+
+  static #onToggleControl(event, target) {
+    roomSession.setGuestControl(target.dataset.clientId, target.dataset.control !== "true").catch(notifyFailure);
   }
 
   static #onInvite(event, target) {

@@ -4,26 +4,28 @@
  * Inputs:
  *  users:      [{ id, name }]                  Foundry players that should be in the room
  *  reports:    Map<userId, { state, clientId }> what each player's own client said it is doing
- *  guests:     [{ clientId, username }]         who the rooms server says is connected
+ *  guests:     [{ clientId, username, permission? }]         who the rooms server says is connected
  *  rejections: [{ username, rejectedAt }]       who the server turned away
  */
 
 /** Per-player rows, in `users` order. `state`: joined | waiting | removed | error | idle | offline. */
 export function buildPlayerRows(users, reports, guests) {
   const connected = new Set(guests.map((g) => g.clientId));
+  const control = new Set(guests.filter((g) => g.permission === "control").map((g) => g.clientId));
   return users.map((user) => {
     const report = reports.get(user.id);
     let state = report?.state ?? (user.active ? "idle" : "offline");
     // The server is the authority on who holds a slot.
     if (state === "joined" && report?.clientId && !connected.has(report.clientId)) state = "idle";
-    return { id: user.id, name: user.name, state, clientId: state === "joined" ? report.clientId : null };
+    const clientId = state === "joined" ? report.clientId : null;
+    return { id: user.id, name: user.name, state, clientId, canControl: control.has(clientId) };
   });
 }
 
 /** Connected guests that no Foundry player claims: somebody who found the link. */
 export function findStrangers(reports, guests) {
   const claimed = new Set([...reports.values()].map((r) => r.clientId).filter(Boolean));
-  return guests.filter((g) => !claimed.has(g.clientId));
+  return guests.filter((g) => !claimed.has(g.clientId)).map((g) => ({ ...g, canControl: g.permission === "control" }));
 }
 
 /** Rejections not seen before; `seen` is updated. Used to notify the GM exactly once per rejection. */

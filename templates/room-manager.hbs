@@ -31,7 +31,7 @@
           <span class="af-dot"></span>
           <span class="af-name">{{name}}</span>
           <span class="af-state">{{label}}</span>
-          {{#if canKick}}<button type="button" data-action="kick" data-client-id="{{clientId}}" title="{{localize 'AUDIOFORGE.Room.Remove'}}"><i class="fa-solid fa-user-xmark"></i></button>{{/if}}
+          {{#if canKick}}{{#if ../controlAvailable}}<button type="button" class="{{#if canControl}}on{{/if}}" data-action="toggleControl" data-client-id="{{clientId}}" data-control="{{canControl}}" title="{{#if canControl}}{{localize 'AUDIOFORGE.Room.RevokeControl'}}{{else}}{{localize 'AUDIOFORGE.Room.GrantControl'}}{{/if}}"><i class="fa-solid fa-sliders"></i></button>{{/if}}<button type="button" data-action="kick" data-client-id="{{clientId}}" title="{{localize 'AUDIOFORGE.Room.Remove'}}"><i class="fa-solid fa-user-xmark"></i></button>{{/if}}
           {{#if canInvite}}<button type="button" data-action="invite" data-user-id="{{id}}" title="{{localize 'AUDIOFORGE.Room.Invite'}}"><i class="fa-solid fa-user-plus"></i></button>{{/if}}
         </li>
         {{else}}
@@ -41,6 +41,16 @@
       {{#if waiting}}<p class="af-note">{{localize "AUDIOFORGE.Room.WaitingHint"}}</p>{{/if}}
     </section>
 
+    {{#if controlAvailable}}
+    <div class="form-group">
+      <label>{{localize "AUDIOFORGE.Room.WhoControls"}}</label>
+      <select name="defaultControl">
+        <option value="listen" {{#unless everyoneControls}}selected{{/unless}}>{{localize "AUDIOFORGE.Room.ControlOnlyMe"}}</option>
+        <option value="control" {{#if everyoneControls}}selected{{/if}}>{{localize "AUDIOFORGE.Room.ControlEveryone"}}</option>
+      </select>
+    </div>
+    {{/if}}
+
     {{#if strangers.length}}
     <section class="af-section">
       <div class="af-section-head"><h3>{{localize "AUDIOFORGE.Room.Others"}}</h3></div>
@@ -49,6 +59,7 @@
         <li class="af-row stranger">
           <span class="af-dot"></span>
           <span class="af-name">{{username}}</span>
+          {{#if ../controlAvailable}}<button type="button" class="{{#if canControl}}on{{/if}}" data-action="toggleControl" data-client-id="{{clientId}}" data-control="{{canControl}}" title="{{#if canControl}}{{localize 'AUDIOFORGE.Room.RevokeControl'}}{{else}}{{localize 'AUDIOFORGE.Room.GrantControl'}}{{/if}}"><i class="fa-solid fa-sliders"></i></button>{{/if}}
           <button type="button" data-action="kick" data-client-id="{{clientId}}" title="{{localize 'AUDIOFORGE.Room.Remove'}}"><i class="fa-solid fa-user-xmark"></i></button>
         </li>
         {{/each}}

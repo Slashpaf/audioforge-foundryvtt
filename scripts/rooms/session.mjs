@@ -1,4 +1,5 @@
 import { MODULE_ID, client } from "../settings.mjs";
+import { RemoteControlClient } from "./remote-control.mjs";
 import { notifyFailure } from "../util.mjs";
 import { RoomGuestClient } from "./guest-client.mjs";
 import { PcmPlayer } from "./pcm-player.mjs";
@@ -20,6 +21,7 @@ class RoomSession extends EventTarget {
   // GM side
   reports = new Map(); // userId -> { state, clientId } as reported by each player's own client
   guests = []; // from Audio Forge: who the rooms server says is connected
+  defaultPermission = "listen"; // who may control Audio Forge: "listen" (only the GM) or "control" (everyone)
   rejections = [];
   opening = false;
   #seenRejections = null; // null until the first state arrives, so a reload does not replay old refusals
@@ -38,6 +40,8 @@ class RoomSession extends EventTarget {
     onPcm: (bytes) => this.#player.push(bytes),
     onReset: () => this.#player.reset(),
   });
+  /** What a player allowed to control Audio Forge drives; looks like `client` to the panel. */
+  remote = new RemoteControlClient(this.#guest);
   get #optedOutOf() {
     return game.settings.get(MODULE_ID, "roomOptOut") || null;
   }
@@ -58,6 +62,16 @@ class RoomSession extends EventTarget {
     return this.#guest.reason;
   }
 
+  /** The GM has allowed this player to control Audio Forge and the host's snapshot is here. */
+  get canControl() {
+    return this.remote.available;
+  }
+
+  /** GM side: the connected Audio Forge can hand out control. */
+  get controlAvailable() {
+    return client.roomControlAvailable;
+  }
+
   get audioBlocked() {
     return this.#player.blocked;
   }
@@ -72,6 +86,7 @@ class RoomSession extends EventTarget {
 
     this.#guest.addEventListener("status", (ev) => this.#onGuestStatus(ev.detail));
     this.#guest.addEventListener("room", () => this.#changed());
+    this.#guest.addEventListener("control", () => this.#changed());
 
     // Browsers keep audio suspended until the page has been interacted with.
     const unlock = () => this.resumeAudio();
@@ -188,6 +203,18 @@ class RoomSession extends EventTarget {
     return client.send({ command: "kickRoomGuest", clientId });
   }
 
+  /** Let one guest (a clientId) control Audio Forge, or take it away. */
+  setGuestControl(clientId, enabled) {
+    return client.send({ command: "setRoomGuestPermission", clientId, permission: enabled ? "control" : "listen" });
+  }
+
+  /** Who may control Audio Forge by default; remembered and applied again whenever a room opens. */
+  async setDefaultControl(everyone) {
+    const permission = everyone ? "control" : "listen";
+    await game.settings.set(MODULE_ID, "roomControlDefault", permission);
+    if (this.room) await client.send({ command: "setRoomDefaultPermission", permission });
+  }
+
   /** Ask a player to (re)join, e.g. after the GM freed a slot for them. */
   invite(userId) {
     this.#send({ action: "invite", userId });
@@ -294,12 +321,14 @@ class RoomSession extends EventTarget {
       : null;
 
     const guests = open ? af.guests ?? [] : [];
+    const defaultPermission = open ? af.defaultGuestPermission ?? "listen" : "listen";
     const rejections = open ? af.rejections ?? [] : [];
 
     const announce = JSON.stringify(next) !== JSON.stringify(this.room);
     // State pushes arrive on every track change; only touch the UI when something it shows has changed.
-    const changed = announce || JSON.stringify([guests, rejections]) !== JSON.stringify([this.guests, this.rejections]);
+    const changed = announce || JSON.stringify([guests, rejections, defaultPermission]) !== JSON.stringify([this.guests, this.rejections, this.defaultPermission]);
     this.room = next;
+    this.defaultPermission = defaultPermission;
     this.guests = guests;
     this.rejections = rejections;
     if (!open) {
@@ -308,8 +337,16 @@ class RoomSession extends EventTarget {
     }
     this.#notifyRejections();
     if (announce) this.#send({ action: "room", room: next });
+    if (announce && open) this.#applyControlDefault(defaultPermission);
     if (changed) this.#changed();
     if (open && !announce && changed) this.#syncAuto(); // the last guest leaving may be what lets the room close
+  }
+
+  /** A new room starts at "only me"; bring it to what the GM chose last time. */
+  #applyControlDefault(current) {
+    const wanted = game.settings.get(MODULE_ID, "roomControlDefault");
+    if (wanted === current || !this.controlAvailable) return;
+    client.send({ command: "setRoomDefaultPermission", permission: wanted }).catch(notifyFailure);
   }
 
   #notifyRejections() {
