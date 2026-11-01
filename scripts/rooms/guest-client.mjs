@@ -1,7 +1,8 @@
 /**
  * Headless Audio Forge Rooms guest: joins a room as a listener and hands the host's PCM audio to a sink.
  * Pure ES module with no Foundry dependencies so it can be tested under Node.
- * Emits "status" (detail: { status, reason?, clientId?, username? }) and "room" (detail: room state).
+ * Emits "status" (detail: { status, reason?, clientId?, username? }), "room" (detail: room state),
+ * "control" (the permission or the control snapshot changed) and "result" (detail: { requestId, ok, error? } of a control command).
  *
  * status: idle | connecting | joined | waiting (room full) | removed (kicked) | error | closed (room gone)
  */
@@ -34,12 +35,15 @@ export class RoomGuestClient extends EventTarget {
   #wanted = false;
   #cfg = null;
   #sink = null;
+  #seq = 0;
 
   status = "idle";
   reason = null;
   clientId = null;
   username = null;
   room = null;
+  /** What the host published for guests allowed to control Audio Forge; null while listen-only or before the first one. */
+  snapshot = null;
 
   /** @param {{ onFormat?: (f: {sampleRate:number, channels:number}) => void, onPcm?: (bytes: Uint8Array) => void, onReset?: () => void }} sink */
   constructor(sink = {}) {
@@ -55,6 +59,21 @@ export class RoomGuestClient extends EventTarget {
     this.#open();
   }
 
+  /** This guest's own permission, from the latest room state: its own entry, else the room default. */
+  get permission() {
+    const own = this.room?.guests?.find((g) => g.clientId === this.clientId)?.permission;
+    return own ?? this.room?.permissions?.guestPermissions?.[this.clientId] ?? this.room?.permissions?.defaultGuestPermission ?? "listen";
+  }
+
+  /** Relay a command to the host. Returns the requestId its `result` event carries, or null when not connected. */
+  sendControl(payload) {
+    const ws = this.#ws;
+    if (!ws || ws.readyState !== 1 || this.status !== "joined") return null;
+    const requestId = `fvtt-c${++this.#seq}`;
+    ws.send(JSON.stringify({ type: "control.command", requestId, payload }));
+    return requestId;
+  }
+
   leave() {
     this.#wanted = false;
     clearTimeout(this.#timer);
@@ -62,6 +81,7 @@ export class RoomGuestClient extends EventTarget {
     this.#close();
     this.clientId = null;
     this.room = null;
+    this.#setSnapshot(null);
     this.#setStatus("idle");
   }
 
@@ -106,6 +126,7 @@ export class RoomGuestClient extends EventTarget {
       if (this.#ws !== ws) return;
       this.#ws = null;
       this.#sink.onReset?.();
+      this.#setSnapshot(null); // no control while offline; the server sends a fresh snapshot on rejoin
       if (!this.#wanted) return; // an "error" message already settled the status
       const reason = CLOSE_CODES[ev.code] ?? (typeof ev.reason === "string" ? ev.reason : "");
       if (this.#fail(FATAL[reason] ? reason : null)) return;
@@ -121,6 +142,7 @@ export class RoomGuestClient extends EventTarget {
     this.#wanted = false;
     this.clientId = null;
     this.room = null;
+    this.#setSnapshot(null);
     this.#setStatus(FATAL[reason], reason);
     return true;
   }
@@ -138,6 +160,15 @@ export class RoomGuestClient extends EventTarget {
       case "room.state":
         this.room = msg.room;
         this.dispatchEvent(new CustomEvent("room", { detail: msg.room }));
+        // Only the server's snapshots are trusted, but a revoke must not wait for its null one.
+        if (this.permission !== "control") this.#setSnapshot(null);
+        else this.dispatchEvent(new Event("control"));
+        break;
+      case "control.snapshot":
+        this.#setSnapshot(msg.snapshot && typeof msg.snapshot === "object" ? msg.snapshot : null);
+        break;
+      case "control.result":
+        this.dispatchEvent(new CustomEvent("result", { detail: { requestId: msg.requestId, ok: msg.ok !== false, error: msg.error } }));
         break;
       case "audio.format":
         this.#setFormat(msg.payload);
@@ -150,6 +181,12 @@ export class RoomGuestClient extends EventTarget {
         if (FATAL[msg.code]) this.#fail(msg.code);
         break;
     }
+  }
+
+  #setSnapshot(snapshot) {
+    if (!snapshot && !this.snapshot) return;
+    this.snapshot = snapshot;
+    this.dispatchEvent(new Event("control"));
   }
 
   #setFormat(f) {

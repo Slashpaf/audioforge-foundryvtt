@@ -70,3 +70,22 @@ test("reconnects after the server drops the socket", async () => {
   for (const s of wss.clients) s.terminate();
   wss.close();
 });
+
+test("room control needs Local API v3", async () => {
+  const wss = await new Promise((resolve) => {
+    const s = new WebSocketServer({ port: 0 }, () => resolve(s));
+    s.on("connection", (ws) => ws.send(JSON.stringify({ type: "hello", apiVersion: 3 })));
+  });
+  const c = new AudioForgeClient();
+  assert.equal(c.roomControlAvailable, false);
+  c.configure({ host: "127.0.0.1", port: wss.address().port });
+  const hello = once(c, "aiDirector");
+  c.start();
+  await hello;
+  assert.equal(c.roomControlAvailable, true);
+  c.apiVersion = 2;
+  assert.equal(c.roomControlAvailable, false);
+  c.stop();
+  for (const s of wss.clients) s.terminate();
+  wss.close();
+});

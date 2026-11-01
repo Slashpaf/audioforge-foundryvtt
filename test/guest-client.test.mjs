@@ -125,3 +125,73 @@ test("leave() stops reconnecting", async () => {
   assert.equal(c.status, "idle");
   done(c, wss);
 });
+
+const room = (permission, extra = {}) => ({ guests: [{ clientId: "c1", username: "Aria", permission }], permissions: { defaultGuestPermission: "listen", guestPermissions: {} }, ...extra });
+const nextEvent = (c, name, pred = () => true) =>
+  new Promise((resolve) => {
+    const on = (ev) => {
+      if (!pred(ev)) return;
+      c.removeEventListener(name, on);
+      resolve(ev.detail);
+    };
+    c.addEventListener(name, on);
+  });
+
+test("permission follows room.state, the snapshot is kept only while allowed", async () => {
+  const snapshot = { state: { musicPlaying: true }, catalog: { libraries: [] }, savedStates: [] };
+  let sock;
+  const wss = await startServer((ws) => {
+    sock = ws;
+    hello(ws, { room: room("listen") });
+  });
+  const c = new RoomGuestClient();
+  const joined = statusIs(c, "joined");
+  c.join({ baseUrl: base(wss), roomId: "ROOM", username: "Aria", sessionId: "s", password: "" });
+  await joined;
+  assert.equal(c.permission, "listen");
+  assert.equal(c.snapshot, null);
+
+  sock.send(JSON.stringify({ type: "room.state", room: room("control") }));
+  sock.send(JSON.stringify({ type: "control.snapshot", snapshot }));
+  await nextEvent(c, "control", () => c.snapshot);
+  assert.equal(c.permission, "control");
+  assert.deepEqual(c.snapshot, snapshot);
+
+  // Revoked: the room state alone clears it, even before the server's null snapshot.
+  sock.send(JSON.stringify({ type: "room.state", room: room("listen") }));
+  await nextEvent(c, "control", () => !c.snapshot);
+  assert.equal(c.permission, "listen");
+  done(c, wss);
+});
+
+test("the room default applies when the guest has no entry of its own", () => {
+  const c = new RoomGuestClient();
+  c.clientId = "x";
+  c.room = { guests: [], permissions: { defaultGuestPermission: "control", guestPermissions: {} } };
+  assert.equal(c.permission, "control");
+  c.room = null;
+  assert.equal(c.permission, "listen");
+});
+
+test("sends control.command with a requestId and reports control.result", async () => {
+  const seen = [];
+  const wss = await startServer((ws) => {
+    hello(ws, { room: room("control") });
+    ws.on("message", (raw) => {
+      const msg = JSON.parse(raw.toString());
+      if (msg.type !== "control.command") return;
+      seen.push(msg);
+      ws.send(JSON.stringify({ type: "control.result", requestId: msg.requestId, ok: false, error: "forbidden" }));
+    });
+  });
+  const c = new RoomGuestClient();
+  assert.equal(c.sendControl({ command: "stop" }), null, "nothing is sent before joining");
+  const joined = statusIs(c, "joined");
+  c.join({ baseUrl: base(wss), roomId: "ROOM", username: "Aria", sessionId: "s", password: "" });
+  await joined;
+  const result = nextEvent(c, "result");
+  const id = c.sendControl({ command: "setVolume", args: { section: "Music", value: 0.5 } });
+  assert.deepEqual(await result, { requestId: id, ok: false, error: "forbidden" });
+  assert.deepEqual(seen[0], { type: "control.command", requestId: id, payload: { command: "setVolume", args: { section: "Music", value: 0.5 } } });
+  done(c, wss);
+});

@@ -8,6 +8,8 @@ const DEFAULT_TIMEOUT_MS = 5000;
 const MAX_BACKOFF_MS = 30000;
 /** First Local API version with the AI Director (Audio Forge 1.5.18). Older servers send no `hello`. */
 const MIN_AI_DIRECTOR_API = 2;
+/** First Local API version that can grant guests control (setRoomGuestPermission, setRoomDefaultPermission, state.room permissions). */
+export const MIN_ROOM_CONTROL_API = 3;
 const AI_LOG_LIMIT = 100;
 /** Microphone audio is real time: when the socket falls this far behind, frames are dropped. */
 const MAX_AUDIO_BACKLOG = 256 * 1024;
@@ -68,6 +70,11 @@ export class AudioForgeClient extends EventTarget {
    */
   get aiDirectorAvailable() {
     return this.connected && this.apiVersion >= MIN_AI_DIRECTOR_API && !!this.aiDirector?.available && !!this.aiDirector?.enabled;
+  }
+
+  /** Room guests can be allowed to control Audio Forge only when the server speaks API v3. */
+  get roomControlAvailable() {
+    return this.connected && this.apiVersion >= MIN_ROOM_CONTROL_API;
   }
 
   /** A command for the AI Director. Rejects without touching the socket when it is not available. */
