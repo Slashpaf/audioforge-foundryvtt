@@ -4,7 +4,7 @@ All notable changes to this module. Versions follow `module.json`; each release 
 
 ## Unreleased
 
-- Online room: with Audio Forge 1.6 or newer (Local API 3) the GM can let players control Audio Forge from the room. Each player and each other guest has a control button next to the remove button, and **Who can control Audio Forge** (only me or everyone) is remembered and applied again whenever a room opens. A player who has been given control gets an **Open controls** button in their room window: the same panel as the GM's (library, Music, Ambiance, Echoes, saved states, stop all), without the room, scene, AI Director and profile tools. It disappears as soon as control is taken away.
+- Online room: with Audio Forge 1.6 or newer (Local API 3) the GM can let players control Audio Forge from the room. Each player and each other guest has a control button next to the remove button, and **Who can control Audio Forge** (only me or everyone) switches who may control it for the room that is open. Every new room starts at only me. A player who has been given control gets an **Open controls** button in their room window: the same panel as the GM's (library, Music, Ambiance, Echoes, saved states, stop all), without the room, scene, AI Director and profile tools. It disappears as soon as control is taken away.
 
 ## 0.2.3 - 2026-11-01
 

@@ -53,7 +53,6 @@ export function registerSettings(profileMenus) {
   // The room this player left or was removed from; auto-join stays off for it, even after a reload.
   game.settings.register(MODULE_ID, "roomOptOut", { scope: "client", config: false, type: String, default: "" });
   // Who may control Audio Forge from the room ("listen": only the GM, "control": everyone); re-applied when a room opens.
-  game.settings.register(MODULE_ID, "roomControlDefault", { scope: "client", config: false, type: String, default: "listen" });
   game.settings.register(MODULE_ID, "roomVolume", { scope: "client", config: false, type: Number, default: 1 });
   // "" follows the call: the browser microphone when Foundry's A/V is on, Audio Forge's input otherwise.
   game.settings.register(MODULE_ID, "aiDirectorSource", { scope: "client", config: false, type: String, default: "" });
