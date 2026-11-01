@@ -89,3 +89,16 @@ test("room control needs Local API v3", async () => {
   for (const s of wss.clients) s.terminate();
   wss.close();
 });
+
+test("room session ids are random, stable per key, and survive blocked storage", async () => {
+  const { roomSessionId } = await import("../scripts/util.mjs");
+  const store = new Map();
+  const storage = { getItem: (k) => store.get(k) ?? null, setItem: (k, v) => store.set(k, v) };
+  const a = roomSessionId(storage, "w.u1");
+  assert.equal(roomSessionId(storage, "w.u1"), a);
+  assert.notEqual(roomSessionId(storage, "w.u2"), a);
+  assert.doesNotMatch(a, /u1/);
+  const broken = { getItem: () => { throw new Error("blocked"); }, setItem: () => { throw new Error("blocked"); } };
+  assert.match(roomSessionId(broken, "k"), /^fvtt-/);
+  assert.match(roomSessionId(undefined, "k"), /^fvtt-/);
+});

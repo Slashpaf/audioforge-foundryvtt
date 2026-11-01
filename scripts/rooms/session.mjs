@@ -1,6 +1,6 @@
 import { MODULE_ID, client } from "../settings.mjs";
 import { RemoteControlClient } from "./remote-control.mjs";
-import { notifyFailure } from "../util.mjs";
+import { notifyFailure, roomSessionId } from "../util.mjs";
 import { RoomGuestClient } from "./guest-client.mjs";
 import { PcmPlayer } from "./pcm-player.mjs";
 import { buildPlayerRows, findStrangers, takeNewRejections } from "./roster.mjs";
@@ -30,6 +30,7 @@ class RoomSession extends EventTarget {
   #autoBusy = false;
   #verified = false; // whether the room we show was checked against Audio Forge since it last connected
   #closeTimer = null;
+  #controlAppliedFor = null; // the room whose control default was set from our setting
   #polling = false;
   #pollAgain = false;
 
@@ -243,7 +244,7 @@ class RoomSession extends EventTarget {
       baseUrl: this.room.baseUrl,
       roomId: this.room.roomId,
       username: game.user.name,
-      sessionId: `fvtt-${game.world.id}-${game.user.id}`,
+      sessionId: roomSessionId(globalThis.localStorage, `${MODULE_ID}.session.${game.world.id}.${game.user.id}`),
       password: this.room.password,
     });
     this.resumeAudio();
@@ -332,6 +333,7 @@ class RoomSession extends EventTarget {
     this.guests = guests;
     this.rejections = rejections;
     if (!open) {
+      this.#controlAppliedFor = null;
       this.reports.clear();
       this.#weOpened = false;
     }
@@ -344,6 +346,9 @@ class RoomSession extends EventTarget {
 
   /** A new room starts at "only me"; bring it to what the GM chose last time. */
   #applyControlDefault(current) {
+    // Only a genuinely new room: later announces (reload, tier, password) must not undo a choice made in the app.
+    if (this.#controlAppliedFor === this.room.roomId) return;
+    this.#controlAppliedFor = this.room.roomId;
     const wanted = game.settings.get(MODULE_ID, "roomControlDefault");
     if (wanted === current || !this.controlAvailable) return;
     client.send({ command: "setRoomDefaultPermission", permission: wanted }).catch(notifyFailure);

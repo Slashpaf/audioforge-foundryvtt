@@ -179,6 +179,8 @@ export class RoomGuestClient extends EventTarget {
       case "error":
         // The close that follows carries the same information; handle it here so the reason is exact.
         if (FATAL[msg.code]) this.#fail(msg.code);
+        // A refused control command (forbidden, rate_limited, ...) answers its requestId like a result would.
+        else if (msg.requestId) this.dispatchEvent(new CustomEvent("result", { detail: { requestId: msg.requestId, ok: false, error: msg.code } }));
         break;
     }
   }

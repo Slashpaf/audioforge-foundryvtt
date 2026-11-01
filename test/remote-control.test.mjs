@@ -9,7 +9,7 @@ const snapshot = {
   catalog: { activeLibraryUuid: "L", libraries: [{ uuid: "L", name: "Lib" }] },
   savedStates: [{ id: "s1", name: "Tavern" }],
 };
-const room = (permission) => ({ guests: [{ clientId: "c1", username: "Aria", permission }], permissions: { defaultGuestPermission: "listen", guestPermissions: {} } });
+const room = (permission, hostConnected = true) => ({ hostConnected, guests: [{ clientId: "c1", username: "Aria", permission }], permissions: { defaultGuestPermission: "listen", guestPermissions: {} } });
 const once = (t, name, pred = () => true) =>
   new Promise((resolve) => {
     const on = (ev) => {
@@ -101,5 +101,24 @@ test("revoking clears the data and fails commands still waiting", async () => {
   await assert.rejects(pending, /closed/);
   assert.equal(remote.state, null);
   assert.deepEqual(remote.savedStates, []);
+  stop();
+});
+
+test("a server error for a request rejects it at once", async () => {
+  const { remote, grant, stop } = await setup((ws, msg) => ws.send(JSON.stringify({ type: "error", code: "rate_limited", requestId: msg.requestId })));
+  await grant();
+  const t = Date.now();
+  await assert.rejects(remote.send({ command: "play", section: "Music" }), /rate_limited/);
+  assert.ok(Date.now() - t < 1000);
+  stop();
+});
+
+test("the panel is disconnected while the host is offline", async () => {
+  const { remote, sock, grant, stop } = await setup();
+  await grant();
+  assert.equal(remote.connected, true);
+  const off = once(remote, "connection");
+  sock().send(JSON.stringify({ type: "room.state", room: room("control", false) }));
+  assert.equal(await off, false);
   stop();
 });

@@ -25,6 +25,7 @@ export class RemoteControlClient extends EventTarget {
     super();
     this.#guest = guest;
     guest.addEventListener("control", () => this.#sync());
+    guest.addEventListener("room", () => this.#sync());
     guest.addEventListener("status", () => this.#sync());
     guest.addEventListener("result", (ev) => this.#onResult(ev.detail));
   }
@@ -71,7 +72,7 @@ export class RemoteControlClient extends EventTarget {
 
   #sync() {
     const snap = this.available ? this.#guest.snapshot : null;
-    const connected = !!snap && this.#guest.status === "joined";
+    const connected = !!snap && this.#guest.status === "joined" && this.#guest.room?.hostConnected === true;
     const was = this.connected;
     this.connected = connected;
     if (!snap) {

@@ -12,4 +12,25 @@ export function notifyFailure(err) {
  */
 export const isRegular = (c) => c.enabledInForge !== false;
 
+/**
+ * The rooms-server session id of this browser for one world and user. It identifies the guest on reconnects and carries
+ * its control grant, so it must be unguessable: never derived from user ids, which every player can read.
+ * `storage` is localStorage (or anything alike); without it the id lasts only for this page load.
+ */
+export function roomSessionId(storage, key) {
+  try {
+    const known = storage?.getItem(key);
+    if (known) return known;
+  } catch {
+    // blocked storage: fall through to a fresh id
+  }
+  const id = `fvtt-${crypto.randomUUID()}`;
+  try {
+    storage?.setItem(key, id);
+  } catch {
+    // not persisted: the next reload joins as a new guest
+  }
+  return id;
+}
+
 export const DOWNLOAD_URL = "https://slashpaf.com/audioforge/download";
