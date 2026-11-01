@@ -141,6 +141,13 @@
       "Leave": "De kamer verlaten",
       "Volume": "Volume",
       "ClickToListen": "Klik om het geluid te starten",
+      "GrantControl": "Laat deze speler Audio Forge bedienen",
+      "RevokeControl": "Bediening van Audio Forge intrekken",
+      "WhoControls": "Wie kan Audio Forge bedienen",
+      "ControlOnlyMe": "Alleen ik",
+      "ControlEveryone": "Iedereen",
+      "OpenControls": "Bediening openen",
+      "ControlsTitle": "Audio Forge-bediening",
       "PlayerPromo": "Bevalt wat je hoort? Audio Forge is gratis te downloaden."
     },
     "Ai": {

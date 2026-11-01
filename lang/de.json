@@ -141,6 +141,13 @@
       "Leave": "Den Raum verlassen",
       "Volume": "Lautstärke",
       "ClickToListen": "Klicken, um den Ton zu starten",
+      "GrantControl": "Diesem Spieler die Steuerung von Audio Forge erlauben",
+      "RevokeControl": "Steuerung von Audio Forge entziehen",
+      "WhoControls": "Wer Audio Forge steuern darf",
+      "ControlOnlyMe": "Nur ich",
+      "ControlEveryone": "Alle",
+      "OpenControls": "Steuerung öffnen",
+      "ControlsTitle": "Audio-Forge-Steuerung",
       "PlayerPromo": "Gefällt dir, was du hörst? Audio Forge ist kostenlos erhältlich."
     },
     "Ai": {
