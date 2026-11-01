@@ -57,14 +57,22 @@ button.af-icon::before {
 }
 .audioforge-panel .af-echo { position: relative; overflow: hidden; }
 .audioforge-panel .af-echo > img, .audioforge-panel .af-echo > span { position: relative; }
-.audioforge-panel .af-echo.playing { box-shadow: 0 0 6px var(--af-chip, var(--color-shadow-highlight, #ff6400)); }
-/* The bar fills the tile from the left over the echo's length; half transparent, so overlapping echoes stack brighter. */
+/* The glow is an animation, so it ends by itself when the last bar has been wiped out. */
+.audioforge-panel .af-echo.playing { animation: af-glow var(--af-glow, 0ms) linear; }
+@keyframes af-glow { from, to { box-shadow: 0 0 6px var(--af-chip, var(--color-shadow-highlight, #ff6400)); } }
+/* A bar fills the tile from the left over the echo's length, then is wiped out left to right like in the app.
+   Half transparent, so overlapping echoes stack brighter. The wipe has no backwards fill: it only applies once it starts. */
 .audioforge-panel .af-echo .af-fill {
-  position: absolute; inset: 0 auto 0 0; width: 0; opacity: 0.5; pointer-events: none;
+  position: absolute; inset: 0; opacity: 0.5; pointer-events: none;
   background: var(--af-chip, var(--color-shadow-highlight, #ff6400));
-  animation: af-fill linear forwards;
+  clip-path: inset(0 100% 0 0);
+  animation-name: af-fill, af-wipe;
+  animation-timing-function: linear, ease-in;
+  animation-fill-mode: forwards, forwards;
 }
-@keyframes af-fill { to { width: 100%; } }
+@keyframes af-fill { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
+@keyframes af-wipe { from { clip-path: inset(0); } to { clip-path: inset(0 0 0 100%); } }
+@media (prefers-reduced-motion: reduce) { .audioforge-panel .af-echo .af-fill { display: none; } }
 /* Acknowledge a click at once; the first push can take a moment, especially for remote players. */
 .audioforge-panel .af-echo:active { filter: brightness(1.6); transform: scale(0.97); }
 .audioforge-panel .af-echo img { width: 32px; height: 32px; object-fit: contain; border: 0; }

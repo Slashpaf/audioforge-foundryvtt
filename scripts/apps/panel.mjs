@@ -123,7 +123,9 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
     const fills = this.#src.echoTracker?.fills() ?? new Map();
     const echoes = (lib?.ambiance ?? []).filter((c) => c.oneShot && usable(c)).map((c) => {
       const active = fills.get(c.uuid) ?? [];
-      return { ...c, icon: this.#src.iconUrl(c.uuid, 96), fills: active, playing: active.length > 0 };
+      // The glow lasts as long as the longest bar needs, so it ends with the wipe.
+      const glowMs = Math.max(0, ...active.map((f) => f.remainingMs));
+      return { ...c, icon: this.#src.iconUrl(c.uuid, 96), fills: active, playing: active.length > 0, glowMs };
     });
     return {
       connected: this.#src.connected,

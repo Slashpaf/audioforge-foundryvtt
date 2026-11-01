@@ -44,7 +44,7 @@
     </div>
     <div class="af-echoes">
       {{#each echoes}}
-      <button type="button" class="af-echo{{#if playing}} playing{{/if}}" data-action="echo" data-uuid="{{uuid}}" {{#if color}}style="--af-chip: {{color}}"{{/if}}>{{#each fills}}<i class="af-fill" style="animation-duration: {{durationMs}}ms; animation-delay: -{{elapsedMs}}ms"></i>{{/each}}{{#if icon}}<img src="{{icon}}" alt="" loading="lazy" onerror="this.remove()">{{/if}}<span>{{name}}</span></button>
+      <button type="button" class="af-echo{{#if playing}} playing{{/if}}" data-action="echo" data-uuid="{{uuid}}" style="{{#if color}}--af-chip: {{color}};{{/if}}{{#if playing}} --af-glow: {{glowMs}}ms{{/if}}">{{#each fills}}<i class="af-fill" style="animation-duration: {{durationMs}}ms, 200ms; animation-delay: -{{elapsedMs}}ms, {{wipeDelayMs}}ms"></i>{{/each}}{{#if icon}}<img src="{{icon}}" alt="" loading="lazy" onerror="this.remove()">{{/if}}<span>{{name}}</span></button>
       {{else}}<p class="af-note">{{localize "AUDIOFORGE.Panel.NoEchoes"}}</p>{{/each}}
     </div>
   </section>
