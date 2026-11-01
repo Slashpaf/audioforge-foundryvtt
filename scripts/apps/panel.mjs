@@ -4,7 +4,7 @@ import { DOWNLOAD_URL, isRegular, notifyFailure } from "../util.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
-const PANEL_EVENTS = ["connection", "blocked", "state", "catalog", "savedStates", "aiDirector", "aiDirectorLog"];
+const PANEL_EVENTS = ["connection", "blocked", "state", "catalog", "savedStates", "echoes", "aiDirector", "aiDirectorLog"];
 
 const SECTIONS = ["Music", "Ambiance"];
 
@@ -120,7 +120,11 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
         categories: list.map((c) => ({ ...c, on: sectionPlaying && playing[name].has(c.uuid), icon: this.#src.iconUrl(c.uuid, 96) })),
       };
     };
-    const echoes = (lib?.ambiance ?? []).filter((c) => c.oneShot && usable(c)).map((c) => ({ ...c, icon: this.#src.iconUrl(c.uuid, 96) }));
+    const fills = this.#src.echoTracker?.fills() ?? new Map();
+    const echoes = (lib?.ambiance ?? []).filter((c) => c.oneShot && usable(c)).map((c) => {
+      const active = fills.get(c.uuid) ?? [];
+      return { ...c, icon: this.#src.iconUrl(c.uuid, 96), fills: active, playing: active.length > 0 };
+    });
     return {
       connected: this.#src.connected,
       downloadUrl: DOWNLOAD_URL,

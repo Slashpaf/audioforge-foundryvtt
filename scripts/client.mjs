@@ -1,8 +1,10 @@
 /**
  * Browser WebSocket client for the Audio Forge Local API.
  * Pure ES module with no Foundry dependencies so it can be tested under Node.
- * Emits: "connection" (detail: boolean), "state", "catalog", "savedStates", "echo", "aiDirector" (status or null), "aiDirectorLog".
+ * Emits: "connection" (detail: boolean), "state", "catalog", "savedStates", "echo", "echoes", "aiDirector" (status or null), "aiDirectorLog".
  */
+
+import { EchoTracker } from "./echo-fill.mjs";
 
 const DEFAULT_TIMEOUT_MS = 5000;
 const MAX_BACKOFF_MS = 30000;
@@ -34,6 +36,9 @@ export class AudioForgeClient extends EventTarget {
   connected = false;
   /** From the server's `hello`; 0 until it arrives (and for Audio Forge older than 1.5.18, which never sends one). */
   apiVersion = 0;
+  /** Echoes playing now (`echoes` pushes; only newer Audio Forge sends them), and when each started. */
+  echoes = [];
+  echoTracker = new EchoTracker();
   /** Latest `ai_director` status push, or null. */
   aiDirector = null;
   /** Recent AI Director activity, oldest first. */
@@ -228,6 +233,8 @@ export class AudioForgeClient extends EventTarget {
     this.connected = value;
     if (!value) {
       this.apiVersion = 0;
+      this.echoes = [];
+      this.echoTracker.clear();
       this.aiDirector = null;
       this.aiDirectorLog = [];
       this.dispatchEvent(new CustomEvent("aiDirector", { detail: null }));
@@ -274,6 +281,11 @@ export class AudioForgeClient extends EventTarget {
         this.dispatchEvent(new CustomEvent("aiDirectorLog", { detail: this.aiDirectorLog }));
         break;
       }
+      case "echoes":
+        this.echoes = Array.isArray(msg.echoes) ? msg.echoes : [];
+        this.echoTracker.update(this.echoes);
+        this.dispatchEvent(new CustomEvent("echoes", { detail: this.echoes }));
+        break;
       case "echo":
         this.dispatchEvent(new CustomEvent("echo", { detail: msg }));
         break;

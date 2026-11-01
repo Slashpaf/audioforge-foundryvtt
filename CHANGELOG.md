@@ -4,6 +4,7 @@ All notable changes to this module. Versions follow `module.json`; each release 
 
 ## Unreleased
 
+- Echo tiles in the panel (yours and the one players with control see) show a bar in the category color that fills the tile from the left over the echo's length, stacking when echoes of a category overlap, and light up while one plays. Tiles also flash when pressed. Needs an Audio Forge that reports its playing echoes.
 - Online room: with Audio Forge 1.6 or newer (Local API 3) the GM can let players control Audio Forge from the room. Each player and each other guest has a control button next to the remove button, and **Who can control Audio Forge** (only me or everyone) switches who may control it for the room that is open. Every new room starts at only me. A player who has been given control gets an **Open controls** button in their room window: the same panel as the GM's (library, Music, Ambiance, Echoes, saved states, stop all), without the room, scene, AI Director and profile tools. It disappears as soon as control is taken away.
 
 ## 0.2.3 - 2026-11-01
