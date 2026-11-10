@@ -123,11 +123,12 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
       Music: new Set((st.musicCategories ?? []).map((c) => c.uuid)),
       Ambiance: new Set((st.ambianceCategories ?? []).map((c) => c.uuid)),
     };
+    const volumeWord = game.i18n.localize("AUDIOFORGE.Room.Volume");
     const section = (name) => {
       const sectionPlaying = name === "Music" ? !!st.musicPlaying : !!st.ambiancePlaying;
       const groups = groupLayer(shown, name, (c) =>
         isRegular(c) && usable(c)
-          ? { ...c, on: sectionPlaying && playing[name].has(c.uuid), icon: this.#src.iconUrl(c.uuid, 96), volume: categoryVolume(st, c.uuid) }
+          ? { ...c, on: sectionPlaying && playing[name].has(c.uuid), icon: this.#src.iconUrl(c.uuid, 96), volume: categoryVolume(st, c.uuid, c), volumeLabel: `${c.name} - ${volumeWord}` }
           : null);
       return {
         name,
@@ -145,7 +146,7 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
       const list = fills.get(c.uuid) ?? [];
       // The glow lasts as long as the longest bar needs, so it ends with the wipe.
       const glowMs = Math.max(0, ...list.map((f) => f.remainingMs));
-      return { ...c, icon: this.#src.iconUrl(c.uuid, 96), fills: list, playing: list.length > 0, glowMs };
+      return { ...c, volume: categoryVolume(st, c.uuid, c), volumeLabel: `${c.name} - ${volumeWord}`, icon: this.#src.iconUrl(c.uuid, 96), fills: list, playing: list.length > 0, glowMs };
     });
     const echoesFull = acc.layers.has("Echoes");
     return {

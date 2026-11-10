@@ -17,6 +17,7 @@ export class RoomManager extends HandlebarsApplicationMixin(ApplicationV2) {
       closeRoom: RoomManager.#onClose,
       kick: RoomManager.#onKick,
       toggleControl: RoomManager.#onToggleControl,
+      dropRoles: RoomManager.#onDropRoles,
       invite: RoomManager.#onInvite,
       inviteAll: RoomManager.#onInviteAll,
       copyLink: RoomManager.#onCopyLink,
@@ -113,6 +114,10 @@ export class RoomManager extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static #onToggleControl(event, target) {
     roomSession.setGuestControl(target.dataset.clientId, target.dataset.control !== "true").catch(notifyFailure);
+  }
+
+  static #onDropRoles(event, target) {
+    roomSession.dropGuestRoles(target.dataset.clientId).catch(notifyFailure);
   }
 
   static #onInvite(event, target) {

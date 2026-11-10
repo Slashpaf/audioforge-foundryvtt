@@ -35,12 +35,14 @@ test("remote players see every library, the GM only the active ones (or the sing
 test("layers are grouped per library, empty groups dropped, echoes are the one-shot ambiance", () => {
   const id = (c) => c;
   assert.deepEqual(groupLayer(libs, "Music", id).map((g) => g.name), ["Alpha", "Gamma"]);
-  assert.deepEqual(groupLayer(libs, "Ambiance", id).map((g) => g.categories.map((c) => c.name)), [["Rain", "Bell"], ["Bow"]]);
+  assert.deepEqual(groupLayer(libs, "Ambiance", id).map((g) => g.categories.map((c) => c.name)), [["Rain"]]);
   assert.deepEqual(groupLayer(libs, "Echoes", id).map((g) => g.categories.map((c) => c.name)), [["Bell"], ["Bow"]]);
 });
 
-test("category volume is the 0-1 value of the state, 1 when unknown", () => {
-  assert.equal(categoryVolume({ categoryVolume: { x: 0.25 } }, "x"), 0.25);
+test("category volume: live value, else the catalog entry, else the middle", () => {
+  assert.equal(categoryVolume({ categoryVolume: { x: 0.25 } }, "x", { volume: 0.9 }), 0.25);
   assert.equal(categoryVolume({ categoryVolume: { x: 7 } }, "x"), 1);
-  assert.equal(categoryVolume({}, "x"), 1);
+  assert.equal(categoryVolume({}, "x", { volume: 0.7 }), 0.7);
+  assert.equal(categoryVolume({}, "x", {}), 0.5);
+  assert.equal(categoryVolume(undefined, "x"), 0.5);
 });

@@ -51,7 +51,7 @@
       "Log": "What it understood", "LogEmpty": "Nothing yet",
       "State": { "idle": "Off", "activating": "Starting…", "listening": "Listening", "processing": "Thinking…", "paused": "Paused" }
     },
-    "Roles": { "Assign": "Choose roles for this player", "NoRoles": "No roles yet. Create them in Audio Forge.", "NoneAssigned": "no role yet",
+    "Roles": { "ListenOnly": "Listen only", "FullControl": "Full control (all sounds)", "Assign": "Choose roles for this player", "NoRoles": "No roles yet. Create them in Audio Forge.", "NoneAssigned": "no role yet",
       "Mode": { "listen": "Listens", "control": "Full control", "roles": "Roles" } },
     "Keybinding": { "Panel": "Toggle Audio Forge panel" }
   }

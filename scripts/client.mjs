@@ -5,6 +5,7 @@
  */
 
 import { EchoTracker } from "./echo-fill.mjs";
+import { VolumePacer } from "./volume-pacer.mjs";
 
 const DEFAULT_TIMEOUT_MS = 5000;
 const MAX_BACKOFF_MS = 30000;
@@ -28,6 +29,7 @@ export class AudioForgeClient extends EventTarget {
   #wanted = false;
   #pending = new Map();
   #seq = 0;
+  #pacer = new VolumePacer();
   #cfg = { host: "localhost", port: 8329, apiKey: "" };
 
   state = null;
@@ -92,10 +94,8 @@ export class AudioForgeClient extends EventTarget {
       if (!resp.ok) return;
       const info = await resp.json();
       const features = info?.features ?? info?.hello?.features;
-      if (features && typeof features === "object") {
-        this.features = features;
-        this.dispatchEvent(new CustomEvent("catalog", { detail: this.catalog }));
-      }
+      this.features = features && typeof features === "object" ? features : {};
+      this.dispatchEvent(new CustomEvent("catalog", { detail: this.catalog }));
     } catch {
       // no info endpoint: stay with the single library select
     }
@@ -123,6 +123,12 @@ export class AudioForgeClient extends EventTarget {
 
   /** Send a command and resolve with the server's result message. Rejects on error result or timeout. */
   send(command, timeoutMs = DEFAULT_TIMEOUT_MS) {
+    // Holding a slider key fires many changes: pace volumes per section and category, the newest value wins.
+    if (command.command === "setVolume") return this.#pacer.send(command, (c) => this.#sendNow(c, timeoutMs));
+    return this.#sendNow(command, timeoutMs);
+  }
+
+  #sendNow(command, timeoutMs) {
     const ws = this.#ws;
     if (!ws || ws.readyState !== 1) return Promise.reject(new Error("Audio Forge is not connected"));
     const requestId = command.requestId ?? `fvtt-${++this.#seq}`;
@@ -287,8 +293,10 @@ export class AudioForgeClient extends EventTarget {
         break;
       case "hello":
         this.apiVersion = Number(msg.apiVersion) || 1;
-        this.features = msg.features && typeof msg.features === "object" ? msg.features : {};
-        if (!msg.features && this.apiVersion >= MIN_ROOM_CONTROL_API) this.#fetchFeatures();
+        // Without features in the hello, keep what was known until GET /api/info answers (a reconnect must not flicker).
+        if (msg.features && typeof msg.features === "object") this.features = msg.features;
+        else if (this.apiVersion >= MIN_ROOM_CONTROL_API) this.#fetchFeatures();
+        else this.features = {};
         this.dispatchEvent(new CustomEvent("aiDirector", { detail: this.aiDirector }));
         break;
       case "ai_director":

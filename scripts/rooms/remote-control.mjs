@@ -5,15 +5,14 @@
  */
 
 import { EchoTracker } from "../echo-fill.mjs";
+import { VolumePacer } from "../volume-pacer.mjs";
 
 const DEFAULT_TIMEOUT_MS = 5000;
-/** The rooms server allows about 30 commands a second per guest; a slider can fire far more, so volumes are paced. */
-const VOLUME_PACE_MS = 150;
 
 export class RemoteControlClient extends EventTarget {
   #guest;
   #pending = new Map();
-  #volumeSlots = new Map(); // section|category -> { sentAt, timer, command, waiters }
+  #pacer = new VolumePacer();
 
   state = null;
   catalog = null;
@@ -47,36 +46,7 @@ export class RemoteControlClient extends EventTarget {
 
   /** Same shape as the local client: `{ command, ...fields }`; resolves with the host's result, rejects on error or timeout. */
   send(cmd, timeoutMs = DEFAULT_TIMEOUT_MS) {
-    return cmd.command === "setVolume" ? this.#sendVolume(cmd, timeoutMs) : this.#sendNow(cmd, timeoutMs);
-  }
-
-  /**
-   * Volume changes of one section are sent at most every VOLUME_PACE_MS, the newest value wins. A call that was replaced
-   * by a newer one resolves right away (its value no longer matters), so a drag never reports a failure per event.
-   */
-  #sendVolume(cmd, timeoutMs) {
-    const key = `${cmd.section}|${cmd.categoryUuid ?? ""}`; // one pace per slider
-    const slot = this.#volumeSlots.get(key) ?? { sentAt: 0, timer: null, command: null, waiters: [] };
-    this.#volumeSlots.set(key, slot);
-    return new Promise((resolve, reject) => {
-      for (const w of slot.waiters) w.resolve({ type: "result", ok: true, superseded: true });
-      slot.waiters = [{ resolve, reject }];
-      slot.command = cmd;
-      if (slot.timer) return;
-      const flush = () => {
-        slot.timer = null;
-        slot.sentAt = Date.now();
-        const { command, waiters } = slot;
-        slot.waiters = [];
-        this.#sendNow(command, timeoutMs).then(
-          (r) => waiters.forEach((w) => w.resolve(r)),
-          (e) => waiters.forEach((w) => w.reject(e)),
-        );
-      };
-      const wait = slot.sentAt + VOLUME_PACE_MS - Date.now();
-      if (wait <= 0) flush();
-      else slot.timer = setTimeout(flush, wait);
-    });
+    return cmd.command === "setVolume" ? this.#pacer.send(cmd, (c) => this.#sendNow(c, timeoutMs)) : this.#sendNow(cmd, timeoutMs);
   }
 
   #sendNow({ command, requestId, ...args }, timeoutMs) {
@@ -108,12 +78,7 @@ export class RemoteControlClient extends EventTarget {
   }
 
   #rejectPending(error) {
-    for (const slot of this.#volumeSlots.values()) {
-      clearTimeout(slot.timer);
-      slot.timer = null;
-      for (const w of slot.waiters) w.reject(error);
-      slot.waiters = [];
-    }
+    this.#pacer.rejectAll(error);
     for (const p of this.#pending.values()) {
       clearTimeout(p.timer);
       p.reject(error);

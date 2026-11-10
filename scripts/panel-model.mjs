@@ -70,7 +70,7 @@ export function groupLayer(libs, layer, pick) {
   const groups = [];
   for (const lib of libs) {
     const list = (lib?.[layer === "Music" ? "music" : "ambiance"] ?? [])
-      .filter((c) => layer !== "Echoes" || !!c.oneShot) // a category that is also an echo shows in both lists
+      .filter((c) => layer === "Music" || (layer === "Echoes") === !!c.oneShot) // one-shot ambiance categories are echoes
       .map(pick)
       .filter(Boolean);
     if (list.length) groups.push({ uuid: lib.uuid, name: lib.name, categories: list });
@@ -78,8 +78,11 @@ export function groupLayer(libs, layer, pick) {
   return groups;
 }
 
-/** Category volume as the slider shows it: 0-1, same scale as `setVolume` (the app maps it to its 0-2 gain). */
-export function categoryVolume(state, uuid) {
-  const v = state?.categoryVolume?.[uuid];
-  return typeof v === "number" ? Math.min(1, Math.max(0, v)) : 1;
+/**
+ * Category volume as the slider shows it: 0-1, same scale as `setVolume` (the app maps it to its 0-2 gain).
+ * The live value when the category is loaded, else the catalog entry's `volume`, else the middle.
+ */
+export function categoryVolume(state, uuid, category) {
+  const v = state?.categoryVolume?.[uuid] ?? category?.volume;
+  return typeof v === "number" ? Math.min(1, Math.max(0, v)) : 0.5;
 }

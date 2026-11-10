@@ -46,7 +46,7 @@
         <button type="button" class="af-chip {{#if on}}on{{/if}}" data-action="toggleCategory" data-section="{{../../name}}" data-uuid="{{uuid}}" data-on="{{on}}" {{#if color}}style="--af-chip: {{color}}"{{/if}}>
           {{#if icon}}<img src="{{icon}}" alt="" loading="lazy" onerror="this.remove()">{{/if}} <span>{{name}}</span>
         </button>
-        <input type="range" class="af-cat-volume" min="0" max="1" step="0.01" value="{{volume}}" data-section="{{../../name}}" data-category-uuid="{{uuid}}" title="{{localize 'AUDIOFORGE.Panel.CategoryVolume'}}">
+        <input type="range" class="af-cat-volume" min="0" max="1" step="0.01" value="{{volume}}" data-section="{{../../name}}" data-category-uuid="{{uuid}}" title="{{localize 'AUDIOFORGE.Panel.CategoryVolume'}}" aria-label="{{volumeLabel}}">
       </div>
       {{/each}}
     </div>
@@ -64,7 +64,10 @@
     {{#if ../echoHeadings}}<h4 class="af-library-name">{{name}}</h4>{{/if}}
     <div class="af-echoes">
       {{#each categories}}
-      <button type="button" class="af-echo{{#if playing}} playing{{/if}}" data-action="echo" data-uuid="{{uuid}}" style="{{#if color}}--af-chip: {{color}};{{/if}}{{#if playing}} --af-glow: {{glowMs}}ms{{/if}}">{{#each fills}}<i class="af-fill" style="animation-duration: {{durationMs}}ms, 200ms; animation-delay: -{{elapsedMs}}ms, {{wipeDelayMs}}ms"></i>{{/each}}{{#if icon}}<img src="{{icon}}" alt="" loading="lazy" onerror="this.remove()">{{/if}}<span>{{name}}</span></button>
+      <div class="af-cat">
+        <button type="button" class="af-echo{{#if playing}} playing{{/if}}" data-action="echo" data-uuid="{{uuid}}" style="{{#if color}}--af-chip: {{color}};{{/if}}{{#if playing}} --af-glow: {{glowMs}}ms{{/if}}">{{#each fills}}<i class="af-fill" style="animation-duration: {{durationMs}}ms, 200ms; animation-delay: -{{elapsedMs}}ms, {{wipeDelayMs}}ms"></i>{{/each}}{{#if icon}}<img src="{{icon}}" alt="" loading="lazy" onerror="this.remove()">{{/if}}<span>{{name}}</span></button>
+        <input type="range" class="af-cat-volume" min="0" max="1" step="0.01" value="{{volume}}" data-section="Ambiance" data-category-uuid="{{uuid}}" title="{{localize 'AUDIOFORGE.Panel.CategoryVolume'}}" aria-label="{{volumeLabel}}">
+      </div>
       {{/each}}
     </div>
     {{else}}<p class="af-note">{{localize "AUDIOFORGE.Panel.NoEchoes"}}</p>{{/each}}

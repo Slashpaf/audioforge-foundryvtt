@@ -157,7 +157,7 @@
       "Log": "O que ele entendeu", "LogEmpty": "Nada ainda",
       "State": { "idle": "Desligado", "activating": "Iniciando…", "listening": "Ouvindo", "processing": "Pensando…", "paused": "Pausado" }
     },
-    "Roles": { "Assign": "Escolher os papéis deste jogador", "NoRoles": "Ainda não há papéis. Crie-os no Audio Forge.", "NoneAssigned": "sem papel ainda",
+    "Roles": { "ListenOnly": "Apenas ouvir", "FullControl": "Controle total (todos os sons)", "Assign": "Escolher os papéis deste jogador", "NoRoles": "Ainda não há papéis. Crie-os no Audio Forge.", "NoneAssigned": "sem papel ainda",
       "Mode": { "listen": "Escuta", "control": "Controle total", "roles": "Papéis" } },
     "Keybinding": {
       "Panel": "Mostrar ou ocultar o painel do Audio Forge"

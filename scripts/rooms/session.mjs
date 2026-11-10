@@ -219,6 +219,12 @@ class RoomSession extends EventTarget {
     return client.send({ command: "setRoomGuestRoles", clientId, roleIds });
   }
 
+  /** A roles-mode guest becomes listen-only: roles are cleared, then the guest is switched to listen. */
+  async dropGuestRoles(clientId) {
+    await client.send({ command: "setRoomGuestRoles", clientId, roleIds: [] });
+    return client.send({ command: "setRoomGuestPermission", clientId, permission: "listen" });
+  }
+
   /** Who may control Audio Forge in this room. Not remembered: every room starts at "only me". */
   async setDefaultControl(everyone) {
     if (!this.room) return;
