@@ -21,6 +21,7 @@ class RoomSession extends EventTarget {
   // GM side
   reports = new Map(); // userId -> { state, clientId } as reported by each player's own client
   guests = []; // from Audio Forge: who the rooms server says is connected
+  roles = null; // [{ id, name }] the app offers for this room, or null when it has no roles
   defaultPermission = "listen"; // who may control Audio Forge: "listen" (only the GM) or "control" (everyone)
   rejections = [];
   opening = false;
@@ -208,6 +209,16 @@ class RoomSession extends EventTarget {
     return client.send({ command: "setRoomGuestPermission", clientId, permission: enabled ? "control" : "listen" });
   }
 
+  /**
+   * Give one guest roles: switches the guest to roles mode when needed, then assigns the role ids.
+   * `current`: the guest's present permission, to skip a needless switch. Needs `this.roles` (the app supports roles).
+   */
+  async setGuestRoles(clientId, roleIds, current) {
+    if (!this.roles) throw new Error("This version of Audio Forge has no roles");
+    if (current !== "roles") await client.send({ command: "setRoomGuestPermission", clientId, permission: "roles" });
+    return client.send({ command: "setRoomGuestRoles", clientId, roleIds });
+  }
+
   /** Who may control Audio Forge in this room. Not remembered: every room starts at "only me". */
   async setDefaultControl(everyone) {
     if (!this.room) return;
@@ -322,12 +333,14 @@ class RoomSession extends EventTarget {
     const guests = open ? af.guests ?? [] : [];
     const defaultPermission = open ? af.defaultGuestPermission ?? "listen" : "listen";
     const rejections = open ? af.rejections ?? [] : [];
+    const roles = open && Array.isArray(af.roles) ? af.roles : null;
 
     const announce = JSON.stringify(next) !== JSON.stringify(this.room);
     // State pushes arrive on every track change; only touch the UI when something it shows has changed.
-    const changed = announce || JSON.stringify([guests, rejections, defaultPermission]) !== JSON.stringify([this.guests, this.rejections, this.defaultPermission]);
+    const changed = announce || JSON.stringify([guests, rejections, defaultPermission, roles]) !== JSON.stringify([this.guests, this.rejections, this.defaultPermission, this.roles]);
     this.room = next;
     this.defaultPermission = defaultPermission;
+    this.roles = roles;
     this.guests = guests;
     this.rejections = rejections;
     if (!open) {

@@ -13,12 +13,14 @@ const VOLUME_PACE_MS = 150;
 export class RemoteControlClient extends EventTarget {
   #guest;
   #pending = new Map();
-  #volumeSlots = new Map(); // section -> { sentAt, timer, command, waiters }
+  #volumeSlots = new Map(); // section|category -> { sentAt, timer, command, waiters }
 
   state = null;
   catalog = null;
   savedStates = [];
   echoes = [];
+  /** What the host says this guest may use (`snapshot.access`); null = everything, as before roles existed. */
+  access = null;
   echoTracker = new EchoTracker();
   connected = false;
   apiVersion = 0;
@@ -39,7 +41,8 @@ export class RemoteControlClient extends EventTarget {
 
   /** Whether the panel has something to show: allowed to control, and the host's snapshot has arrived. */
   get available() {
-    return this.#guest.permission === "control" && !!this.#guest.snapshot;
+    const p = this.#guest.permission;
+    return (p === "control" || p === "roles") && !!this.#guest.snapshot;
   }
 
   /** Same shape as the local client: `{ command, ...fields }`; resolves with the host's result, rejects on error or timeout. */
@@ -52,8 +55,9 @@ export class RemoteControlClient extends EventTarget {
    * by a newer one resolves right away (its value no longer matters), so a drag never reports a failure per event.
    */
   #sendVolume(cmd, timeoutMs) {
-    const slot = this.#volumeSlots.get(cmd.section) ?? { sentAt: 0, timer: null, command: null, waiters: [] };
-    this.#volumeSlots.set(cmd.section, slot);
+    const key = `${cmd.section}|${cmd.categoryUuid ?? ""}`; // one pace per slider
+    const slot = this.#volumeSlots.get(key) ?? { sentAt: 0, timer: null, command: null, waiters: [] };
+    this.#volumeSlots.set(key, slot);
     return new Promise((resolve, reject) => {
       for (const w of slot.waiters) w.resolve({ type: "result", ok: true, superseded: true });
       slot.waiters = [{ resolve, reject }];
@@ -127,10 +131,12 @@ export class RemoteControlClient extends EventTarget {
       this.catalog = null;
       this.savedStates = [];
       this.echoes = [];
+      this.access = null;
       this.echoTracker.clear();
     } else {
       this.state = snap.state ? { type: "state", ...snap.state } : null;
       this.catalog = snap.catalog ? { type: "catalog", ...snap.catalog } : null;
+      this.access = snap.access && typeof snap.access === "object" ? snap.access : null;
       this.savedStates = Array.isArray(snap.savedStates) ? snap.savedStates : [];
       this.echoes = Array.isArray(snap.echoes?.echoes) ? snap.echoes.echoes : [];
       this.echoTracker.update(this.echoes); // known playbackIds keep their start across snapshots

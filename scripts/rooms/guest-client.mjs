@@ -7,6 +7,7 @@
  * status: idle | connecting | joined | waiting (room full) | removed (kicked) | error | closed (room gone)
  */
 
+const PERMISSIONS = new Set(["listen", "control", "roles"]);
 const MAX_BACKOFF_MS = 10000;
 
 const CLOSE_CODES = { 4401: "invalid_room_password", 4403: "kicked", 4404: "room_not_found", 4409: "room_full", 4429: "guest_limit_reached" };
@@ -67,7 +68,13 @@ export class RoomGuestClient extends EventTarget {
   /** This guest's own permission, from the latest room state: its own entry, else the room default. */
   get permission() {
     const own = this.room?.guests?.find((g) => g.clientId === this.clientId)?.permission;
-    return own ?? this.room?.permissions?.guestPermissions?.[this.clientId] ?? this.room?.permissions?.defaultGuestPermission ?? "listen";
+    const value = own ?? this.room?.permissions?.guestPermissions?.[this.clientId] ?? this.room?.permissions?.defaultGuestPermission ?? "listen";
+    return PERMISSIONS.has(value) ? value : "listen"; // unknown values fail closed
+  }
+
+  /** "control" (everything) and "roles" (what the host's roles grant) may send commands and receive a snapshot. */
+  get mayControl() {
+    return this.permission === "control" || this.permission === "roles";
   }
 
   /** Relay a command to the host. Returns the requestId its `result` event carries, or null when not connected. */
@@ -166,7 +173,7 @@ export class RoomGuestClient extends EventTarget {
         this.room = msg.room;
         this.dispatchEvent(new CustomEvent("room", { detail: msg.room }));
         // Only the server's snapshots are trusted, but a revoke must not wait for its null one.
-        if (this.permission !== "control") this.#setSnapshot(null);
+        if (!this.mayControl) this.#setSnapshot(null);
         else this.dispatchEvent(new Event("control"));
         break;
       case "control.snapshot":

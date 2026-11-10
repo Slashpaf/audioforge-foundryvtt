@@ -11,7 +11,7 @@
       "Ambiance": "Ambiance",
       "Echoes": "Echo's",
       "SavedStates": "Opgeslagen statussen",
-      "Library": "Bibliotheek",
+      "Library": "Bibliotheek", "Libraries": "Bibliotheken", "CategoryVolume": "Volume van deze categorie",
       "StopAll": "Alles stoppen",
       "Play": "Afspelen",
       "Pause": "Pauzeren",
@@ -157,6 +157,8 @@
       "Log": "Wat hij begreep", "LogEmpty": "Nog niets",
       "State": { "idle": "Uit", "activating": "Starten…", "listening": "Luistert", "processing": "Denkt na…", "paused": "Gepauzeerd" }
     },
+    "Roles": { "Assign": "Kies de rollen van deze speler", "NoRoles": "Nog geen rollen. Maak ze aan in Audio Forge.", "NoneAssigned": "nog geen rol",
+      "Mode": { "listen": "Luistert", "control": "Volledige controle", "roles": "Rollen" } },
     "Keybinding": {
       "Panel": "Audio Forge-paneel tonen of verbergen"
     }

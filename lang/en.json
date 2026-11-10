@@ -3,7 +3,7 @@
     "Title": "Audio Forge",
     "Panel": { "Open": "Open Audio Forge", "Offline": "Audio Forge is not connected", "Connected": "Connected",
       "Connecting": "Connecting…", "MixedContent": "Blocked: this page is served over HTTPS, so the browser will not allow a connection to a remote Audio Forge. Use http:// for Foundry or run Audio Forge on this computer.",
-      "Music": "Music", "Ambiance": "Ambiance", "Echoes": "Echoes", "SavedStates": "Saved states", "Library": "Library",
+      "Music": "Music", "Ambiance": "Ambiance", "Echoes": "Echoes", "SavedStates": "Saved states", "Library": "Library", "Libraries": "Libraries", "CategoryVolume": "Volume of this category",
       "StopAll": "Stop all", "Play": "Play", "Pause": "Pause", "Stop": "Stop", "Next": "Next track",
       "ApplyScene": "Apply scene audio", "NoStates": "No saved states", "NoEchoes": "No echoes in this library", "GetAudioForge": "Download Audio Forge" },
     "Settings": {
@@ -51,6 +51,8 @@
       "Log": "What it understood", "LogEmpty": "Nothing yet",
       "State": { "idle": "Off", "activating": "Starting…", "listening": "Listening", "processing": "Thinking…", "paused": "Paused" }
     },
+    "Roles": { "Assign": "Choose roles for this player", "NoRoles": "No roles yet. Create them in Audio Forge.", "NoneAssigned": "no role yet",
+      "Mode": { "listen": "Listens", "control": "Full control", "roles": "Roles" } },
     "Keybinding": { "Panel": "Toggle Audio Forge panel" }
   }
 }

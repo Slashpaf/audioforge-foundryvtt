@@ -11,7 +11,7 @@
       "Ambiance": "Ambiente",
       "Echoes": "Ecos",
       "SavedStates": "Estados guardados",
-      "Library": "Biblioteca",
+      "Library": "Biblioteca", "Libraries": "Bibliotecas", "CategoryVolume": "Volumen de esta categoría",
       "StopAll": "Detener todo",
       "Play": "Reproducir",
       "Pause": "Pausa",
@@ -157,6 +157,8 @@
       "Log": "Lo que ha entendido", "LogEmpty": "Aún nada",
       "State": { "idle": "Apagado", "activating": "Iniciando…", "listening": "Escuchando", "processing": "Pensando…", "paused": "En pausa" }
     },
+    "Roles": { "Assign": "Elegir los roles de este jugador", "NoRoles": "Aún no hay roles. Créalos en Audio Forge.", "NoneAssigned": "sin rol todavía",
+      "Mode": { "listen": "Escucha", "control": "Control total", "roles": "Roles" } },
     "Keybinding": {
       "Panel": "Mostrar u ocultar el panel de Audio Forge"
     }

@@ -2,7 +2,11 @@
 
 All notable changes to this module. Versions follow `module.json`; each release has a matching `vX.Y.Z` tag.
 
-## Unreleased
+## 0.3.0 - 2026-11-10
+
+- Online room roles: with an Audio Forge that offers them, the GM can give each player roles (for example an instrument player who only controls the music of one library). The room window shows how each player may use Audio Forge (listens, full control or roles) and has a role picker per player. Players with roles see only what their roles allow: the other categories, section buttons, Stop all and saved states are hidden.
+- Several libraries: the panel lists the categories of every active library, grouped by library, for the GM and for players. With a compatible Audio Forge the GM switches libraries on and off with checkboxes instead of the single library select; older versions keep the select.
+- Every Music and Ambiance category has its own small volume slider in the panel.
 
 - Audio Forge now has its own button in the scene controls, for the GM and for players, instead of sitting inside the sound controls (GM) or the token controls (players). It opens the panel (GM) or the room window (players) without changing the layer you are working on.
 - Echo tiles in the panel (yours and the one players with control see) show a bar in the category color that fills the tile from the left over the echo's length and is then wiped out left to right as in the app, stacking when echoes of a category overlap, and light up while one plays. Tiles also flash when pressed. Needs an Audio Forge that reports its playing echoes.

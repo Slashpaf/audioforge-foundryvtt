@@ -1,6 +1,7 @@
 import { MODULE_ID, client } from "../settings.mjs";
 import { DOWNLOAD_URL, notifyFailure } from "../util.mjs";
 import { roomSession } from "../rooms/session.mjs";
+import { roleChoices } from "../rooms/roster.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -25,6 +26,7 @@ export class RoomManager extends HandlebarsApplicationMixin(ApplicationV2) {
   static PARTS = { body: { template: `modules/${MODULE_ID}/templates/room-manager.hbs` } };
 
   #refresh = () => this.render();
+  #openRoles = new Set(); // clientIds whose role list is open, kept across re-renders
   #password = null; // what the GM has typed so far, kept across re-renders
 
   async _onFirstRender(context, options) {
@@ -42,6 +44,18 @@ export class RoomManager extends HandlebarsApplicationMixin(ApplicationV2) {
   _onRender(context, options) {
     super._onRender?.(context, options);
     this.element.querySelector("input[name=password]")?.addEventListener("input", (ev) => (this.#password = ev.currentTarget.value));
+    for (const details of this.element.querySelectorAll("details.af-roles")) {
+      const id = details.dataset.clientId;
+      details.open = this.#openRoles.has(id);
+      details.addEventListener("toggle", () => (details.open ? this.#openRoles.add(id) : this.#openRoles.delete(id)));
+    }
+    for (const box of this.element.querySelectorAll("input[type=checkbox][data-role]")) {
+      box.addEventListener("change", () => {
+        const holder = box.closest("[data-client-id]");
+        const roleIds = [...holder.querySelectorAll("input[type=checkbox][data-role]")].filter((b) => b.checked).map((b) => b.dataset.role);
+        roomSession.setGuestRoles(holder.dataset.clientId, roleIds, holder.dataset.mode).catch(notifyFailure);
+      });
+    }
     this.element.querySelector("select[name=defaultControl]")?.addEventListener("change", (ev) => {
       roomSession.setDefaultControl(ev.currentTarget.value === "control").catch(notifyFailure);
     });
@@ -53,6 +67,7 @@ export class RoomManager extends HandlebarsApplicationMixin(ApplicationV2) {
       ...r,
       label: game.i18n.localize(`AUDIOFORGE.Room.State.${r.state}`),
       canKick: r.state === "joined",
+      roleChoices: roleChoices(roomSession.roles, r.roleIds),
       canInvite: ["idle", "waiting", "removed", "error"].includes(r.state),
     }));
     return {
@@ -68,7 +83,8 @@ export class RoomManager extends HandlebarsApplicationMixin(ApplicationV2) {
       full: !!room && room.maxGuests > 0 && roomSession.guests.length >= room.maxGuests,
       rows,
       waiting: rows.some((r) => r.state === "waiting"),
-      strangers: roomSession.strangers(),
+      strangers: roomSession.strangers().map((g) => ({ ...g, roleChoices: roleChoices(roomSession.roles, g.roleIds) })),
+      rolesAvailable: !!roomSession.roles,
       controlAvailable: roomSession.controlAvailable,
       everyoneControls: roomSession.defaultPermission === "control",
     };
