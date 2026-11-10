@@ -5,7 +5,7 @@
     <span class="af-spacer"></span>
     {{#if gm}}<button type="button" data-action="openRoom" title="{{localize 'AUDIOFORGE.Room.ManagerTitle'}}"><i class="fa-solid fa-tower-broadcast"></i></button>{{/if}}
     {{#if hasScene}}<button type="button" data-action="applyScene" title="{{localize 'AUDIOFORGE.Panel.ApplyScene'}}"><i class="fa-solid fa-clapperboard"></i></button>{{/if}}
-    <button type="button" data-action="stopAll" title="{{localize 'AUDIOFORGE.Panel.StopAll'}}" {{#unless connected}}disabled{{/unless}}><i class="fa-solid fa-stop"></i></button>
+    {{#if stopAll}}<button type="button" data-action="stopAll" title="{{localize 'AUDIOFORGE.Panel.StopAll'}}" {{#unless connected}}disabled{{/unless}}><i class="fa-solid fa-stop"></i></button>{{/if}}
   </header>
 
   {{#unless connected}}{{#if gm}}
@@ -13,41 +13,63 @@
   {{/if}}{{/unless}}
 
   {{#if connected}}
+  {{#if libraryChecks.length}}
+  <div class="form-group af-library">
+    <label>{{localize "AUDIOFORGE.Panel.Libraries"}}</label>
+    <div class="af-library-checks">
+      {{#each libraryChecks}}<label class="af-check"><input type="checkbox" data-library="{{uuid}}" {{#if checked}}checked{{/if}}> <span>{{name}}</span></label>{{/each}}
+    </div>
+  </div>
+  {{else}}{{#if libraries.length}}
   <div class="form-group af-library">
     <label>{{localize "AUDIOFORGE.Panel.Library"}}</label>
     <select name="library">{{#each libraries}}<option value="{{uuid}}" {{#if selected}}selected{{/if}}>{{name}}</option>{{/each}}</select>
   </div>
+  {{/if}}{{/if}}
 
   {{#each sections}}
   <section class="af-section">
     <div class="af-section-head">
       <h3>{{label}}</h3>
+      {{#if full}}
       <button type="button" data-action="toggleSection" data-section="{{name}}" data-playing="{{playing}}" title="{{#if playing}}{{localize 'AUDIOFORGE.Panel.Pause'}}{{else}}{{localize 'AUDIOFORGE.Panel.Play'}}{{/if}}"><i class="fa-solid {{#if playing}}fa-pause{{else}}fa-play{{/if}}"></i></button>
       <button type="button" data-action="stopSection" data-section="{{name}}" title="{{localize 'AUDIOFORGE.Panel.Stop'}}"><i class="fa-solid fa-stop"></i></button>
       <button type="button" data-action="nextTrack" data-section="{{name}}" title="{{localize 'AUDIOFORGE.Panel.Next'}}"><i class="fa-solid fa-forward-step"></i></button>
       <input type="range" min="0" max="1" step="0.01" value="{{volume}}" data-section="{{name}}">
+      {{/if}}
     </div>
+    {{#each groups}}
+    {{#if ../headings}}<h4 class="af-library-name">{{name}}</h4>{{/if}}
     <div class="af-chips">
       {{#each categories}}
-      <button type="button" class="af-chip {{#if on}}on{{/if}}" data-action="toggleCategory" data-section="{{../name}}" data-uuid="{{uuid}}" data-on="{{on}}" {{#if color}}style="--af-chip: {{color}}"{{/if}}>
-        {{#if icon}}<img src="{{icon}}" alt="" loading="lazy" onerror="this.remove()">{{/if}} <span>{{name}}</span>
-      </button>
+      <div class="af-cat">
+        <button type="button" class="af-chip {{#if on}}on{{/if}}" data-action="toggleCategory" data-section="{{../../name}}" data-uuid="{{uuid}}" data-on="{{on}}" {{#if color}}style="--af-chip: {{color}}"{{/if}}>
+          {{#if icon}}<img src="{{icon}}" alt="" loading="lazy" onerror="this.remove()">{{/if}} <span>{{name}}</span>
+        </button>
+        <input type="range" class="af-cat-volume" min="0" max="1" step="0.01" value="{{volume}}" data-section="{{../../name}}" data-category-uuid="{{uuid}}" title="{{localize 'AUDIOFORGE.Panel.CategoryVolume'}}">
+      </div>
       {{/each}}
     </div>
+    {{/each}}
   </section>
   {{/each}}
 
+  {{#if showEchoes}}
   <section class="af-section">
     <div class="af-section-head">
       <h3>{{localize "AUDIOFORGE.Panel.Echoes"}}</h3>
-      <input type="range" min="0" max="1" step="0.01" value="{{echoesVolume}}" data-section="Echoes">
+      {{#if echoesFull}}<input type="range" min="0" max="1" step="0.01" value="{{echoesVolume}}" data-section="Echoes">{{/if}}
     </div>
+    {{#each echoGroups}}
+    {{#if ../echoHeadings}}<h4 class="af-library-name">{{name}}</h4>{{/if}}
     <div class="af-echoes">
-      {{#each echoes}}
+      {{#each categories}}
       <button type="button" class="af-echo{{#if playing}} playing{{/if}}" data-action="echo" data-uuid="{{uuid}}" style="{{#if color}}--af-chip: {{color}};{{/if}}{{#if playing}} --af-glow: {{glowMs}}ms{{/if}}">{{#each fills}}<i class="af-fill" style="animation-duration: {{durationMs}}ms, 200ms; animation-delay: -{{elapsedMs}}ms, {{wipeDelayMs}}ms"></i>{{/each}}{{#if icon}}<img src="{{icon}}" alt="" loading="lazy" onerror="this.remove()">{{/if}}<span>{{name}}</span></button>
-      {{else}}<p class="af-note">{{localize "AUDIOFORGE.Panel.NoEchoes"}}</p>{{/each}}
+      {{/each}}
     </div>
+    {{else}}<p class="af-note">{{localize "AUDIOFORGE.Panel.NoEchoes"}}</p>{{/each}}
   </section>
+  {{/if}}
 
   {{#if ai}}
   <section class="af-section af-ai">
@@ -76,6 +98,7 @@
   </section>
   {{/if}}
 
+  {{#if showSavedStates}}
   <section class="af-section">
     <div class="af-section-head af-plain"><h3>{{localize "AUDIOFORGE.Panel.SavedStates"}}</h3></div>
     <div class="af-chips">
@@ -84,5 +107,6 @@
       {{else}}<p class="af-note">{{localize "AUDIOFORGE.Panel.NoStates"}}</p>{{/each}}
     </div>
   </section>
+  {{/if}}
   {{/if}}
 </div>

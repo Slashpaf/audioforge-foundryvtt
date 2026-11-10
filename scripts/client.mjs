@@ -36,6 +36,8 @@ export class AudioForgeClient extends EventTarget {
   connected = false;
   /** From the server's `hello`; 0 until it arrives (and for Audio Forge older than 1.5.18, which never sends one). */
   apiVersion = 0;
+  /** From the server's `hello` (or GET /api/info): optional capabilities such as `activeLibraries`; empty for older Audio Forge. */
+  features = {};
   /** Echoes playing now (`echoes` pushes; only newer Audio Forge sends them), and when each started. */
   echoes = [];
   echoTracker = new EchoTracker();
@@ -75,6 +77,28 @@ export class AudioForgeClient extends EventTarget {
    */
   get aiDirectorAvailable() {
     return this.connected && this.apiVersion >= MIN_AI_DIRECTOR_API && !!this.aiDirector?.available && !!this.aiDirector?.enabled;
+  }
+
+  /** The app can switch several libraries on at once (`setActiveLibraries`); otherwise the panel keeps its single library select. */
+  get activeLibrariesAvailable() {
+    return this.features?.activeLibraries === true;
+  }
+
+  /** Best effort: the hello of some builds carries no features, but GET /api/info does. */
+  async #fetchFeatures() {
+    try {
+      const q = this.#cfg.apiKey ? `?apiKey=${encodeURIComponent(this.#cfg.apiKey)}` : "";
+      const resp = await fetch(`${this.baseUrl}/api/info${q}`);
+      if (!resp.ok) return;
+      const info = await resp.json();
+      const features = info?.features ?? info?.hello?.features;
+      if (features && typeof features === "object") {
+        this.features = features;
+        this.dispatchEvent(new CustomEvent("catalog", { detail: this.catalog }));
+      }
+    } catch {
+      // no info endpoint: stay with the single library select
+    }
   }
 
   /** Room guests can be allowed to control Audio Forge only when the server speaks API v3. */
@@ -263,6 +287,8 @@ export class AudioForgeClient extends EventTarget {
         break;
       case "hello":
         this.apiVersion = Number(msg.apiVersion) || 1;
+        this.features = msg.features && typeof msg.features === "object" ? msg.features : {};
+        if (!msg.features && this.apiVersion >= MIN_ROOM_CONTROL_API) this.#fetchFeatures();
         this.dispatchEvent(new CustomEvent("aiDirector", { detail: this.aiDirector }));
         break;
       case "ai_director":

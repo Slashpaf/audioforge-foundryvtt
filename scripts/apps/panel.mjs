@@ -1,5 +1,6 @@
 import { MODULE_ID, client } from "../settings.mjs";
 import { aiDirector } from "../ai/director.mjs";
+import { activeLibraryUuids, categoryVolume, groupLayer, resolveAccess, shownLibraries } from "../panel-model.mjs";
 import { DOWNLOAD_URL, isRegular, notifyFailure } from "../util.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
@@ -80,7 +81,8 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
       input.addEventListener("change", (ev) => {
         this.#dragging = false;
         const value = Number(ev.currentTarget.value);
-        this.#src.send({ command: "setVolume", section: ev.currentTarget.dataset.section, value }).catch(notifyFailure);
+        const { section, categoryUuid } = ev.currentTarget.dataset;
+        this.#src.send({ command: "setVolume", section, value, ...(categoryUuid ? { categoryUuid } : {}) }).catch(notifyFailure);
       });
     }
     this.element.querySelector("select[name=aiSource]")?.addEventListener("change", (ev) => {
@@ -97,48 +99,76 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
     this.element.querySelector("select[name=library]")?.addEventListener("change", (ev) => {
       this.#src.send({ command: "setActiveLibrary", libraryUuid: ev.currentTarget.value }).catch(notifyFailure);
     });
+    for (const box of this.element.querySelectorAll("input[type=checkbox][data-library]")) {
+      box.addEventListener("change", () => {
+        const boxes = [...this.element.querySelectorAll("input[type=checkbox][data-library]")];
+        const libraryUuids = boxes.filter((b) => b.checked).map((b) => b.dataset.library);
+        if (!libraryUuids.length) {
+          box.checked = true; // at least one library stays active
+          return;
+        }
+        this.#src.send({ command: "setActiveLibraries", libraryUuids }).catch(notifyFailure);
+      });
+    }
   }
 
   async _prepareContext() {
     const st = this.#src.state ?? {};
     const cat = this.#src.catalog;
     const libs = cat?.libraries ?? [];
-    const activeUuid = st.libraryUuid || cat?.activeLibraryUuid;
-    const lib = libs.find((l) => l.uuid === activeUuid) ?? libs[0];
+    const remote = this.#remote;
+    const multi = !remote && client.activeLibrariesAvailable;
+    const acc = resolveAccess(remote ? this.#src.access : null);
+    const shown = shownLibraries({ libraries: libs, state: st, catalog: cat, remote, multi });
+    const active = activeLibraryUuids(st, cat) ?? libs.map((l) => l.uuid);
     const playing = {
       Music: new Set((st.musicCategories ?? []).map((c) => c.uuid)),
       Ambiance: new Set((st.ambianceCategories ?? []).map((c) => c.uuid)),
     };
     const section = (name) => {
-      const list = (lib?.[name.toLowerCase()] ?? []).filter((c) => isRegular(c) && usable(c));
       const sectionPlaying = name === "Music" ? !!st.musicPlaying : !!st.ambiancePlaying;
+      const groups = groupLayer(shown, name, (c) =>
+        isRegular(c) && usable(c)
+          ? { ...c, on: sectionPlaying && playing[name].has(c.uuid), icon: this.#src.iconUrl(c.uuid, 96), volume: categoryVolume(st, c.uuid) }
+          : null);
       return {
         name,
         label: game.i18n.localize(`AUDIOFORGE.Panel.${name}`),
         playing: sectionPlaying,
         volume: name === "Music" ? st.musicVolume ?? 0 : st.ambianceVolume ?? 0,
-        categories: list.map((c) => ({ ...c, on: sectionPlaying && playing[name].has(c.uuid), icon: this.#src.iconUrl(c.uuid, 96) })),
+        full: acc.layers.has(name),
+        groups,
+        headings: groups.length > 1,
       };
     };
     const fills = this.#src.echoTracker?.fills() ?? new Map();
-    const echoes = (lib?.ambiance ?? []).filter((c) => c.oneShot && usable(c)).map((c) => {
-      const active = fills.get(c.uuid) ?? [];
+    const echoGroups = groupLayer(shown, "Echoes", (c) => {
+      if (!usable(c)) return null;
+      const list = fills.get(c.uuid) ?? [];
       // The glow lasts as long as the longest bar needs, so it ends with the wipe.
-      const glowMs = Math.max(0, ...active.map((f) => f.remainingMs));
-      return { ...c, icon: this.#src.iconUrl(c.uuid, 96), fills: active, playing: active.length > 0, glowMs };
+      const glowMs = Math.max(0, ...list.map((f) => f.remainingMs));
+      return { ...c, icon: this.#src.iconUrl(c.uuid, 96), fills: list, playing: list.length > 0, glowMs };
     });
+    const echoesFull = acc.layers.has("Echoes");
     return {
       connected: this.#src.connected,
       downloadUrl: DOWNLOAD_URL,
       blocked: this.#src.blockedReason === "mixed-content",
-      libraries: libs.map((l) => ({ uuid: l.uuid, name: l.name, selected: l.uuid === lib?.uuid })),
-      sections: SECTIONS.map(section),
-      echoes,
+      // GM: several libraries at once (checkboxes) when the app supports it, else the single select. Players: neither.
+      libraryChecks: multi ? libs.map((l) => ({ uuid: l.uuid, name: l.name, checked: active.includes(l.uuid) })) : [],
+      libraries: !remote && !multi ? libs.map((l) => ({ uuid: l.uuid, name: l.name, selected: l.uuid === shown[0]?.uuid })) : [],
+      sections: SECTIONS.map(section).filter((s) => s.full || s.groups.length),
+      echoGroups,
+      echoHeadings: echoGroups.length > 1,
+      echoesFull,
       echoesVolume: st.echoesVolume ?? 1,
-      savedStates: this.#src.savedStates ?? [],
-      hasScene: !this.#remote && !!canvas?.scene,
-      gm: !this.#remote,
-      ai: this.#remote ? null : this.#aiContext(),
+      showEchoes: echoesFull || echoGroups.length > 0,
+      stopAll: acc.stopAll,
+      savedStates: acc.savedStates ? this.#src.savedStates ?? [] : [],
+      showSavedStates: acc.savedStates,
+      hasScene: !remote && !!canvas?.scene,
+      gm: !remote,
+      ai: remote ? null : this.#aiContext(),
     };
   }
 
