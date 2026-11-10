@@ -1,6 +1,6 @@
 import { MODULE_ID, client } from "../settings.mjs";
 import { aiDirector } from "../ai/director.mjs";
-import { activeLibraryUuids, categoryVolume, groupLayer, resolveAccess, shownLibraries } from "../panel-model.mjs";
+import { categoryVolume, groupLayer, libraryView, resolveAccess } from "../panel-model.mjs";
 import { DOWNLOAD_URL, isRegular, notifyFailure } from "../util.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
@@ -117,10 +117,8 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
     const cat = this.#src.catalog;
     const libs = cat?.libraries ?? [];
     const remote = this.#remote;
-    const multi = !remote && client.activeLibrariesAvailable;
     const acc = resolveAccess(remote ? this.#src.access : null);
-    const shown = shownLibraries({ libraries: libs, state: st, catalog: cat, remote, multi });
-    const active = activeLibraryUuids(st, cat) ?? libs.map((l) => l.uuid);
+    const { multi, shown, active } = libraryView({ libraries: libs, state: st, catalog: cat, remote, features: client.features });
     const playing = {
       Music: new Set((st.musicCategories ?? []).map((c) => c.uuid)),
       Ambiance: new Set((st.ambianceCategories ?? []).map((c) => c.uuid)),
@@ -154,9 +152,9 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
       connected: this.#src.connected,
       downloadUrl: DOWNLOAD_URL,
       blocked: this.#src.blockedReason === "mixed-content",
-      // GM: several libraries at once (checkboxes) when the app supports it, else the single select. Players: neither.
-      libraryChecks: multi ? libs.map((l) => ({ uuid: l.uuid, name: l.name, checked: active.includes(l.uuid) })) : [],
-      libraries: !remote && !multi ? libs.map((l) => ({ uuid: l.uuid, name: l.name, selected: l.uuid === shown[0]?.uuid })) : [],
+      // New host: the GM gets checkboxes, players nothing. Old host: the single library select, for both.
+      libraryChecks: multi && !remote ? libs.map((l) => ({ uuid: l.uuid, name: l.name, checked: active.includes(l.uuid) })) : [],
+      libraries: !multi ? libs.map((l) => ({ uuid: l.uuid, name: l.name, selected: l.uuid === shown[0]?.uuid })) : [],
       sections: SECTIONS.map(section).filter((s) => s.full || s.groups.length),
       echoGroups,
       echoHeadings: echoGroups.length > 1,

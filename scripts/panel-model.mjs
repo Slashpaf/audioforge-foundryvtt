@@ -29,6 +29,25 @@ export function activeLibraryUuids(state, catalog) {
 }
 
 /**
+ * Whether the host can run several active libraries and says which are active. An older host lists every library in
+ * the catalog although only one is playable, so the merged view is only for hosts that advertise it:
+ * remote snapshots by `catalog.activeLibraryUuids` (an array), the local client by `features.activeLibraries`.
+ */
+export function isMultiHost({ remote, catalog, features }) {
+  return remote ? Array.isArray(catalog?.activeLibraryUuids) : features?.activeLibraries === true;
+}
+
+/**
+ * The library part of the panel. `multi`: merged view of the active libraries (players: all libraries of the snapshot),
+ * no library select for players, checkboxes for the GM. Not `multi`: the old behaviour, one library and a select.
+ */
+export function libraryView({ libraries, state, catalog, remote, features }) {
+  const multi = isMultiHost({ remote, catalog, features });
+  const shown = shownLibraries({ libraries, state, catalog, remote: remote && multi, multi: !remote && multi });
+  return { multi, shown, active: activeLibraryUuids(state, catalog) ?? (libraries ?? []).map((l) => l.uuid) };
+}
+
+/**
  * Libraries whose categories the panel lists.
  *  - remote player: every library of the snapshot (the host already limited it to what this guest may use)
  *  - local, several active libraries supported: the active ones
