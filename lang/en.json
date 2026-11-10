@@ -42,7 +42,7 @@
       "State": { "joined": "Listening", "waiting": "Waiting, room full", "removed": "Removed", "error": "Error", "connecting": "Connecting…", "idle": "Not joined", "offline": "Offline" },
       "Player": { "idle": "Not joined", "connecting": "Connecting…", "joined": "Listening", "waiting": "Room full", "removed": "Removed", "error": "Error", "closed": "Room closed" },
       "NoRoom": "Your GM has not opened a room.", "PlayerPromo": "Like what you hear? Audio Forge is free to download.", "Join": "Join the room", "Leave": "Leave the room", "Volume": "Volume", "ClickToListen": "Click to start the audio",
-      "GrantControl": "Let this player control Audio Forge", "RevokeControl": "Take away control of Audio Forge", "WhoControls": "Who can control Audio Forge", "ControlOnlyMe": "Only me", "ControlEveryone": "Everyone", "OpenControls": "Open controls", "ControlsTitle": "Audio Forge controls"
+      "StartAnew": "Start anew", "StartAnewHint": "Forget what you were allowed to do in this room and join again as a new player.", "StartAnewConfirm": "Start anew? The room forgets your earlier access (for example roles) and you join again as a new player. Your GM can grant it again.", "Cancel": "Cancel", "AccessRestored": "Your earlier access in this room was restored.", "GrantControl": "Let this player control Audio Forge", "RevokeControl": "Take away control of Audio Forge", "WhoControls": "Who can control Audio Forge", "ControlOnlyMe": "Only me", "ControlEveryone": "Everyone", "OpenControls": "Open controls", "ControlsTitle": "Audio Forge controls"
     },
     "Ai": {
       "Title": "AI Director", "Enable": "Start the AI Director", "Disable": "Stop the AI Director", "MicLive": "Your microphone is being sent to Audio Forge",

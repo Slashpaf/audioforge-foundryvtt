@@ -37,6 +37,7 @@ export class RoomGuestClient extends EventTarget {
   #cfg = null;
   #sink = null;
   #seq = 0;
+  #forgetting = null; // { resolve, timer } while a guest.forget is in flight
 
   status = "idle";
   reason = null;
@@ -45,6 +46,10 @@ export class RoomGuestClient extends EventTarget {
   room = null;
   /** What the host published for guests allowed to control Audio Forge; null while listen-only or before the first one. */
   snapshot = null;
+  /** `server.hello.features` of the rooms server (e.g. `guestForget`); empty before the first hello and for old servers. */
+  features = {};
+  /** True when the server restored this guest's earlier access (same session id) in its last hello. */
+  resumed = false;
 
   /** @param {{ onFormat?: (f: {sampleRate:number, channels:number}) => void, onPcm?: (bytes: Uint8Array) => void, onReset?: () => void }} sink */
   constructor(sink = {}) {
@@ -84,6 +89,26 @@ export class RoomGuestClient extends EventTarget {
     const requestId = `fvtt-c${++this.#seq}`;
     ws.send(JSON.stringify({ type: "control.command", requestId, payload }));
     return requestId;
+  }
+
+  /**
+   * Ask the server to forget this guest's session (its stored access) and close the connection. Only sent when the
+   * server announced `features.guestForget`. Resolves true once the server closed the socket, false when it does not
+   * support it (nothing is sent, the connection is left as it is) or did not answer in time (the socket is closed here).
+   */
+  forget(timeoutMs = 3000) {
+    const ws = this.#ws;
+    if (!ws || ws.readyState !== 1 || this.status !== "joined" || this.features?.guestForget !== true) return Promise.resolve(false);
+    return new Promise((resolve) => {
+      this.#wanted = false; // the close that follows is expected: no reconnect
+      const timer = setTimeout(() => {
+        this.#forgetting = null;
+        this.leave();
+        resolve(false);
+      }, timeoutMs);
+      this.#forgetting = { resolve, timer };
+      ws.send(JSON.stringify({ type: "guest.forget" }));
+    });
   }
 
   leave() {
@@ -139,6 +164,22 @@ export class RoomGuestClient extends EventTarget {
       this.#ws = null;
       this.#sink.onReset?.();
       this.#setSnapshot(null); // no control while offline; the server sends a fresh snapshot on rejoin
+      const forgotten = this.#forgetting || ev.reason === "guest_forgotten";
+      if (forgotten) {
+        // The server dropped this guest's session on request: a clean end, not an error and never a reconnect.
+        this.#wanted = false;
+        this.clientId = null;
+        this.room = null;
+        this.resumed = false;
+        this.#setSnapshot(null);
+        this.#setStatus("idle", "guest_forgotten");
+        if (this.#forgetting) {
+          clearTimeout(this.#forgetting.timer);
+          this.#forgetting.resolve(true);
+          this.#forgetting = null;
+        }
+        return;
+      }
       if (!this.#wanted) return; // an "error" message already settled the status
       const reason = CLOSE_CODES[ev.code] ?? (typeof ev.reason === "string" ? ev.reason : "");
       if (this.#fail(FATAL[reason] ? reason : null)) return;
@@ -165,6 +206,8 @@ export class RoomGuestClient extends EventTarget {
         this.clientId = msg.clientId;
         this.username = msg.username;
         this.room = msg.room;
+        this.features = msg.features && typeof msg.features === "object" ? msg.features : {};
+        this.resumed = msg.resumed === true;
         this.#attempt = 0;
         this.#setStatus("joined");
         this.dispatchEvent(new CustomEvent("room", { detail: msg.room }));

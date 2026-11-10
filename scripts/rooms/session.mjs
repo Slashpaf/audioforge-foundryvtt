@@ -1,6 +1,6 @@
 import { MODULE_ID, client } from "../settings.mjs";
 import { RemoteControlClient } from "./remote-control.mjs";
-import { notifyFailure, roomSessionId } from "../util.mjs";
+import { notifyFailure, resetRoomSessionId, roomSessionId } from "../util.mjs";
 import { RoomGuestClient } from "./guest-client.mjs";
 import { PcmPlayer } from "./pcm-player.mjs";
 import { buildPlayerRows, findStrangers, takeNewRejections } from "./roster.mjs";
@@ -263,6 +263,24 @@ class RoomSession extends EventTarget {
       password: this.room.password,
     });
     this.resumeAudio();
+  }
+
+  /** The server restored this player's earlier access in the current session (shown quietly, never hidden). */
+  get resumed() {
+    return this.#guest.resumed;
+  }
+
+  /**
+   * Forget who this player was in the room and rejoin as a new guest (default access): the server drops the stored
+   * session when it supports it, otherwise the connection is just closed. Either way the session id is replaced.
+   */
+  async startAnew() {
+    const roomId = this.room?.roomId;
+    const forgotten = await this.#guest.forget();
+    if (!forgotten) this.#guest.leave();
+    this.#player.stop();
+    resetRoomSessionId(globalThis.localStorage, `${MODULE_ID}.session.${game.world.id}.${game.user.id}`);
+    if (this.room && this.room.roomId === roomId) this.join();
   }
 
   leave() {

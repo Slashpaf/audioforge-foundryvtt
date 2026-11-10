@@ -33,4 +33,14 @@ export function roomSessionId(storage, key) {
   return id;
 }
 
+/** Replace the stored session id by a fresh one (a new identity for the rooms server) and return it. */
+export function resetRoomSessionId(storage, key) {
+  try {
+    storage?.removeItem?.(key);
+  } catch {
+    // blocked storage
+  }
+  return roomSessionId(storage, key);
+}
+
 export const DOWNLOAD_URL = "https://slashpaf.com/audioforge/download";

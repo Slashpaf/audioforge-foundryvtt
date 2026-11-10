@@ -141,7 +141,7 @@
       "Leave": "Salir de la sala",
       "Volume": "Volumen",
       "ClickToListen": "Haz clic para iniciar el audio",
-      "GrantControl": "Permitir que este jugador controle Audio Forge",
+      "StartAnew": "Empezar de nuevo", "StartAnewHint": "Olvidar lo que podías hacer en esta sala y volver a entrar como jugador nuevo.", "StartAnewConfirm": "¿Empezar de nuevo? La sala olvida tu acceso anterior (por ejemplo los roles) y vuelves a entrar como jugador nuevo. Tu GM puede volver a concedértelo.", "Cancel": "Cancelar", "AccessRestored": "Se ha restaurado tu acceso anterior en esta sala.", "GrantControl": "Permitir que este jugador controle Audio Forge",
       "RevokeControl": "Quitar el control de Audio Forge",
       "WhoControls": "Quién puede controlar Audio Forge",
       "ControlOnlyMe": "Solo yo",

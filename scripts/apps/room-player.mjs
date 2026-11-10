@@ -1,6 +1,6 @@
 import { MODULE_ID } from "../settings.mjs";
 import { roomSession } from "../rooms/session.mjs";
-import { DOWNLOAD_URL } from "../util.mjs";
+import { DOWNLOAD_URL, notifyFailure } from "../util.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -14,6 +14,7 @@ export class RoomPlayerPanel extends HandlebarsApplicationMixin(ApplicationV2) {
     actions: {
       join: RoomPlayerPanel.#onJoin,
       leave: RoomPlayerPanel.#onLeave,
+      startAnew: RoomPlayerPanel.#onStartAnew,
       unlock: RoomPlayerPanel.#onUnlock,
       openControls: RoomPlayerPanel.#onOpenControls,
     },
@@ -52,6 +53,7 @@ export class RoomPlayerPanel extends HandlebarsApplicationMixin(ApplicationV2) {
       canLeave: ["joined", "connecting", "waiting"].includes(status),
       blocked: status === "joined" && roomSession.audioBlocked,
       canControl: roomSession.canControl,
+      resumed: status === "joined" && roomSession.resumed,
       volume: roomSession.volume,
       downloadUrl: DOWNLOAD_URL,
     };
@@ -63,6 +65,16 @@ export class RoomPlayerPanel extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static #onLeave() {
     roomSession.leave();
+  }
+
+  static async #onStartAnew() {
+    const ok = await foundry.applications.api.DialogV2.confirm({
+      window: { title: "AUDIOFORGE.Room.StartAnew" },
+      content: `<p>${game.i18n.localize("AUDIOFORGE.Room.StartAnewConfirm")}</p>`,
+      yes: { label: game.i18n.localize("AUDIOFORGE.Room.StartAnew") },
+      no: { label: game.i18n.localize("AUDIOFORGE.Room.Cancel") },
+    });
+    if (ok) roomSession.startAnew().catch(notifyFailure);
   }
 
   static #onOpenControls() {
