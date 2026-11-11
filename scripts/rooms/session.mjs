@@ -334,15 +334,21 @@ class RoomSession extends EventTarget {
   join() {
     if (!this.room) return;
     this.#optedOutOf = null;
-    this.#player.start();
-    this.#guest.join({
-      baseUrl: this.room.baseUrl,
-      roomId: this.room.roomId,
-      username: game.user.name,
-      sessionId: roomSessionId(globalThis.localStorage, `${MODULE_ID}.session.${game.world.id}.${game.user.id}`),
-      password: this.room.password,
-    });
-    this.resumeAudio();
+    try {
+      this.#player.start();
+      this.#guest.join({
+        baseUrl: this.room.baseUrl,
+        roomId: this.room.roomId,
+        username: game.user.name,
+        sessionId: roomSessionId(globalThis.localStorage, `${MODULE_ID}.session.${game.world.id}.${game.user.id}`),
+        password: this.room.password,
+      });
+      this.resumeAudio();
+    } catch (err) {
+      // A click that silently does nothing is the worst failure: say what broke.
+      console.error("Audio Forge: could not join the room", err);
+      notifyFailure(err);
+    }
   }
 
   /** The server restored this player's earlier access in the current session (shown quietly, never hidden). */
