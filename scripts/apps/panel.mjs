@@ -1,6 +1,7 @@
 import { MODULE_ID, client } from "../settings.mjs";
 import { aiDirector } from "../ai/director.mjs";
-import { categoryVolume, groupLayer, libraryView, resolveAccess } from "../panel-model.mjs";
+import { categoryVolume, groupLayer, volumePercent, libraryView, resolveAccess } from "../panel-model.mjs";
+import { clampCategoryVolume } from "../volume-pacer.mjs";
 import { DOWNLOAD_URL, isRegular, notifyFailure } from "../util.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
@@ -82,7 +83,8 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
         this.#dragging = false;
         const value = Number(ev.currentTarget.value);
         const { section, categoryUuid } = ev.currentTarget.dataset;
-        this.#src.send({ command: "setVolume", section, value, ...(categoryUuid ? { categoryUuid } : {}) }).catch(notifyFailure);
+        // A category never goes above display 0.5 (the app's own maximum); an older app would crash on more.
+        this.#src.send({ command: "setVolume", section, value: categoryUuid ? clampCategoryVolume(value) : value, ...(categoryUuid ? { categoryUuid } : {}) }).catch(notifyFailure);
       });
     }
     this.element.querySelector("select[name=aiSource]")?.addEventListener("change", (ev) => {
@@ -128,7 +130,7 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
       const sectionPlaying = name === "Music" ? !!st.musicPlaying : !!st.ambiancePlaying;
       const groups = groupLayer(shown, name, (c) =>
         isRegular(c) && usable(c)
-          ? { ...c, on: sectionPlaying && playing[name].has(c.uuid), icon: this.#src.iconUrl(c.uuid, 96), volume: categoryVolume(st, c.uuid, c), volumeLabel: `${c.name} - ${volumeWord}` }
+          ? { ...c, on: sectionPlaying && playing[name].has(c.uuid), icon: this.#src.iconUrl(c.uuid, 96), volume: categoryVolume(st, c.uuid, c), volumePercent: volumePercent(categoryVolume(st, c.uuid, c)), volumeLabel: `${c.name} - ${volumeWord}` }
           : null);
       return {
         name,
@@ -146,7 +148,7 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
       const list = fills.get(c.uuid) ?? [];
       // The glow lasts as long as the longest bar needs, so it ends with the wipe.
       const glowMs = Math.max(0, ...list.map((f) => f.remainingMs));
-      return { ...c, volume: categoryVolume(st, c.uuid, c), volumeLabel: `${c.name} - ${volumeWord}`, icon: this.#src.iconUrl(c.uuid, 96), fills: list, playing: list.length > 0, glowMs };
+      return { ...c, icon: this.#src.iconUrl(c.uuid, 96), fills: list, playing: list.length > 0, glowMs };
     });
     const echoesFull = acc.layers.has("Echoes");
     return {

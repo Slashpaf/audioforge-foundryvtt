@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { activeLibraryUuids, categoryVolume, groupLayer, resolveAccess, shownLibraries } from "../scripts/panel-model.mjs";
+import { activeLibraryUuids, categoryVolume, groupLayer, resolveAccess, volumePercent, shownLibraries } from "../scripts/panel-model.mjs";
 
 const libs = [
   { uuid: "A", name: "Alpha", music: [{ uuid: "m1", name: "Battle" }], ambiance: [{ uuid: "a1", name: "Rain" }, { uuid: "e1", name: "Bell", oneShot: true }] },
@@ -39,10 +39,14 @@ test("layers are grouped per library, empty groups dropped, echoes are the one-s
   assert.deepEqual(groupLayer(libs, "Echoes", id).map((g) => g.categories.map((c) => c.name)), [["Bell"], ["Bow"]]);
 });
 
-test("category volume: live value, else the catalog entry, else the middle", () => {
-  assert.equal(categoryVolume({ categoryVolume: { x: 0.25 } }, "x", { volume: 0.9 }), 0.25);
-  assert.equal(categoryVolume({ categoryVolume: { x: 7 } }, "x"), 1);
-  assert.equal(categoryVolume({}, "x", { volume: 0.7 }), 0.7);
-  assert.equal(categoryVolume({}, "x", {}), 0.5);
-  assert.equal(categoryVolume(undefined, "x"), 0.5);
+test("category volume spans display 0..0.5: live value, else the catalog entry, else a quarter", () => {
+  assert.equal(categoryVolume({ categoryVolume: { x: 0.25 } }, "x", { volume: 0.4 }), 0.25);
+  assert.equal(categoryVolume({ categoryVolume: { x: 7 } }, "x"), 0.5);
+  assert.equal(categoryVolume({ categoryVolume: { x: -1 } }, "x"), 0);
+  assert.equal(categoryVolume({}, "x", { volume: 0.4 }), 0.4);
+  assert.equal(categoryVolume({}, "x", { volume: 1 }), 0.5);
+  assert.equal(categoryVolume({}, "x", {}), 0.25);
+  assert.equal(categoryVolume(undefined, "x"), 0.25);
+  assert.equal(volumePercent(0.5), "100%");
+  assert.equal(volumePercent(0.25), "50%");
 });

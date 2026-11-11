@@ -3,6 +3,8 @@
  * No Foundry dependencies so they can be tested under Node.
  */
 
+import { clampCategoryVolume } from "./volume-pacer.mjs";
+
 const LAYERS = ["Music", "Ambiance", "Echoes"];
 
 /**
@@ -79,10 +81,14 @@ export function groupLayer(libs, layer, pick) {
 }
 
 /**
- * Category volume as the slider shows it: 0-1, same scale as `setVolume` (the app maps it to its 0-2 gain).
- * The live value when the category is loaded, else the catalog entry's `volume`, else the middle.
+ * Category volume as the slider shows it. The Local API maps a display value v to a gain of 2*v for Music and Ambiance and
+ * the app caps a category at gain 1.0, so a category slider spans display 0..0.5 (0..100% of its own scale).
+ * The live value when the category is loaded, else the catalog entry's `volume`, else a quarter (gain 0.5).
  */
 export function categoryVolume(state, uuid, category) {
   const v = state?.categoryVolume?.[uuid] ?? category?.volume;
-  return typeof v === "number" ? Math.min(1, Math.max(0, v)) : 0.5;
+  return typeof v === "number" ? clampCategoryVolume(v) : 0.25;
 }
+
+/** The slider value as a percentage of the category's own range: display 0.5 is 100%. */
+export const volumePercent = (display) => `${Math.round(clampCategoryVolume(display) * 200)}%`;

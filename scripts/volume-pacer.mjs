@@ -5,6 +5,14 @@
  */
 export const VOLUME_PACE_MS = 150;
 
+/** Highest display value for one category (gain 1.0). Above it the app rejects the value and can crash. */
+export const CATEGORY_VOLUME_MAX = 0.5;
+
+export function clampCategoryVolume(value) {
+  const v = Number(value);
+  return Number.isFinite(v) ? Math.min(CATEGORY_VOLUME_MAX, Math.max(0, v)) : 0;
+}
+
 export const volumeKey = (cmd) => `${cmd.section}|${cmd.categoryUuid ?? ""}`;
 
 export class VolumePacer {
@@ -12,6 +20,7 @@ export class VolumePacer {
 
   /** `sendNow(command)` does the real send and returns a promise. */
   send(cmd, sendNow) {
+    if (cmd.categoryUuid != null) cmd = { ...cmd, value: clampCategoryVolume(cmd.value) }; // never above what the app allows
     const key = volumeKey(cmd);
     const slot = this.#slots.get(key) ?? { sentAt: 0, timer: null, command: null, waiters: [] };
     this.#slots.set(key, slot);
