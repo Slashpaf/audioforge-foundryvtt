@@ -134,3 +134,18 @@ button.af-icon::before {
 .audioforge-room .af-roles summary { cursor: pointer; list-style: none; width: 2rem; text-align: center; }
 .audioforge-room .af-roles .af-role-list { display: flex; flex-direction: column; gap: 0.2rem; padding: 0.3rem 0 0.2rem 1.2rem; }
 .audioforge-room .af-check { display: flex; align-items: center; gap: 0.3rem; }
+
+/* Roles window */
+.audioforge-roles .af-roles-window { display: flex; flex-direction: column; gap: 0.5rem; }
+.audioforge-roles .af-row { display: flex; align-items: center; gap: 0.4rem; }
+.audioforge-roles .af-row .af-name { flex: 1; }
+.audioforge-roles .af-row button { flex: 0 0 auto; width: 2rem; }
+.audioforge-roles ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.3rem; }
+.audioforge-roles .af-role-box { display: flex; flex-direction: column; gap: 0.2rem; }
+.audioforge-roles .af-check { display: flex; align-items: center; gap: 0.3rem; }
+.audioforge-roles .af-role-picker { max-height: 18rem; overflow-y: auto; margin-top: 0.3rem; }
+.audioforge-roles .af-role-lib h4 { margin: 0.4rem 0 0; border: 0; }
+.audioforge-roles .af-role-layer h5 { margin: 0.2rem 0 0; font-size: var(--font-size-12, 12px); opacity: 0.8; }
+.audioforge-roles .af-role-cats { display: flex; flex-wrap: wrap; gap: 0.1rem 0.8rem; padding-left: 0.6rem; }
+.audioforge-roles [hidden] { display: none; }
+.audioforge-roles .af-role-actions { display: flex; gap: 0.4rem; }

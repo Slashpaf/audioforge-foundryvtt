@@ -30,6 +30,7 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
       stopAll: AudioForgePanel.#onStopAll,
       applyScene: AudioForgePanel.#onApplyScene,
       openRoom: AudioForgePanel.#onOpenRoom,
+      openRoles: AudioForgePanel.#onOpenRoles,
       toggleAi: AudioForgePanel.#onToggleAi,
     },
   };
@@ -169,6 +170,7 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
       showSavedStates: acc.savedStates,
       hasScene: !remote && !!canvas?.scene,
       gm: !remote,
+      rolesAvailable: !remote && client.roomRolesAvailable,
       ai: remote ? null : this.#aiContext(),
     };
   }
@@ -214,6 +216,10 @@ export class AudioForgePanel extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static #onStopSection(event, target) {
     AudioForgePanel.#run(this.#src.send({ command: "stop", section: target.dataset.section }));
+  }
+
+  static #onOpenRoles() {
+    game.modules.get(MODULE_ID).api.openRoles();
   }
 
   static #onOpenRoom() {

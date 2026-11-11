@@ -18,6 +18,7 @@ export class RoomManager extends HandlebarsApplicationMixin(ApplicationV2) {
       kick: RoomManager.#onKick,
       toggleControl: RoomManager.#onToggleControl,
       resumeRoom: RoomManager.#onResume,
+      openRoles: RoomManager.#onOpenRoles,
       newRoom: RoomManager.#onNewRoom,
       dropRoles: RoomManager.#onDropRoles,
       invite: RoomManager.#onInvite,
@@ -92,6 +93,7 @@ export class RoomManager extends HandlebarsApplicationMixin(ApplicationV2) {
         roomId: roomSession.recoverable.roomId,
         minutes: roomSession.recoverable.hostGraceRemainingSeconds > 0 ? Math.max(1, Math.ceil(roomSession.recoverable.hostGraceRemainingSeconds / 60)) : 0,
       },
+      rolesManageable: client.roomRolesAvailable,
       rolesAvailable: !!roomSession.roles,
       controlAvailable: roomSession.controlAvailable,
       everyoneControls: roomSession.defaultPermission === "control",
@@ -105,6 +107,10 @@ export class RoomManager extends HandlebarsApplicationMixin(ApplicationV2) {
     } catch (err) {
       notifyFailure(err);
     }
+  }
+
+  static #onOpenRoles() {
+    game.modules.get(MODULE_ID).api.openRoles();
   }
 
   static async #onResume() {

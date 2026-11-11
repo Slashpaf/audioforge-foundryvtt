@@ -19,6 +19,8 @@
     </p>
     {{/if}}
 
+    {{#if rolesManageable}}<button type="button" data-action="openRoles"><i class="fa-solid fa-masks-theater"></i> {{localize "AUDIOFORGE.Roles.Manage"}}</button>{{/if}}
+
     {{#if controlAvailable}}
     <div class="form-group">
       <label>{{localize "AUDIOFORGE.Room.WhoControls"}}</label>

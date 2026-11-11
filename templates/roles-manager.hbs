@@ -1,0 +1,61 @@
+<div class="af-roles-window">
+  {{#unless connected}}
+  <p class="af-note">{{localize "AUDIOFORGE.Roles.Offline"}}</p>
+  {{else}}
+  {{#if editing}}
+  <div class="form-group">
+    <label>{{localize "AUDIOFORGE.Roles.Name"}}</label>
+    <input type="text" name="name" value="{{name}}" maxlength="40" autocomplete="off">
+  </div>
+
+  <fieldset class="af-role-box">
+    <legend>{{localize "AUDIOFORGE.Roles.WholeLayer"}}</legend>
+    {{#each layers}}<label class="af-check"><input type="checkbox" data-layer="{{layer}}" {{#if checked}}checked{{/if}}> <span>{{label}}</span></label>{{/each}}
+    <p class="af-note">{{localize "AUDIOFORGE.Roles.WholeLayerHint"}}</p>
+  </fieldset>
+
+  <fieldset class="af-role-box">
+    <legend>{{localize "AUDIOFORGE.Roles.Libraries"}}</legend>
+    {{#each libraries}}<label class="af-check"><input type="checkbox" data-library="{{uuid}}" {{#if checked}}checked{{/if}}> <span>{{name}}</span></label>{{else}}<p class="af-note">{{localize "AUDIOFORGE.Roles.NoLibraries"}}</p>{{/each}}
+    <p class="af-note">{{localize "AUDIOFORGE.Roles.LibrariesHint"}}</p>
+  </fieldset>
+
+  <fieldset class="af-role-box">
+    <legend>{{localize "AUDIOFORGE.Roles.Categories"}}</legend>
+    <input type="search" name="search" placeholder="{{localize 'AUDIOFORGE.Roles.Search'}}" aria-label="{{localize 'AUDIOFORGE.Roles.Search'}}" autocomplete="off">
+    <div class="af-role-picker">
+      {{#each groups}}
+      <section class="af-role-lib" data-name="{{search}}">
+        <h4>{{name}} <span class="af-note" data-lib-count></span></h4>
+        {{#each layers}}
+        <div class="af-role-layer">
+          <h5>{{label}} <span class="af-note" data-count></span></h5>
+          <div class="af-role-cats">
+            {{#each categories}}<label class="af-check af-role-cat" data-name="{{search}}"><input type="checkbox" data-category="{{uuid}}" {{#if selected}}checked{{/if}}> <span>{{name}}</span></label>{{/each}}
+          </div>
+        </div>
+        {{/each}}
+      </section>
+      {{else}}<p class="af-note">{{localize "AUDIOFORGE.Roles.NoCategories"}}</p>{{/each}}
+    </div>
+  </fieldset>
+
+  <footer class="af-role-actions">
+    <button type="button" data-action="saveRole"><i class="fa-solid fa-floppy-disk"></i> {{localize "AUDIOFORGE.Roles.Save"}}</button>
+    <button type="button" data-action="cancelEdit">{{localize "AUDIOFORGE.Roles.Cancel"}}</button>
+  </footer>
+  {{else}}
+  {{#if loadError}}<p class="af-warn">{{localize "AUDIOFORGE.Roles.LoadFailed"}}</p>{{/if}}
+  <ul class="af-role-list-window">
+    {{#each roles}}
+    <li class="af-row">
+      <span class="af-name">{{name}}<br><span class="af-note">{{summary}}</span></span>
+      <button type="button" data-action="editRole" data-id="{{id}}" title="{{localize 'AUDIOFORGE.Roles.Edit'}}" aria-label="{{localize 'AUDIOFORGE.Roles.Edit'}}"><i class="fa-solid fa-pen"></i></button>
+      <button type="button" data-action="deleteRole" data-id="{{id}}" title="{{localize 'AUDIOFORGE.Roles.Delete'}}" aria-label="{{localize 'AUDIOFORGE.Roles.Delete'}}"><i class="fa-solid fa-trash"></i></button>
+    </li>
+    {{else}}{{#if loaded}}<li class="af-note">{{localize "AUDIOFORGE.Roles.NoRolesYet"}}</li>{{/if}}{{/each}}
+  </ul>
+  <button type="button" data-action="newRole"><i class="fa-solid fa-plus"></i> {{localize "AUDIOFORGE.Roles.New"}}</button>
+  {{/if}}
+  {{/unless}}
+</div>

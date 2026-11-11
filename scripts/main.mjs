@@ -4,6 +4,7 @@ import { notifyFailure } from "./util.mjs";
 import { AudioForgePanel } from "./apps/panel.mjs";
 import { ProfileEditor, CombatStartProfile, CombatEndProfile } from "./apps/profile-editor.mjs";
 import { RoomManager } from "./apps/room-manager.mjs";
+import { RolesManager } from "./apps/roles-manager.mjs";
 import { RoomPlayerPanel } from "./apps/room-player.mjs";
 import { roomSession } from "./rooms/session.mjs";
 import { aiDirector } from "./ai/director.mjs";
@@ -20,6 +21,15 @@ function toggleRoomWindow(force) {
   }
   roomWindow ??= game.user.isGM ? new RoomManager() : new RoomPlayerPanel();
   roomWindow.render({ force: true });
+}
+
+let rolesWindow = null;
+
+/** GM only, and only when Audio Forge has roles. */
+function openRolesWindow() {
+  if (!game.user.isGM || !client.roomRolesAvailable) return;
+  rolesWindow ??= new RolesManager();
+  rolesWindow.render({ force: true });
 }
 
 function togglePanel(force) {
@@ -112,6 +122,7 @@ Hooks.once("ready", () => {
 
   api.openRoom = () => toggleRoomWindow(true);
   api.openControls = () => toggleRemotePanel(true);
+  api.openRoles = openRolesWindow;
   roomSession.init();
   // Taking control away closes the panel; the snapshot is already gone.
   roomSession.addEventListener("change", () => {

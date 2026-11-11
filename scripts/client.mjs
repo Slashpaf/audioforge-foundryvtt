@@ -86,6 +86,28 @@ export class AudioForgeClient extends EventTarget {
     return this.features?.activeLibraries === true;
   }
 
+  /** The app has room roles (`listRoomRoles`, `saveRoomRole`, `deleteRoomRole`): `hello.features.roomControl.roles`. */
+  get roomRolesAvailable() {
+    return this.connected && this.features?.roomControl?.roles === true;
+  }
+
+  /** The roles saved in the app: [{ id, name, fullLayers, libraryUuids, categoryUuids }]. Works without an open room. */
+  async listRoomRoles() {
+    const r = await this.send({ command: "listRoomRoles" });
+    return Array.isArray(r?.roles) ? r.roles : [];
+  }
+
+  /** Create (no `role.id`) or replace (with `role.id`) a role; resolves with the saved role. */
+  async saveRoomRole(role) {
+    const r = await this.send({ command: "saveRoomRole", role });
+    return r?.role ?? null;
+  }
+
+  /** Delete a role; the app also takes it from every guest that had it. */
+  deleteRoomRole(id) {
+    return this.send({ command: "deleteRoomRole", id });
+  }
+
   /** The app can resume its saved room (`getRecoverableRoom`, `startAudioCapture {resume}`, `stopAudioCapture {recoverable}`). */
   get roomRecoveryAvailable() {
     return this.connected && this.features?.roomRecovery === true;
