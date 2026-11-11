@@ -129,3 +129,24 @@ test("roster: a player who started anew is one row with the new clientId, the ol
   assert.deepEqual([rows[0].clientId, rows[0].mode, rows[0].isRoles], ["c2", "listen", false]);
   assert.deepEqual(findStrangers(reports, after), []);
 });
+
+test("session ids work on plain http, where crypto.randomUUID does not exist", async () => {
+  const { randomUuid, roomSessionId } = await import("../scripts/util.mjs");
+  const insecure = { getRandomValues: (a) => globalThis.crypto.getRandomValues(a) }; // no randomUUID, like http://lan-host
+  const id = randomUuid(insecure);
+  assert.match(id, /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+  assert.notEqual(randomUuid(insecure), id);
+  assert.match(randomUuid(), /^[0-9a-f-]{36}$/); // the secure-context path still works
+  const store = new Map();
+  const storage = { getItem: (k) => store.get(k) ?? null, setItem: (k, v) => store.set(k, v), removeItem: (k) => store.delete(k) };
+  const saved = Object.getOwnPropertyDescriptor(globalThis.crypto, "randomUUID");
+  try {
+    Object.defineProperty(globalThis.crypto, "randomUUID", { value: undefined, configurable: true });
+    const a = roomSessionId(storage, "k");
+    assert.match(a, /^fvtt-[0-9a-f-]{36}$/);
+    assert.equal(roomSessionId(storage, "k"), a); // stored, stable
+  } finally {
+    if (saved) Object.defineProperty(globalThis.crypto, "randomUUID", saved);
+    else delete globalThis.crypto.randomUUID;
+  }
+});

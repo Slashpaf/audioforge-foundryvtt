@@ -4,6 +4,7 @@ All notable changes to this module. Versions follow `module.json`; each release 
 
 ## 0.3.0 - 2026-11-10
 
+- Players can join a room when Foundry is opened over plain http on the local network (the session id no longer needs `crypto.randomUUID`, which browsers only offer on HTTPS).
 - Online room roles: with an Audio Forge that offers them, the GM can give each player roles (for example an instrument player who only controls the music of one library). The room window shows how each player may use Audio Forge (listens, full control or roles) and has a role picker per player. Players with roles see only what their roles allow: the other categories, section buttons, Stop all and saved states are hidden.
 - Several libraries: the panel lists the categories of every active library, grouped by library, for the GM and for players. With a compatible Audio Forge the GM switches libraries on and off with checkboxes instead of the single library select; older versions keep the select.
 - Every Music and Ambiance category has its own small volume slider in the panel.

@@ -13,6 +13,20 @@ export function notifyFailure(err) {
 export const isRegular = (c) => c.enabledInForge !== false;
 
 /**
+ * A random UUID v4. `crypto.randomUUID` only exists in secure contexts (HTTPS or localhost), and many tables open
+ * Foundry over plain http on the local network; `crypto.getRandomValues` works everywhere.
+ */
+export function randomUuid(cryptoApi = globalThis.crypto) {
+  if (typeof cryptoApi?.randomUUID === "function") return cryptoApi.randomUUID();
+  const b = new Uint8Array(16);
+  cryptoApi.getRandomValues(b);
+  b[6] = (b[6] & 0x0f) | 0x40;
+  b[8] = (b[8] & 0x3f) | 0x80;
+  const h = [...b].map((x) => x.toString(16).padStart(2, "0")).join("");
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
+}
+
+/**
  * The rooms-server session id of this browser for one world and user. It identifies the guest on reconnects and carries
  * its control grant, so it must be unguessable: never derived from user ids, which every player can read.
  * `storage` is localStorage (or anything alike); without it the id lasts only for this page load.
@@ -24,7 +38,7 @@ export function roomSessionId(storage, key) {
   } catch {
     // blocked storage: fall through to a fresh id
   }
-  const id = `fvtt-${crypto.randomUUID()}`;
+  const id = `fvtt-${randomUuid()}`;
   try {
     storage?.setItem(key, id);
   } catch {
