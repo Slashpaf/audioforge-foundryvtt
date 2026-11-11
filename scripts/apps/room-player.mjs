@@ -14,7 +14,6 @@ export class RoomPlayerPanel extends HandlebarsApplicationMixin(ApplicationV2) {
     actions: {
       join: RoomPlayerPanel.#onJoin,
       leave: RoomPlayerPanel.#onLeave,
-      startAnew: RoomPlayerPanel.#onStartAnew,
       unlock: RoomPlayerPanel.#onUnlock,
       openControls: RoomPlayerPanel.#onOpenControls,
     },
@@ -74,15 +73,6 @@ export class RoomPlayerPanel extends HandlebarsApplicationMixin(ApplicationV2) {
     roomSession.leave();
   }
 
-  static async #onStartAnew() {
-    const ok = await foundry.applications.api.DialogV2.confirm({
-      window: { title: "AUDIOFORGE.Room.StartAnew" },
-      content: `<p>${game.i18n.localize("AUDIOFORGE.Room.StartAnewConfirm")}</p>`,
-      yes: { label: game.i18n.localize("AUDIOFORGE.Room.StartAnew") },
-      no: { label: game.i18n.localize("AUDIOFORGE.Room.Cancel") },
-    });
-    if (ok) roomSession.startAnew().catch(notifyFailure);
-  }
 
   static #onOpenControls() {
     game.modules.get(MODULE_ID).api.openControls();
