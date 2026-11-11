@@ -59,7 +59,6 @@ export class RoomPlayerPanel extends HandlebarsApplicationMixin(ApplicationV2) {
       canLeave: ["joined", "connecting", "waiting"].includes(status),
       blocked: status === "joined" && roomSession.audioBlocked,
       canControl: roomSession.canControl,
-      resumed: status === "joined" && roomSession.resumed,
       volume: roomSession.volume,
       downloadUrl: DOWNLOAD_URL,
     };
