@@ -6,6 +6,7 @@ import { PcmPlayer } from "./pcm-player.mjs";
 import { buildPlayerRows, findStrangers, takeNewRejections } from "./roster.mjs";
 
 const CHANNEL = `module.${MODULE_ID}`;
+const RECOVERABLE_REFRESH_MS = 10_000; // how often the room window may ask the app for a resumable room
 const EMPTY_ROOM_GRACE_MS = 60_000; // a player reloading the page should not close the room
 
 /**
@@ -21,11 +22,15 @@ class RoomSession extends EventTarget {
   // GM side
   reports = new Map(); // userId -> { state, clientId } as reported by each player's own client
   guests = []; // from Audio Forge: who the rooms server says is connected
+  /** A saved room the app could resume (`client.getRecoverableRoom()`), only while no room is open; else null. */
+  recoverable = null;
   roles = null; // [{ id, name }] the app offers for this room, or null when it has no roles
   defaultPermission = "listen"; // who may control Audio Forge: "listen" (only the GM) or "control" (everyone)
   rejections = [];
   opening = false;
   #seenRejections = null; // null until the first state arrives, so a reload does not replay old refusals
+  #recoverableBusy = false;
+  #recoverableAt = 0;
   #weOpened = false; // only a room this module opened by itself is closed by itself
   #suppressed = false; // the GM closed the room by hand: stay closed until every player has left once
   #autoBusy = false;
@@ -99,7 +104,10 @@ class RoomSession extends EventTarget {
       // and stale state must not be announced before the fresh state arrives.
       client.addEventListener("state", () => this.#onState());
       client.addEventListener("connection", () => {
-        if (!client.connected) this.#verified = false; // Audio Forge was closed: whatever room it had is gone
+        if (!client.connected) {
+          this.#verified = false; // Audio Forge was closed: whatever room it had is gone
+          this.#setRecoverable(null);
+        }
         this.#syncAuto();
         this.#changed();
       });
@@ -112,21 +120,24 @@ class RoomSession extends EventTarget {
 
   // ---- GM actions ---------------------------------------------------------------------------------------------
 
-  async open(password = "") {
+  /** Open the room: resumes the app's saved room when there is one (and the app can), else creates a new one. `fresh`: never resume. */
+  async open(password = "", { fresh = false } = {}) {
     this.#weOpened = false; // a room the GM opens is the GM's to close
     this.#suppressed = false;
-    return this.#open(password);
+    return this.#open(password, { fresh });
   }
 
-  async #open(password) {
+  async #open(password, { fresh = false } = {}) {
     this.opening = true;
     this.#changed();
     try {
-      const result = await client.send({
-        command: "startAudioCapture",
-        url: game.settings.get(MODULE_ID, "roomsServerUrl"),
-        password: password.trim() || undefined,
-      }, 20000);
+      const url = game.settings.get(MODULE_ID, "roomsServerUrl");
+      const pass = password.trim() || undefined;
+      if (!fresh && (await this.#resume(url, pass))) {
+        await game.settings.set(MODULE_ID, "roomPassword", password.trim());
+        return;
+      }
+      const result = await client.send({ command: "startAudioCapture", url, password: pass }, 20000);
       await game.settings.set(MODULE_ID, "roomPassword", password.trim());
       // The result carries the status; the pushed state follows. Apply it now instead of waiting.
       this.#apply(result.status);
@@ -134,6 +145,65 @@ class RoomSession extends EventTarget {
       this.opening = false;
       this.#changed();
     }
+  }
+
+  /**
+   * Try to resume the app's saved room. True when a room is now running (resumed, or already hosted by the app and
+   * adopted); false when there is nothing to resume, so the caller creates a new room. Other errors are thrown.
+   */
+  async #resume(url, password) {
+    if (!client.roomRecoveryAvailable) return false;
+    const saved = await client.getRecoverableRoom();
+    if (!saved) {
+      this.#setRecoverable(null);
+      return false;
+    }
+    let result;
+    try {
+      result = await client.send({ command: "startAudioCapture", url, password, resume: true }, 20000);
+    } catch (err) {
+      const text = String(err?.message ?? err);
+      if (/no recoverable room|room not recoverable/i.test(text)) {
+        this.#setRecoverable(null);
+        return false;
+      }
+      if (/room already running/i.test(text)) {
+        const { status } = await client.send({ command: "getAudioCaptureStatus" });
+        if (status?.running && status.roomId) {
+          this.#verified = true;
+          this.#apply(status);
+          return true;
+        }
+      }
+      throw err;
+    }
+    const status = result.status ?? (await client.send({ command: "getAudioCaptureStatus" })).status;
+    this.#setRecoverable(null);
+    this.#apply(status);
+    ui.notifications.info("AUDIOFORGE.Room.Resumed", { localize: true });
+    return true;
+  }
+
+  /** Ask the app whether a saved room can be resumed (only while no room is open). Throttled, never throws. */
+  async refreshRecoverable() {
+    if (!this.isGM || this.room || this.opening || !client.roomRecoveryAvailable) return this.#setRecoverable(null);
+    if (this.#recoverableBusy || Date.now() - this.#recoverableAt < RECOVERABLE_REFRESH_MS) return;
+    this.#recoverableBusy = true;
+    try {
+      const saved = await client.getRecoverableRoom();
+      this.#recoverableAt = Date.now();
+      this.#setRecoverable(this.room ? null : saved);
+    } finally {
+      this.#recoverableBusy = false;
+    }
+  }
+
+  #setRecoverable(saved) {
+    const key = (r) => (r ? `${r.roomId}|${Math.ceil((r.hostGraceRemainingSeconds ?? 0) / 60)}` : "");
+    const changed = key(saved) !== key(this.recoverable);
+    this.recoverable = saved;
+    if (!saved) this.#recoverableAt = 0;
+    if (changed) this.#changed();
   }
 
   /**
@@ -179,7 +249,7 @@ class RoomSession extends EventTarget {
       } else if (this.room && this.#weOpened && !this.#closeTimer) {
         this.#closeTimer = setTimeout(() => {
           this.#closeTimer = null;
-          if (!game.users.some((u) => !u.isGM && u.active) && !this.guests.length && this.#weOpened) this.close().catch(notifyFailure);
+          if (!game.users.some((u) => !u.isGM && u.active) && !this.guests.length && this.#weOpened) this.close({ recoverable: true }).catch(notifyFailure);
         }, EMPTY_ROOM_GRACE_MS);
       }
       return;
@@ -193,11 +263,17 @@ class RoomSession extends EventTarget {
     this.#weOpened = true;
   }
 
-  async close({ byHand = false } = {}) {
+  /**
+   * Close the room. `recoverable` (used by the automatic close, only honoured when the app supports it) keeps the room
+   * alive on the rooms server for its grace period so it can be resumed; the default closes it for good.
+   */
+  async close({ byHand = false, recoverable = false } = {}) {
     if (byHand) this.#suppressed = true;
     this.#weOpened = false;
-    await client.send({ command: "stopAudioCapture" });
+    const keep = recoverable && client.roomRecoveryAvailable;
+    await client.send(keep ? { command: "stopAudioCapture", recoverable: true } : { command: "stopAudioCapture" });
     this.#apply(null);
+    if (keep) this.refreshRecoverable().catch(() => {});
   }
 
   kick(clientId) {
@@ -215,14 +291,13 @@ class RoomSession extends EventTarget {
    */
   async setGuestRoles(clientId, roleIds, current) {
     if (!this.roles) throw new Error("This version of Audio Forge has no roles");
-    if (current !== "roles") await client.send({ command: "setRoomGuestPermission", clientId, permission: "roles" });
+    // The app puts the guest in roles mode itself when roles are given (setRoomGuestPermission refuses "roles").
     return client.send({ command: "setRoomGuestRoles", clientId, roleIds });
   }
 
   /** A roles-mode guest becomes listen-only: roles are cleared, then the guest is switched to listen. */
   async dropGuestRoles(clientId) {
-    await client.send({ command: "setRoomGuestRoles", clientId, roleIds: [] });
-    return client.send({ command: "setRoomGuestPermission", clientId, permission: "listen" });
+    return client.send({ command: "setRoomGuestRoles", clientId, roleIds: [] }); // an empty list returns the guest to listen
   }
 
   /** Who may control Audio Forge in this room. Not remembered: every room starts at "only me". */

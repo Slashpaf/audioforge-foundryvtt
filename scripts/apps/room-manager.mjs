@@ -17,6 +17,8 @@ export class RoomManager extends HandlebarsApplicationMixin(ApplicationV2) {
       closeRoom: RoomManager.#onClose,
       kick: RoomManager.#onKick,
       toggleControl: RoomManager.#onToggleControl,
+      resumeRoom: RoomManager.#onResume,
+      newRoom: RoomManager.#onNewRoom,
       dropRoles: RoomManager.#onDropRoles,
       invite: RoomManager.#onInvite,
       inviteAll: RoomManager.#onInviteAll,
@@ -44,6 +46,7 @@ export class RoomManager extends HandlebarsApplicationMixin(ApplicationV2) {
 
   _onRender(context, options) {
     super._onRender?.(context, options);
+    roomSession.refreshRecoverable().catch(() => {});
     this.element.querySelector("input[name=password]")?.addEventListener("input", (ev) => (this.#password = ev.currentTarget.value));
     for (const details of this.element.querySelectorAll("details.af-roles")) {
       const id = details.dataset.clientId;
@@ -85,6 +88,10 @@ export class RoomManager extends HandlebarsApplicationMixin(ApplicationV2) {
       rows,
       waiting: rows.some((r) => r.state === "waiting"),
       strangers: roomSession.strangers().map((g) => ({ ...g, roleChoices: roleChoices(roomSession.roles, g.roleIds) })),
+      recoverable: room || !roomSession.recoverable ? null : {
+        roomId: roomSession.recoverable.roomId,
+        minutes: roomSession.recoverable.hostGraceRemainingSeconds > 0 ? Math.max(1, Math.ceil(roomSession.recoverable.hostGraceRemainingSeconds / 60)) : 0,
+      },
       rolesAvailable: !!roomSession.roles,
       controlAvailable: roomSession.controlAvailable,
       everyoneControls: roomSession.defaultPermission === "control",
@@ -95,6 +102,22 @@ export class RoomManager extends HandlebarsApplicationMixin(ApplicationV2) {
     const password = this.element.querySelector("input[name=password]")?.value ?? "";
     try {
       await roomSession.open(password);
+    } catch (err) {
+      notifyFailure(err);
+    }
+  }
+
+  static async #onResume() {
+    try {
+      await roomSession.open(this.element.querySelector("input[name=password]")?.value ?? this.#password ?? "");
+    } catch (err) {
+      notifyFailure(err);
+    }
+  }
+
+  static async #onNewRoom() {
+    try {
+      await roomSession.open(this.element.querySelector("input[name=password]")?.value ?? this.#password ?? "", { fresh: true });
     } catch (err) {
       notifyFailure(err);
     }

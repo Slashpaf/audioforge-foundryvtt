@@ -141,7 +141,7 @@
       "Leave": "De kamer verlaten",
       "Volume": "Volume",
       "ClickToListen": "Klik om het geluid te starten",
-      "StartAnew": "Opnieuw beginnen", "StartAnewHint": "Vergeet wat je in deze kamer mocht doen en kom er opnieuw in als nieuwe speler.", "StartAnewConfirm": "Opnieuw beginnen? De kamer vergeet je eerdere toegang (bijvoorbeeld rollen) en je komt er opnieuw in als nieuwe speler. Je GM kan het opnieuw geven.", "Cancel": "Annuleren", "AccessRestored": "Je eerdere toegang tot deze kamer is hersteld.", "GrantControl": "Laat deze speler Audio Forge bedienen",
+      "StartAnew": "Opnieuw beginnen", "StartAnewHint": "Vergeet wat je in deze kamer mocht doen en kom er opnieuw in als nieuwe speler.", "StartAnewConfirm": "Opnieuw beginnen? De kamer vergeet je eerdere toegang (bijvoorbeeld rollen) en je komt er opnieuw in als nieuwe speler. Je GM kan het opnieuw geven.", "Cancel": "Annuleren", "AccessRestored": "Je eerdere toegang tot deze kamer is hersteld.", "Resumed": "Vorige kamer hervat", "Previous": "Vorige kamer {id}, nog beschikbaar.", "PreviousFor": "Nog ongeveer {minutes} min om te hervatten.", "ResumeButton": "Kamer hervatten", "NewRoomButton": "Nieuwe kamer starten", "GrantControl": "Laat deze speler Audio Forge bedienen",
       "RevokeControl": "Bediening van Audio Forge intrekken",
       "WhoControls": "Wie kan Audio Forge bedienen",
       "ControlOnlyMe": "Alleen ik",

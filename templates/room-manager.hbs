@@ -73,10 +73,18 @@
       <label>{{localize "AUDIOFORGE.Room.Password"}}</label>
       <input type="text" name="password" value="{{password}}" placeholder="{{localize 'AUDIOFORGE.Room.PasswordOptional'}}" autocomplete="off">
     </div>
+    {{#if recoverable}}
+    <p class="af-note af-recoverable">{{localize "AUDIOFORGE.Room.Previous" id=recoverable.roomId}}{{#if recoverable.minutes}} {{localize "AUDIOFORGE.Room.PreviousFor" minutes=recoverable.minutes}}{{/if}}</p>
+    <button type="button" data-action="resumeRoom" {{#if opening}}disabled{{/if}}>
+      <i class="fa-solid {{#if opening}}fa-spinner fa-spin{{else}}fa-clock-rotate-left{{/if}}"></i> {{localize "AUDIOFORGE.Room.ResumeButton"}}
+    </button>
+    <button type="button" data-action="newRoom" {{#if opening}}disabled{{/if}}><i class="fa-solid fa-plus"></i> {{localize "AUDIOFORGE.Room.NewRoomButton"}}</button>
+    {{else}}
     <p class="af-note">{{localize "AUDIOFORGE.Room.OpenHint"}}</p>
     <button type="button" data-action="openRoom" {{#if opening}}disabled{{/if}}>
       <i class="fa-solid {{#if opening}}fa-spinner fa-spin{{else}}fa-tower-broadcast{{/if}}"></i> {{localize "AUDIOFORGE.Room.OpenButton"}}
     </button>
+    {{/if}}
     {{/if}}
   {{/unless}}
 </div>

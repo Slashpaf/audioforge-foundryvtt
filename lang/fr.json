@@ -141,7 +141,7 @@
       "Leave": "Quitter le salon",
       "Volume": "Volume",
       "ClickToListen": "Cliquez pour démarrer le son",
-      "StartAnew": "Repartir de zéro", "StartAnewHint": "Oublier ce que vous pouviez faire dans cette salle et la rejoindre comme nouveau joueur.", "StartAnewConfirm": "Repartir de zéro ? La salle oublie votre accès précédent (par exemple vos rôles) et vous la rejoignez comme nouveau joueur. Votre MJ peut vous le redonner.", "Cancel": "Annuler", "AccessRestored": "Votre accès précédent dans cette salle a été rétabli.", "GrantControl": "Autoriser ce joueur à contrôler Audio Forge",
+      "StartAnew": "Repartir de zéro", "StartAnewHint": "Oublier ce que vous pouviez faire dans cette salle et la rejoindre comme nouveau joueur.", "StartAnewConfirm": "Repartir de zéro ? La salle oublie votre accès précédent (par exemple vos rôles) et vous la rejoignez comme nouveau joueur. Votre MJ peut vous le redonner.", "Cancel": "Annuler", "AccessRestored": "Votre accès précédent dans cette salle a été rétabli.", "Resumed": "Salle précédente reprise", "Previous": "Salle précédente {id}, toujours disponible.", "PreviousFor": "Environ {minutes} min pour la reprendre.", "ResumeButton": "Reprendre la salle", "NewRoomButton": "Démarrer une nouvelle salle", "GrantControl": "Autoriser ce joueur à contrôler Audio Forge",
       "RevokeControl": "Retirer le contrôle d'Audio Forge",
       "WhoControls": "Qui peut contrôler Audio Forge",
       "ControlOnlyMe": "Moi seul",

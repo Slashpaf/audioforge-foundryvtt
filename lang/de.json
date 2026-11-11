@@ -141,7 +141,7 @@
       "Leave": "Den Raum verlassen",
       "Volume": "Lautstärke",
       "ClickToListen": "Klicken, um den Ton zu starten",
-      "StartAnew": "Neu beginnen", "StartAnewHint": "Vergessen, was du in diesem Raum durftest, und als neuer Spieler erneut beitreten.", "StartAnewConfirm": "Neu beginnen? Der Raum vergisst deinen früheren Zugriff (zum Beispiel Rollen) und du trittst als neuer Spieler erneut bei. Dein GM kann ihn wieder vergeben.", "Cancel": "Abbrechen", "AccessRestored": "Dein früherer Zugriff in diesem Raum wurde wiederhergestellt.", "GrantControl": "Diesem Spieler die Steuerung von Audio Forge erlauben",
+      "StartAnew": "Neu beginnen", "StartAnewHint": "Vergessen, was du in diesem Raum durftest, und als neuer Spieler erneut beitreten.", "StartAnewConfirm": "Neu beginnen? Der Raum vergisst deinen früheren Zugriff (zum Beispiel Rollen) und du trittst als neuer Spieler erneut bei. Dein GM kann ihn wieder vergeben.", "Cancel": "Abbrechen", "AccessRestored": "Dein früherer Zugriff in diesem Raum wurde wiederhergestellt.", "Resumed": "Vorheriger Raum fortgesetzt", "Previous": "Vorheriger Raum {id}, noch verfügbar.", "PreviousFor": "Noch etwa {minutes} Min. zum Fortsetzen.", "ResumeButton": "Raum fortsetzen", "NewRoomButton": "Neuen Raum starten", "GrantControl": "Diesem Spieler die Steuerung von Audio Forge erlauben",
       "RevokeControl": "Steuerung von Audio Forge entziehen",
       "WhoControls": "Wer Audio Forge steuern darf",
       "ControlOnlyMe": "Nur ich",

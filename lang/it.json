@@ -141,7 +141,7 @@
       "Leave": "Esci dalla stanza",
       "Volume": "Volume",
       "ClickToListen": "Clicca per avviare l'audio",
-      "StartAnew": "Ricomincia da capo", "StartAnewHint": "Dimentica cosa potevi fare in questa stanza e rientra come nuovo giocatore.", "StartAnewConfirm": "Ricominciare da capo? La stanza dimentica il tuo accesso precedente (per esempio i ruoli) e rientri come nuovo giocatore. Il GM può concederlo di nuovo.", "Cancel": "Annulla", "AccessRestored": "Il tuo accesso precedente in questa stanza è stato ripristinato.", "GrantControl": "Consenti a questo giocatore di controllare Audio Forge",
+      "StartAnew": "Ricomincia da capo", "StartAnewHint": "Dimentica cosa potevi fare in questa stanza e rientra come nuovo giocatore.", "StartAnewConfirm": "Ricominciare da capo? La stanza dimentica il tuo accesso precedente (per esempio i ruoli) e rientri come nuovo giocatore. Il GM può concederlo di nuovo.", "Cancel": "Annulla", "AccessRestored": "Il tuo accesso precedente in questa stanza è stato ripristinato.", "Resumed": "Stanza precedente ripresa", "Previous": "Stanza precedente {id}, ancora disponibile.", "PreviousFor": "Circa {minutes} min per riprenderla.", "ResumeButton": "Riprendi la stanza", "NewRoomButton": "Avvia una nuova stanza", "GrantControl": "Consenti a questo giocatore di controllare Audio Forge",
       "RevokeControl": "Revoca il controllo di Audio Forge",
       "WhoControls": "Chi può controllare Audio Forge",
       "ControlOnlyMe": "Solo io",

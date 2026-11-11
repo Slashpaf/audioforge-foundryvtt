@@ -86,19 +86,40 @@ export class AudioForgeClient extends EventTarget {
     return this.features?.activeLibraries === true;
   }
 
+  /** The app can resume its saved room (`getRecoverableRoom`, `startAudioCapture {resume}`, `stopAudioCapture {recoverable}`). */
+  get roomRecoveryAvailable() {
+    return this.connected && this.features?.roomRecovery === true;
+  }
+
+  /** The saved room that could be resumed, `{ roomId, roomUrl, accessTier, hostGraceRemainingSeconds? }`, or null. Never throws. */
+  async getRecoverableRoom() {
+    if (!this.roomRecoveryAvailable) return null;
+    try {
+      const r = await this.send({ command: "getRecoverableRoom" });
+      if (!r?.recoverable || r.unknown) return null;
+      return { roomId: r.roomId, roomUrl: r.roomUrl, accessTier: r.accessTier, hostGraceRemainingSeconds: r.hostGraceRemainingSeconds };
+    } catch {
+      return null;
+    }
+  }
+
   /** Best effort: the hello of some builds carries no features, but GET /api/info does. */
   async #fetchFeatures() {
+    let features = {};
     try {
       const q = this.#cfg.apiKey ? `?apiKey=${encodeURIComponent(this.#cfg.apiKey)}` : "";
       const resp = await fetch(`${this.baseUrl}/api/info${q}`);
-      if (!resp.ok) return;
-      const info = await resp.json();
-      const features = info?.features ?? info?.hello?.features;
-      this.features = features && typeof features === "object" ? features : {};
-      this.dispatchEvent(new CustomEvent("catalog", { detail: this.catalog }));
+      if (resp.ok) {
+        const info = await resp.json();
+        const found = info?.features ?? info?.hello?.features;
+        if (found && typeof found === "object") features = found;
+      }
     } catch {
-      // no info endpoint: stay with the single library select
+      // no info endpoint: this app announces no features
     }
+    // Until here the previous value was kept (a reconnect must not flicker); the answer, even an empty one, replaces it.
+    this.features = features;
+    this.dispatchEvent(new CustomEvent("catalog", { detail: this.catalog }));
   }
 
   /** Room guests can be allowed to control Audio Forge only when the server speaks API v3. */
