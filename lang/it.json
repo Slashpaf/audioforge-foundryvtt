@@ -37,7 +37,7 @@
       },
       "RoomsServer": {
         "Name": "Server delle stanze",
-        "Hint": "Dove Audio Forge apre le stanze online. Lascia il valore predefinito, a meno che tu non usi un tuo server."
+        "Hint": "Dove Audio Forge apre le stanze online. Lascia il valore predefinito, a meno che tu non usi un tuo server. Un server che non è HTTPS funziona solo se Foundry è aperto in http semplice sulla stessa rete."
       },
       "RoomAutoOpen": {
         "Name": "Apri la stanza online quando ci sono giocatori connessi",
@@ -127,7 +127,7 @@
         "idle": "Non connesso",
         "offline": "Offline"
       },
-      "Player": {
+      "Player": { "MixedContent": "Questa pagina è sicura (HTTPS) ma il server delle stanze {host} no: il browser blocca la connessione. Apri Foundry in http, oppure servi il server delle stanze in HTTPS.", "Unreachable": "Impossibile raggiungere il server delle stanze {host}. Controlla l'indirizzo in Impostazioni di gioco > Audio Forge > Server delle stanze e che il server sia in funzione.",
         "idle": "Non connesso",
         "connecting": "Connessione…",
         "joined": "In ascolto",

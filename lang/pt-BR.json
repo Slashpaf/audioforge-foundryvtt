@@ -37,7 +37,7 @@
       },
       "RoomsServer": {
         "Name": "Servidor de salas",
-        "Hint": "Onde o Audio Forge abre as salas online. Deixe o padrão, a menos que você use seu próprio servidor."
+        "Hint": "Onde o Audio Forge abre as salas online. Deixe o padrão, a menos que você use seu próprio servidor. Um servidor sem HTTPS só funciona se o Foundry for aberto por http simples na mesma rede."
       },
       "RoomAutoOpen": {
         "Name": "Abrir a sala online enquanto houver jogadores conectados",
@@ -127,7 +127,7 @@
         "idle": "Não conectado",
         "offline": "Offline"
       },
-      "Player": {
+      "Player": { "MixedContent": "Esta página é segura (HTTPS), mas o servidor de salas {host} não é: seu navegador bloqueia a conexão. Abra o Foundry por http ou sirva o servidor de salas por HTTPS.", "Unreachable": "Não foi possível alcançar o servidor de salas {host}. Verifique o endereço em Configurações do jogo > Audio Forge > Servidor de salas e se o servidor está em execução.",
         "idle": "Não conectado",
         "connecting": "Conectando…",
         "joined": "Ouvindo",

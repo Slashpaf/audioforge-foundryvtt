@@ -41,14 +41,21 @@ export class RoomPlayerPanel extends HandlebarsApplicationMixin(ApplicationV2) {
 
   async _prepareContext() {
     const status = roomSession.playerStatus;
+    const reason = roomSession.playerReason;
+    const host = roomSession.playerTarget;
+    const problem =
+      status === "error" && reason === "mixed_content" ? game.i18n.format("AUDIOFORGE.Room.Player.MixedContent", { host })
+      : status === "connecting" && reason === "unreachable" ? game.i18n.format("AUDIOFORGE.Room.Player.Unreachable", { host })
+      : "";
     return {
+      problem,
       open: !!roomSession.room,
       status,
       statusLabel: game.i18n.localize(`AUDIOFORGE.Room.Player.${status}`),
       joined: status === "joined",
       waiting: status === "waiting",
       removed: status === "removed",
-      error: status === "error",
+      error: status === "error" && reason !== "mixed_content",
       canJoin: !!roomSession.room && ["idle", "waiting", "removed", "error", "closed"].includes(status),
       canLeave: ["joined", "connecting", "waiting"].includes(status),
       blocked: status === "joined" && roomSession.audioBlocked,

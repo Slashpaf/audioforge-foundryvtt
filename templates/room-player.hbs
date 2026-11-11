@@ -10,6 +10,7 @@
     {{#if canLeave}}<button type="button" data-action="leave" title="{{localize 'AUDIOFORGE.Room.Leave'}}"><i class="fa-solid fa-right-from-bracket"></i></button>{{/if}}
   </header>
 
+  {{#if problem}}<p class="af-warn">{{problem}}</p>{{/if}}
   {{#if waiting}}<p class="af-warn">{{localize "AUDIOFORGE.Room.RejectedPlayer"}}</p>{{/if}}
   {{#if removed}}<p class="af-warn">{{localize "AUDIOFORGE.Room.Removed"}}</p>{{/if}}
   {{#if error}}<p class="af-warn">{{localize "AUDIOFORGE.Room.JoinError"}}</p>{{/if}}

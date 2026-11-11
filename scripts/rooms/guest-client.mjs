@@ -7,6 +7,12 @@
  * status: idle | connecting | joined | waiting (room full) | removed (kicked) | error | closed (room gone)
  */
 
+import { isLoopback } from "../client.mjs";
+
+/** Failed connection attempts (closed before server.hello) after which the player is told the server is unreachable. */
+const UNREACHABLE_AFTER = 3;
+/** Same, when a socket neither opens nor answers for this long (a blocked or black-holed address). */
+const HELLO_WAIT_MS = 10000;
 const PERMISSIONS = new Set(["listen", "control", "roles"]);
 const MAX_BACKOFF_MS = 10000;
 
@@ -20,6 +26,16 @@ const FATAL = {
   invalid_room_password: "error",
   room_not_found: "closed",
 };
+
+/** A plain ws:// connection from an HTTPS page to a non-loopback host is blocked by browsers without any error to read. */
+export function isMixedContent(baseUrl) {
+  try {
+    const url = new URL(baseUrl);
+    return globalThis.location?.protocol === "https:" && url.protocol === "http:" && !isLoopback(url.hostname);
+  } catch {
+    return false;
+  }
+}
 
 export function roomWebSocketUrl(baseUrl) {
   const url = new URL(baseUrl);
@@ -37,6 +53,9 @@ export class RoomGuestClient extends EventTarget {
   #cfg = null;
   #sink = null;
   #seq = 0;
+  #failures = 0; // consecutive attempts that ended before server.hello
+  #unreachable = false;
+  #helloTimer = null;
   #forgetting = null; // { resolve, timer } while a guest.forget is in flight
 
   status = "idle";
@@ -62,7 +81,18 @@ export class RoomGuestClient extends EventTarget {
     this.#cfg = cfg;
     this.#wanted = true;
     this.#attempt = 0;
+    this.#failures = 0;
+    this.#unreachable = false;
     this.#open();
+  }
+
+  /** The rooms server being contacted (host and port, e.g. "192.168.0.9:8080"); empty before the first join. */
+  get target() {
+    try {
+      return new URL(this.#cfg.baseUrl).host;
+    } catch {
+      return "";
+    }
   }
 
   /** Where the room lives, for URLs on the rooms server (icons); null before the first join. */
@@ -114,7 +144,10 @@ export class RoomGuestClient extends EventTarget {
   leave() {
     this.#wanted = false;
     clearTimeout(this.#timer);
+    clearTimeout(this.#helloTimer);
     this.#timer = null;
+    this.#failures = 0;
+    this.#unreachable = false;
     this.#close();
     this.clientId = null;
     this.room = null;
@@ -126,7 +159,14 @@ export class RoomGuestClient extends EventTarget {
     this.#close();
     clearTimeout(this.#timer);
     this.#timer = null;
-    this.#setStatus("connecting");
+    if (isMixedContent(this.#cfg.baseUrl)) {
+      // The browser would silently block ws:// from a secure page: say so instead of connecting forever.
+      console.warn(`Audio Forge: the browser blocks the connection to the rooms server ${roomWebSocketUrl(this.#cfg.baseUrl)} from an HTTPS page (mixed content).`);
+      this.#wanted = false;
+      this.#setStatus("error", "mixed_content");
+      return;
+    }
+    this.#setStatus("connecting", this.#unreachable ? "unreachable" : undefined);
     let ws;
     try {
       ws = new WebSocket(roomWebSocketUrl(this.#cfg.baseUrl));
@@ -138,6 +178,10 @@ export class RoomGuestClient extends EventTarget {
     ws.binaryType = "arraybuffer";
     this.#ws = ws;
     let joined = false;
+    clearTimeout(this.#helloTimer);
+    this.#helloTimer = setTimeout(() => {
+      if (this.#ws === ws && !joined) this.#markUnreachable();
+    }, HELLO_WAIT_MS);
 
     ws.addEventListener("open", () => {
       if (this.#ws !== ws) return;
@@ -159,9 +203,11 @@ export class RoomGuestClient extends EventTarget {
       if (msg.type === "server.hello") joined = true;
       this.#handle(msg);
     });
-    ws.addEventListener("close", (ev) => {
-      if (this.#ws !== ws) return;
+    const onClose = (ev) => {
+      if (this.#ws !== ws) return; // handled already (close and the fallback below can both fire)
       this.#ws = null;
+      clearTimeout(this.#helloTimer);
+      if (!joined && !this.#forgetting) this.#failures++;
       this.#sink.onReset?.();
       this.#setSnapshot(null); // no control while offline; the server sends a fresh snapshot on rejoin
       const forgotten = this.#forgetting || ev.reason === "guest_forgotten";
@@ -184,9 +230,21 @@ export class RoomGuestClient extends EventTarget {
       const reason = CLOSE_CODES[ev.code] ?? (typeof ev.reason === "string" ? ev.reason : "");
       if (this.#fail(FATAL[reason] ? reason : null)) return;
       this.#retry();
+    };
+    ws.addEventListener("close", onClose);
+    // "error" is followed by "close" in browsers, but some runtimes never send "close" for a refused connection: if
+    // the socket is not open shortly after an error, treat it as closed so the failure is counted and retried.
+    ws.addEventListener("error", () => {
+      setTimeout(() => {
+        if (this.#ws !== ws || ws.readyState === 1) return;
+        try {
+          ws.close();
+        } catch {
+          // already dead
+        }
+        onClose({ code: 1006, reason: "" });
+      }, 100);
     });
-    // "error" is always followed by "close"; retrying is handled there.
-    ws.addEventListener("error", () => {});
   }
 
   /** Apply a fatal refusal. Returns true when the reason ends the session (no retry). */
@@ -209,6 +267,9 @@ export class RoomGuestClient extends EventTarget {
         this.features = msg.features && typeof msg.features === "object" ? msg.features : {};
         this.resumed = msg.resumed === true;
         this.#attempt = 0;
+        this.#failures = 0;
+        this.#unreachable = false;
+        clearTimeout(this.#helloTimer);
         this.#setStatus("joined");
         this.dispatchEvent(new CustomEvent("room", { detail: msg.room }));
         break;
@@ -255,11 +316,20 @@ export class RoomGuestClient extends EventTarget {
     if (!this.#wanted) return;
     const delay = Math.min(1000 * 2 ** this.#attempt, MAX_BACKOFF_MS);
     this.#attempt++;
-    this.#setStatus("connecting", "reconnecting");
+    if (this.#failures >= UNREACHABLE_AFTER) this.#markUnreachable();
+    else this.#setStatus("connecting", this.#unreachable ? "unreachable" : "reconnecting");
     this.#timer = setTimeout(() => {
       this.#timer = null;
       if (this.#wanted) this.#open();
     }, delay);
+  }
+
+  /** Keep retrying, but show that the server cannot be reached (and log the exact address once). */
+  #markUnreachable() {
+    if (!this.#wanted) return;
+    if (!this.#unreachable) console.warn(`Audio Forge: cannot reach the rooms server at ${roomWebSocketUrl(this.#cfg.baseUrl)}.`);
+    this.#unreachable = true;
+    this.#setStatus("connecting", "unreachable");
   }
 
   #close() {

@@ -37,7 +37,7 @@
       },
       "RoomsServer": {
         "Name": "Kamerserver",
-        "Hint": "Waar Audio Forge online kamers opent. Laat de standaardwaarde staan, tenzij je een eigen server draait."
+        "Hint": "Waar Audio Forge online kamers opent. Laat de standaardwaarde staan, tenzij je een eigen server draait. Een server zonder HTTPS werkt alleen als Foundry via gewoon http op hetzelfde netwerk wordt geopend."
       },
       "RoomAutoOpen": {
         "Name": "Online kamer openen zolang er spelers verbonden zijn",
@@ -127,7 +127,7 @@
         "idle": "Niet deelgenomen",
         "offline": "Offline"
       },
-      "Player": {
+      "Player": { "MixedContent": "Deze pagina is beveiligd (HTTPS) maar de kamerserver {host} niet: je browser blokkeert de verbinding. Open Foundry via http, of bied de kamerserver aan via HTTPS.", "Unreachable": "De kamerserver {host} is niet bereikbaar. Controleer het adres in Spelinstellingen > Audio Forge > Kamerserver en of de server draait.",
         "idle": "Niet deelgenomen",
         "connecting": "Verbinden…",
         "joined": "Luistert",

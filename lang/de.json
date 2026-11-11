@@ -37,7 +37,7 @@
       },
       "RoomsServer": {
         "Name": "Raum-Server",
-        "Hint": "Wo Audio Forge Online-Räume öffnet. Lass den Standardwert, außer du betreibst einen eigenen Server."
+        "Hint": "Wo Audio Forge Online-Räume öffnet. Lass den Standardwert, außer du betreibst einen eigenen Server. Ein Server ohne HTTPS funktioniert nur, wenn Foundry im selben Netzwerk über einfaches http geöffnet wird."
       },
       "RoomAutoOpen": {
         "Name": "Online-Raum öffnen, solange Spieler verbunden sind",
@@ -127,7 +127,7 @@
         "idle": "Nicht beigetreten",
         "offline": "Offline"
       },
-      "Player": {
+      "Player": { "MixedContent": "Diese Seite ist gesichert (HTTPS), der Raumserver {host} aber nicht: Dein Browser blockiert die Verbindung. Öffne Foundry über http oder stelle den Raumserver über HTTPS bereit.", "Unreachable": "Der Raumserver {host} ist nicht erreichbar. Prüfe die Adresse unter Spieleinstellungen > Audio Forge > Raumserver und ob der Server läuft.",
         "idle": "Nicht beigetreten",
         "connecting": "Verbinde…",
         "joined": "Hört zu",

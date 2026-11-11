@@ -64,6 +64,11 @@ class RoomSession extends EventTarget {
     return this.#guest.status;
   }
 
+  /** The rooms server the player's connection goes to (host:port). */
+  get playerTarget() {
+    return this.#guest.target;
+  }
+
   get playerReason() {
     return this.#guest.reason;
   }
