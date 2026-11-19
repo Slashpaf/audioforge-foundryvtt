@@ -2,9 +2,8 @@
 
 All notable changes to this module. Versions follow `module.json`; each release has a matching `vX.Y.Z` tag.
 
-## 0.3.0 - 2026-11-10
+## 0.3.0 - 2026-11-20
 
-- No "Start anew" button and no "access restored" line in the player window: a Foundry player is a fixed identity and a reload rejoins the room.
 - Players can join a room when Foundry is opened over plain http on the local network (the session id no longer needs `crypto.randomUUID`, which browsers only offer on HTTPS).
 - Online room roles: with an Audio Forge that offers them, the GM can give each player roles (for example an instrument player who only controls the music of one library). The room window shows how each player may use Audio Forge (listens, full control or roles) and has a role picker per player. Players with roles see only what their roles allow: the other categories, section buttons, Stop all and saved states are hidden.
 - Several libraries: the panel lists the categories of every active library, grouped by library, for the GM and for players. With a compatible Audio Forge the GM switches libraries on and off with checkboxes instead of the single library select; older versions keep the select.
@@ -12,7 +11,6 @@ All notable changes to this module. Versions follow `module.json`; each release 
 - Online room: with an Audio Forge that can resume rooms, opening the room resumes the previous one when it is still available (players keep their roles), and the room closes recoverably when the last player leaves. The room window offers **Resume room** or **Start a new room** when a previous room can be resumed. Closing the room by hand still closes it for good.
 - Roles window for the GM (**Manage roles** in the room window and in the panel header, with an Audio Forge that has roles): create, edit and delete roles with whole layers, libraries and individual categories, then give them to players in the room window.
 - Online room: a player whose page is served over HTTPS and whose rooms server is plain http (not on this computer) is now told that the browser blocks the connection, instead of staying on Connecting. A rooms server that cannot be reached shows its address after a few failed attempts, and the Rooms server setting explains the HTTPS rule.
-- Online room, player window: a **Start anew** button (with a confirmation) forgets what the room remembered about you, such as roles, and joins again as a new player. When the room restored your earlier access on joining, a short note says so. Needs a rooms server that supports it; with an older one the button simply leaves and rejoins with a new identity.
 
 - Audio Forge now has its own button in the scene controls, for the GM and for players, instead of sitting inside the sound controls (GM) or the token controls (players). It opens the panel (GM) or the room window (players) without changing the layer you are working on.
 - Echo tiles in the panel (yours and the one players with control see) show a bar in the category color that fills the tile from the left over the echo's length and is then wiped out left to right as in the app, stacking when echoes of a category overlap, and light up while one plays. Tiles also flash when pressed. Needs an Audio Forge that reports its playing echoes.
